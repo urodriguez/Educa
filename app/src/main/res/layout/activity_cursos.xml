@@ -7,31 +7,15 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
-    tools:context="com.example.uciel.educa.Log">
+    tools:context="com.example.uciel.educa.Cursos">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/info"
-        android:layout_alignParentLeft="true"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:text="Cursos disponibles"
+        android:id="@+id/textView"
         android:layout_alignParentTop="true"
-        android:textSize="18sp"
-        />
-
-    <com.facebook.login.widget.LoginButton
-        android:id="@+id/login_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        />
-
-    <com.google.android.gms.common.SignInButton
-        android:id="@+id/sign_in_button"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/login_button"
         android:layout_centerHorizontal="true"
-        android:layout_marginBottom="40dp"
-        />
-
+        android:layout_marginTop="157dp" />
 </RelativeLayout>

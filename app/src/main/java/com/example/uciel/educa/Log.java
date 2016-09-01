@@ -104,11 +104,10 @@ public class Log extends AppCompatActivity implements GoogleApiClient.OnConnecti
         if (result.isSuccess()) {
             // Signed in successfully, show authenticated UI.
             GoogleSignInAccount acct = result.getSignInAccount();
-            //mStatusTextView.setText(getString(R.string.signed_in_fmt, acct.getDisplayName()));
-            //updateUI(true);
+            android.util.Log.d(TAG, "account Name: " + acct.getDisplayName());
+            android.util.Log.d(TAG, "account Email: " + acct.getEmail());
         } else {
-            // Signed out, show unauthenticated UI.
-           // updateUI(false);
+            android.util.Log.d(TAG, "ERROR AL INICIAR SESION");
         }
     }
 // [END handleSignInResult]
