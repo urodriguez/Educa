@@ -30,7 +30,8 @@
             android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
             android:label="@string/app_name"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
-        <activity android:name=".Cursos"></activity>
+        <activity android:name=".Cursos" />
+        <activity android:name=".DescripcionCurso"></activity>
     </application>
 
 </manifest>

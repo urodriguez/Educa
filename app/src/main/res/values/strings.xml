@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">Educa</string>
     <string name="facebook_app_id">1737611673172942</string>
+    <string name="action_search">Buscador</string>
 </resources>

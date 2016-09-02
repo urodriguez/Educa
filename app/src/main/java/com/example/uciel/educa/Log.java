@@ -106,6 +106,9 @@ public class Log extends AppCompatActivity implements GoogleApiClient.OnConnecti
             GoogleSignInAccount acct = result.getSignInAccount();
             android.util.Log.d(TAG, "account Name: " + acct.getDisplayName());
             android.util.Log.d(TAG, "account Email: " + acct.getEmail());
+
+            Intent cursosIntent = new Intent(this,Cursos.class);
+            startActivity(cursosIntent);
         } else {
             android.util.Log.d(TAG, "ERROR AL INICIAR SESION");
         }
