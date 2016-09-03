@@ -21,35 +21,45 @@
         android:layout_alignParentStart="true"
         android:layout_marginTop="43dp" />
 
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Filtrar por"
+        android:id="@+id/buttonFiltrar"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
+
     <SearchView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:id="@+id/searchView"
         android:icon="@android:drawable/ic_menu_search"
         android:title="@string/action_search"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
         android:queryHint="Buscar..."
-        android:showAsAction="always"/>
-
-    <Button
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="Filtrar por categoria"
-        android:id="@+id/button"
+        android:showAsAction="always"
         android:layout_alignParentTop="true"
-        android:layout_alignParentRight="true"
-        android:layout_alignParentEnd="true" />
+        android:layout_toRightOf="@+id/buttonFiltrar"
+        android:layout_toEndOf="@+id/buttonFiltrar" />
 
-    <LinearLayout
-        android:id="@+id/LLcursos"
-        android:orientation="vertical"
+    <ScrollView
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
-        android:layout_below="@+id/textView"></LinearLayout>
+        android:id="@+id/scrollView"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/textView">
+
+        <LinearLayout
+            android:id="@+id/LLcursos"
+            android:orientation="vertical"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_below="@+id/textView">
+        </LinearLayout>
+    </ScrollView>
+
 
 
 
