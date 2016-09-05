@@ -5,18 +5,22 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.SlidingPaneLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.*;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.RatingBar;
 import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -135,10 +139,55 @@ public class Cursos extends AppCompatActivity implements SearchView.OnQueryTextL
 
         ImageView img = new ImageView (this);
         img.setImageResource(R.drawable.angular);
-        //LinearLayout marco = new LinearLayout(this);
-        //marco.setOrientation(LinearLayout.VERTICAL);
         img.setLayoutParams(new LinearLayout.LayoutParams(150,150));
-        linearLayoutCursos.addView(img);
+
+        LinearLayout parent = new LinearLayout(this);
+        parent.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+        parent.setOrientation(LinearLayout.VERTICAL);
+
+        //children of parent linearlayout
+
+
+        LinearLayout layout2 = new LinearLayout(this);
+        layout2.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+        layout2.setOrientation(LinearLayout.HORIZONTAL);
+
+        layout2.addView(img);
+
+        LinearLayout layout3 = new LinearLayout(this);
+        layout3.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
+        layout3.setOrientation(LinearLayout.VERTICAL);
+
+        layout2.addView(layout3);
+
+        parent.addView(layout2);
+
+        //children of layout2 LinearLayout
+
+        TextView tv1 = new TextView(this);
+        TextView tv2 = new TextView(this);
+
+        tv1.setText("Angular JS");
+        tv2.setText("Fontela");
+
+        layout3.addView(tv1);
+        layout3.addView(tv2);
+
+        RatingBar ratingBar = new RatingBar(this);
+        ratingBar.setNumStars(5);
+        ratingBar.setRating(5);
+        //ratingBar.setVisibility(View.INVISIBLE);
+
+        layout3.addView(ratingBar);
+
+        ratingBar.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
+            public void onRatingChanged(RatingBar ratingBar, float rating,
+                                        boolean fromUser) {
+                android.util.Log.d("INFO", String.valueOf(rating));
+            }
+        });
+
+        linearLayoutCursos.addView(parent);
         img.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 android.util.Log.d("INFO", "MOSTRANDO CURSO3");
