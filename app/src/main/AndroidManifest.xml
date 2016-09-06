@@ -31,7 +31,8 @@
             android:label="@string/app_name"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
         <activity android:name=".Cursos" />
-        <activity android:name=".DescripcionCurso"></activity>
+        <activity android:name=".DescripcionCurso" />
+        <activity android:name=".Home" />
     </application>
 
 </manifest>

@@ -28,13 +28,10 @@ import android.widget.Toast;
 public class Cursos extends AppCompatActivity implements SearchView.OnQueryTextListener {
     LinearLayout linearLayoutCursos;
     SearchView searchView;
-    Button btnFiltrar;
     ListView listView;
     DrawerLayout drawerLayout;
 
     final String[] opciones = {"Cursos disponibles", "Mis cursos", "Diplomas"};
-    final CharSequence categorias[] = new CharSequence[] {"Nombre", "Categoria"};
-    String filtrandoPor = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -48,29 +45,13 @@ public class Cursos extends AppCompatActivity implements SearchView.OnQueryTextL
         linearLayoutCursos = (LinearLayout) findViewById(R.id.LLcursos);
 
         this.mostrarCursos();
+
     }
 
 
     private void cargarFiltroYBusqueda(){
         searchView = (SearchView) findViewById(R.id.searchView);
         searchView.setOnQueryTextListener(this);
-
-        btnFiltrar = (Button) findViewById(R.id.buttonFiltrar);
-        btnFiltrar.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-
-                AlertDialog.Builder builder = new AlertDialog.Builder(Cursos.this);
-                builder.setTitle("Selecciona un filtro");
-                builder.setItems(categorias, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        searchView.setQueryHint("Buscar por " + categorias[which]);
-                        filtrandoPor = categorias[which].toString();
-                    }
-                });
-                builder.show();
-            }
-        });
     }
 
     private void cargarMenuLateral() {
@@ -246,7 +227,7 @@ public class Cursos extends AppCompatActivity implements SearchView.OnQueryTextL
     @Override
     public boolean onQueryTextSubmit(String query) {
         // User pressed the search button
-        android.util.Log.d("INFO", "Buscando: " + query + " - Filtro: " + filtrandoPor);
+        android.util.Log.d("INFO", "Buscando: " + query);
         return false;
     }
 
