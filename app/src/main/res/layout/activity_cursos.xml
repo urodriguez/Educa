@@ -6,53 +6,45 @@
     android:layout_height="match_parent"
     tools:context="com.example.uciel.educa.Cursos">
 
-    <RelativeLayout
-        xmlns:tools="http://schemas.android.com/tools"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        tools:context=".MainActivity" >
+    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="16dp"
+        android:paddingRight="16dp">
 
-        <TextView
+        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:text="Cursos disponibles"
-            android:id="@+id/textView"
-            android:layout_below="@+id/searchView"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentStart="true"
-            android:layout_marginTop="43dp" />
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:id="@+id/rltvca">
+
+            <TextView
+                android:id="@+id/categoriaActual"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="25dp"
+                />
+
+        </RelativeLayout>
 
 
-        <SearchView
+        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/searchView"
-            android:icon="@android:drawable/ic_menu_search"
-            android:title="@string/action_search"
-            android:queryHint="Buscar..."
-            android:showAsAction="always"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentRight="true"
-            />
+            android:paddingLeft="16dp"
+            android:paddingRight="16dp"
+            android:id="@+id/rlrv"
+            android:layout_below="@+id/rltvca">
 
-        <ScrollView
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:id="@+id/scrollView"
-            android:layout_centerHorizontal="true"
-            android:layout_below="@+id/textView">
+            <android.support.v7.widget.RecyclerView
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:id="@+id/rv"
+                >
 
-            <LinearLayout
-                android:id="@+id/LLcursos"
-                android:orientation="vertical"
-                android:layout_width="match_parent"
-                android:layout_height="match_parent"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentStart="true"
-                android:layout_below="@+id/textView">
-            </LinearLayout>
-        </ScrollView>
+            </android.support.v7.widget.RecyclerView>
+        </RelativeLayout>
 
     </RelativeLayout>
 

@@ -8,6 +8,8 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v4.widget.SlidingPaneLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.LinearLayoutManager;
+import android.support.v7.widget.RecyclerView;
 import android.util.*;
 import android.util.Log;
 import android.view.Gravity;
@@ -25,11 +27,17 @@ import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class Cursos extends AppCompatActivity implements SearchView.OnQueryTextListener {
-    LinearLayout linearLayoutCursos;
     SearchView searchView;
     ListView listView;
     DrawerLayout drawerLayout;
+
+    private List<Curso> cursos;
+    private RecyclerView rv;
+    private TextView tvCategoriaActual;
 
     final String[] opciones = {"Cursos disponibles", "Mis cursos", "Diplomas"};
 
@@ -38,19 +46,39 @@ public class Cursos extends AppCompatActivity implements SearchView.OnQueryTextL
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cursos);
 
-        this.cargarMenuLateral();
+        //this.cargarMenuLateral();
 
-        this.cargarFiltroYBusqueda();
+        tvCategoriaActual=(TextView) findViewById(R.id.categoriaActual);
+        tvCategoriaActual.setText("MOSTRANDO CATEGORIA: ");
 
-        linearLayoutCursos = (LinearLayout) findViewById(R.id.LLcursos);
+        //this.cargarFiltroYBusqueda();
 
-        this.mostrarCursos();
+        rv=(RecyclerView)findViewById(R.id.rv);
 
+        LinearLayoutManager llm = new LinearLayoutManager(this);
+        llm.setOrientation(LinearLayoutManager.VERTICAL);
+        rv.setLayoutManager(llm);
+        rv.setHasFixedSize(true);
+
+        initializeData();
+        initializeAdapter();
+    }
+
+    private void initializeData(){
+        cursos = new ArrayList<>();
+        cursos.add(new Curso("Angular", "Jose", R.drawable.angular));
+        cursos.add(new Curso("JavaScript", "Carlos", R.drawable.cursojs));
+        cursos.add(new Curso("Matematica", "Juan", R.drawable.matematica));
+    }
+
+    private void initializeAdapter(){
+        RVAdapter adapter = new RVAdapter(cursos, "VERTICAL");
+        rv.setAdapter(adapter);
     }
 
 
     private void cargarFiltroYBusqueda(){
-        searchView = (SearchView) findViewById(R.id.searchView);
+        //searchView = (SearchView) findViewById(R.id.searchView);
         searchView.setOnQueryTextListener(this);
     }
 
@@ -97,131 +125,6 @@ public class Cursos extends AppCompatActivity implements SearchView.OnQueryTextL
         }
 
         return super.onOptionsItemSelected(item);
-    }
-
-    private void mostrarCursos() {
-/*        TextView tva = new TextView(this);
-        tva.setText("CURSO 1");
-        linearLayoutCursos.addView(tva);
-
-        TextView tvs = new TextView(this);
-        tvs.setText("CURSO 2");
-        linearLayoutCursos.addView(tvs);*/
-
-
-        View separador = new View(this);
-        separador.setMinimumHeight(1);
-        separador.setBackgroundColor(Color.GRAY);
-        linearLayoutCursos.addView(separador);
-
-        TextView cat1 = new TextView(this);
-        cat1.setText("PROGRAMACION");
-        linearLayoutCursos.addView(cat1);
-
-        ImageView img = new ImageView (this);
-        img.setImageResource(R.drawable.angular);
-        img.setLayoutParams(new LinearLayout.LayoutParams(150,150));
-
-        LinearLayout parent = new LinearLayout(this);
-        parent.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-        parent.setOrientation(LinearLayout.VERTICAL);
-
-        //children of parent linearlayout
-
-
-        LinearLayout layout2 = new LinearLayout(this);
-        layout2.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-        layout2.setOrientation(LinearLayout.HORIZONTAL);
-
-        layout2.addView(img);
-
-        LinearLayout layout3 = new LinearLayout(this);
-        layout3.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT));
-        layout3.setOrientation(LinearLayout.VERTICAL);
-
-        layout2.addView(layout3);
-
-        parent.addView(layout2);
-
-        //children of layout2 LinearLayout
-
-        TextView tv1 = new TextView(this);
-        TextView tv2 = new TextView(this);
-
-        tv1.setText("Angular JS");
-        tv2.setText("Fontela");
-
-        layout3.addView(tv1);
-        layout3.addView(tv2);
-
-        RatingBar ratingBar = new RatingBar(this);
-        ratingBar.setNumStars(5);
-        ratingBar.setRating(5);
-        //ratingBar.setVisibility(View.INVISIBLE);
-
-        layout3.addView(ratingBar);
-
-        ratingBar.setOnRatingBarChangeListener(new RatingBar.OnRatingBarChangeListener() {
-            public void onRatingChanged(RatingBar ratingBar, float rating,
-                                        boolean fromUser) {
-                android.util.Log.d("INFO", String.valueOf(rating));
-            }
-        });
-
-        linearLayoutCursos.addView(parent);
-        img.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                android.util.Log.d("INFO", "MOSTRANDO CURSO3");
-                Intent descripcionCursoIntent = new Intent(Cursos.this,DescripcionCurso.class);
-                startActivity(descripcionCursoIntent);
-            }
-        });
-
-
-        ImageView img2 = new ImageView (this);
-        img2.setImageResource(R.drawable.cursojs);
-        img2.setLayoutParams(new LinearLayout.LayoutParams(150,150));
-        linearLayoutCursos.addView(img2);
-        img2.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                android.util.Log.d("INFO", "MOSTRANDO CURSO4");
-                Intent descripcionCursoIntent = new Intent(Cursos.this,DescripcionCurso.class);
-                startActivity(descripcionCursoIntent);
-            }
-        });
-
-
-        View separador2 = new View(this);
-        separador2.setMinimumHeight(1);
-        separador2.setBackgroundColor(Color.GRAY);
-        linearLayoutCursos.addView(separador2);
-
-        TextView cat2 = new TextView(this);
-        cat2.setText("EXACTAS");
-        linearLayoutCursos.addView(cat2);
-
-        ImageView img3 = new ImageView (this);
-        img3.setImageResource(R.drawable.matematica);
-        img3.setLayoutParams(new LinearLayout.LayoutParams(150,150));
-        linearLayoutCursos.addView(img3);
-        img3.setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                android.util.Log.d("INFO", "MOSTRANDO CURSO4");
-                Intent descripcionCursoIntent = new Intent(Cursos.this,DescripcionCurso.class);
-                startActivity(descripcionCursoIntent);
-            }
-        });
-
-/*        for(int i = 5; i < 100; i++){
-            TextView txt = new TextView(this);
-            txt.setText("CURSO " + String.valueOf(i));
-            linearLayoutCursos.addView(txt);
-
-            View separadorr = new View(this);
-            separadorr.setMinimumHeight(1);
-            separadorr.setBackgroundColor(Color.GRAY);
-            linearLayoutCursos.addView(separadorr);
-        }*/
     }
 
     @Override

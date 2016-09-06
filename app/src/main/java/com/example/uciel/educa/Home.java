@@ -39,7 +39,7 @@ public class Home extends AppCompatActivity {
     }
 
     private void initializeAdapter(){
-        RVAdapter adapter = new RVAdapter(cursos);
+        RVAdapter adapter = new RVAdapter(cursos, "HORIZONTAL");
         rv.setAdapter(adapter);
     }
 }

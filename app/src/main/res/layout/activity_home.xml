@@ -55,7 +55,7 @@
         android:layout_below="@+id/rlrv">
 
         <TextView
-            android:id="@+id/textviewCursos"
+            android:id="@+id/textviewCategorias"
             android:layout_marginTop="35dp"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
