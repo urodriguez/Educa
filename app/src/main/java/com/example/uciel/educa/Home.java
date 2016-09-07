@@ -1,24 +1,38 @@
 package com.example.uciel.educa;
 
+import android.app.SearchManager;
+import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.SearchView;
+import android.support.v7.widget.Toolbar;
+import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.widget.TextView;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Home extends AppCompatActivity {
+public class Home extends AppCompatActivity implements android.widget.SearchView.OnQueryTextListener{
 
+    android.widget.SearchView searchView;
     private List<Curso> cursos;
     private RecyclerView rv;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         setContentView(R.layout.activity_home);
+
+        // Adding Toolbar to Main screen
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+
+        this.cargarFiltroYBusqueda();
 
         rv=(RecyclerView)findViewById(R.id.rv);
 
@@ -42,4 +56,23 @@ public class Home extends AppCompatActivity {
         RVAdapter adapter = new RVAdapter(cursos, "HORIZONTAL");
         rv.setAdapter(adapter);
     }
+
+    private void cargarFiltroYBusqueda(){
+        searchView = (android.widget.SearchView) findViewById(R.id.searchView);
+        searchView.setOnQueryTextListener(this);
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        // User pressed the search button
+        android.util.Log.d("INFO", "Buscando: " + query);
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        // User changed the text
+        return false;
+    }
+
 }

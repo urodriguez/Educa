@@ -51,7 +51,7 @@ public class Cursos extends AppCompatActivity implements SearchView.OnQueryTextL
         tvCategoriaActual=(TextView) findViewById(R.id.categoriaActual);
         tvCategoriaActual.setText("MOSTRANDO CATEGORIA: ");
 
-        //this.cargarFiltroYBusqueda();
+        this.cargarFiltroYBusqueda();
 
         rv=(RecyclerView)findViewById(R.id.rv);
 
@@ -78,7 +78,7 @@ public class Cursos extends AppCompatActivity implements SearchView.OnQueryTextL
 
 
     private void cargarFiltroYBusqueda(){
-        //searchView = (SearchView) findViewById(R.id.searchView);
+        searchView = (SearchView) findViewById(R.id.searchView);
         searchView.setOnQueryTextListener(this);
     }
 
