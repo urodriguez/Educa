@@ -126,6 +126,51 @@
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentStart="true"
                 android:layout_below="@+id/textView">
+
+                <ImageView
+                    android:src="@drawable/prog"
+                    android:layout_width="200dp"
+                    android:layout_height="200dp"
+                    android:id="@+id/programacion"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentTop="true"
+                    />
+
+                <ImageView
+                    android:src="@drawable/gastronomia"
+                    android:layout_width="200dp"
+                    android:layout_height="200dp"
+                    android:id="@+id/gastronomia"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentTop="true"
+                    />
+
+                <ImageView
+                    android:src="@drawable/idiomas"
+                    android:layout_width="200dp"
+                    android:layout_height="200dp"
+                    android:id="@+id/idiomas"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentTop="true"
+                    />
+
+                <ImageView
+                    android:src="@drawable/gestion"
+                    android:layout_width="200dp"
+                    android:layout_height="200dp"
+                    android:id="@+id/gestion"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentTop="true"
+                    />
+
+                <ImageView
+                    android:src="@drawable/exactas"
+                    android:layout_width="200dp"
+                    android:layout_height="200dp"
+                    android:id="@+id/exactas"
+                    android:layout_alignParentLeft="true"
+                    android:layout_alignParentTop="true"
+                    />
             </LinearLayout>
         </HorizontalScrollView>
 

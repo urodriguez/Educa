@@ -4,4 +4,10 @@
     <string name="action_search">Buscador</string>
     <string name="categorias">Navegar por las categorías</string>
     <string name="proximos">Proximos cursos</string>
+    <string name="action_settings">Settings</string>
+    <string name="home_item">Home</string>
+    <string name="productos_item">Mis Cursos</string>
+    <string name="facturas_item">Mis Diplomas</string>
+    <string name="log_out_item">Cerrar Sesión</string>
+    <string name="configuracion_item">Configuración</string>
 </resources>

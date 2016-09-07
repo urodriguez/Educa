@@ -1,39 +1,30 @@
 package com.example.uciel.educa;
 
-import android.app.AlertDialog;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.graphics.Color;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v4.widget.SlidingPaneLayout;
-import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.design.widget.NavigationView;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.view.GravityCompat;
+import android.support.v4.widget.DrawerLayout;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.support.v7.widget.Toolbar;
 import android.util.*;
-import android.util.Log;
-import android.view.Gravity;
+import android.view.Menu;
 import android.view.MenuItem;
-import android.view.View;
-import android.widget.AdapterView;
-import android.widget.ArrayAdapter;
-import android.widget.Button;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.RatingBar;
 import android.widget.SearchView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class Cursos extends AppCompatActivity implements SearchView.OnQueryTextListener {
     SearchView searchView;
-    ListView listView;
-    DrawerLayout drawerLayout;
+    private DrawerLayout drawerLayout;
+    private NavigationView navigationView;
 
     private List<Curso> cursos;
     private RecyclerView rv;
@@ -46,7 +37,13 @@ public class Cursos extends AppCompatActivity implements SearchView.OnQueryTextL
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cursos);
 
-        //this.cargarMenuLateral();
+        setToolbar(); // Setear Toolbar como action bar
+
+        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
+        navigationView = (NavigationView) findViewById(R.id.nav_view);
+        if (navigationView != null) {
+            setupDrawerContent(navigationView);
+        }
 
         tvCategoriaActual = (TextView) findViewById(R.id.categoriaActual);
         tvCategoriaActual.setText("Estas en: ");
@@ -64,6 +61,62 @@ public class Cursos extends AppCompatActivity implements SearchView.OnQueryTextL
         initializeAdapter();
     }
 
+    private void setToolbar() {
+        Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        setSupportActionBar(toolbar);
+        final ActionBar ab = getSupportActionBar();
+        if (ab != null) {
+            // Poner ícono del drawer toggle
+            ab.setHomeAsUpIndicator(R.drawable.ic_menu);
+            ab.setDisplayHomeAsUpEnabled(true);
+        }
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        if (!drawerLayout.isDrawerOpen(GravityCompat.START)) {
+            getMenuInflater().inflate(R.menu.nav_menu, menu);
+            return true;
+        }
+        return super.onCreateOptionsMenu(menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case android.R.id.home:
+                drawerLayout.openDrawer(GravityCompat.START);
+                return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
+    private void setupDrawerContent(NavigationView navigationView) {
+        navigationView.setNavigationItemSelectedListener(
+                new NavigationView.OnNavigationItemSelectedListener() {
+
+                    @Override
+                    public boolean onNavigationItemSelected(MenuItem menuItem) {
+                        // Marcar item presionado
+                        menuItem.setChecked(true);
+                        // Crear nuevo fragmento
+                        String title = menuItem.getTitle().toString();
+                        //selectItem(title);
+                        android.util.Log.d("INFO", "ITEM SELECCIONADO: " + title);
+
+                        if(title.equals("Home")){
+                            Intent homeIntent = new Intent(Cursos.this,Home.class);
+                            startActivity(homeIntent);
+                        }
+
+                        drawerLayout.closeDrawers(); // Cerrar drawer
+                        return true;
+                    }
+                }
+        );
+    }
+
+
     private void initializeData(){
         cursos = new ArrayList<>();
         cursos.add(new Curso("Angular", "Jose", R.drawable.angular));
@@ -80,51 +133,6 @@ public class Cursos extends AppCompatActivity implements SearchView.OnQueryTextL
     private void cargarFiltroYBusqueda(){
         searchView = (SearchView) findViewById(R.id.searchView);
         searchView.setOnQueryTextListener(this);
-    }
-
-    private void cargarMenuLateral() {
-        listView = (ListView) findViewById(R.id.list_view);
-        drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
-
-        listView.setAdapter(new ArrayAdapter(this,
-                android.R.layout.simple_list_item_1, android.R.id.text1,
-                opciones));
-
-        listView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            @Override
-            public void onItemClick(AdapterView arg0, View arg1, int arg2,
-                                    long arg3) {
-                if(arg2 == 0){
-                    Intent cursosIntent = new Intent(Cursos.this,Cursos.class);
-                    startActivity(cursosIntent);
-                } else {
-                    Toast.makeText(Cursos.this, "Mostrando... " + opciones[arg2],
-                            Toast.LENGTH_SHORT).show();
-                    drawerLayout.closeDrawers();
-                }
-
-            }
-        });
-    }
-
-
-    /*
-     * mostramos/ocultamos el menu al precionar el icono de la aplicacion
-     * ubicado en la barra XXX
-     */
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case android.R.id.home:
-                if (drawerLayout.isDrawerOpen(listView)) {
-                    drawerLayout.closeDrawers();
-                } else {
-                    drawerLayout.openDrawer(listView);
-                }
-                return true;
-        }
-
-        return super.onOptionsItemSelected(item);
     }
 
     @Override

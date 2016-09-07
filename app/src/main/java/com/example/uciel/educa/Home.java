@@ -2,6 +2,7 @@ package com.example.uciel.educa;
 
 import android.app.SearchManager;
 import android.content.Context;
+import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
@@ -12,6 +13,7 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -53,11 +55,47 @@ public class Home extends AppCompatActivity implements android.widget.SearchView
     }
 
     private void mostrarCategorias() {
-        for(int i = 0; i < 10; i++){
-            ImageView img = new ImageView(this);
-            img.setImageResource(R.drawable.desarrollo);
-            img.setLayoutParams(new LinearLayout.LayoutParams(150,150));
-            llCategorias.addView(img);
+        ImageView imgP = (ImageView) findViewById(R.id.programacion);
+        ImageView imgG = (ImageView) findViewById(R.id.gastronomia);
+        ImageView imgI = (ImageView) findViewById(R.id.idiomas);
+        ImageView imgGe = (ImageView) findViewById(R.id.gestion);
+        ImageView imgE = (ImageView) findViewById(R.id.exactas);
+
+        if (imgP != null && imgG != null && imgI != null && imgGe != null && imgE != null) {
+            imgP.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    Intent descripcionCursoIntent = new Intent(Home.this,DescripcionCurso.class);
+                    startActivity(descripcionCursoIntent);
+                }
+            });
+
+            imgG.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    Intent descripcionCursoIntent = new Intent(Home.this,DescripcionCurso.class);
+                    startActivity(descripcionCursoIntent);
+                }
+            });
+
+            imgI.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    Intent descripcionCursoIntent = new Intent(Home.this,DescripcionCurso.class);
+                    startActivity(descripcionCursoIntent);
+                }
+            });
+
+            imgGe.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    Intent descripcionCursoIntent = new Intent(Home.this,DescripcionCurso.class);
+                    startActivity(descripcionCursoIntent);
+                }
+            });
+
+            imgE.setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    Intent descripcionCursoIntent = new Intent(Home.this,DescripcionCurso.class);
+                    startActivity(descripcionCursoIntent);
+                }
+            });
         }
     }
 

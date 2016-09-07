@@ -5,7 +5,8 @@
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context="com.example.uciel.educa.Cursos">
+    tools:context="com.example.uciel.educa.Cursos"
+    android:fitsSystemWindows="true">
 
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="wrap_content"
@@ -99,15 +100,16 @@
 
     </RelativeLayout>
 
-    <ListView
-        android:id="@+id/list_view"
-        android:layout_width="300dp"
+    <!-- Menú Deslizante -->
+    <android.support.design.widget.NavigationView
+        android:id="@+id/nav_view"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:layout_gravity="start"
-        android:background="#007095"
-        android:choiceMode="singleChoice"
-        android:divider="#005875"
-        android:dividerHeight="2dp" />
+        android:fitsSystemWindows="true"
+        app:headerLayout="@layout/nav_header"
+        app:menu="@menu/nav_menu"/>
+
 </android.support.v4.widget.DrawerLayout>
 
 
