@@ -28,6 +28,7 @@
                     android:layout_height="wrap_content"
                     android:textAppearance="?android:attr/textAppearanceLarge"
                     android:text="Educa"
+                    android:textColor="#FFFFFF"
                     android:id="@+id/textView"
                     android:layout_alignParentLeft="true"
                     android:layout_centerInParent="true"
@@ -66,8 +67,7 @@
             <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingLeft="16dp"
-                android:paddingRight="16dp"
+                android:paddingLeft="8dp"
                 android:id="@+id/rltvca">
 
                 <TextView
@@ -83,8 +83,6 @@
             <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingLeft="16dp"
-                android:paddingRight="16dp"
                 android:id="@+id/rlrv"
                 android:layout_below="@+id/rltvca">
 

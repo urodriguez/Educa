@@ -48,8 +48,8 @@ public class Cursos extends AppCompatActivity implements SearchView.OnQueryTextL
 
         //this.cargarMenuLateral();
 
-        tvCategoriaActual=(TextView) findViewById(R.id.categoriaActual);
-        tvCategoriaActual.setText("MOSTRANDO CATEGORIA: ");
+        tvCategoriaActual = (TextView) findViewById(R.id.categoriaActual);
+        tvCategoriaActual.setText("Estas en: ");
 
         this.cargarFiltroYBusqueda();
 

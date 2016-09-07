@@ -12,6 +12,8 @@ import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import java.util.ArrayList;
@@ -22,6 +24,8 @@ public class Home extends AppCompatActivity implements android.widget.SearchView
     android.widget.SearchView searchView;
     private List<Curso> cursos;
     private RecyclerView rv;
+
+    LinearLayout llCategorias;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -43,6 +47,18 @@ public class Home extends AppCompatActivity implements android.widget.SearchView
 
         initializeData();
         initializeAdapter();
+
+        llCategorias = (LinearLayout) findViewById(R.id.LLcategorias);
+        mostrarCategorias();
+    }
+
+    private void mostrarCategorias() {
+        for(int i = 0; i < 10; i++){
+            ImageView img = new ImageView(this);
+            img.setImageResource(R.drawable.desarrollo);
+            img.setLayoutParams(new LinearLayout.LayoutParams(150,150));
+            llCategorias.addView(img);
+        }
     }
 
     private void initializeData(){
