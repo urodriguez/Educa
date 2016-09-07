@@ -30,8 +30,6 @@ public class Cursos extends AppCompatActivity implements SearchView.OnQueryTextL
     private RecyclerView rv;
     private TextView tvCategoriaActual;
 
-    final String[] opciones = {"Cursos disponibles", "Mis cursos", "Diplomas"};
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -45,8 +43,11 @@ public class Cursos extends AppCompatActivity implements SearchView.OnQueryTextL
             setupDrawerContent(navigationView);
         }
 
+
+        Intent intent = getIntent();//obtengo el Intent de otra activity
+        Bundle extras = intent.getExtras();//obtengo los extras de ese Intent
         tvCategoriaActual = (TextView) findViewById(R.id.categoriaActual);
-        tvCategoriaActual.setText("Estas en: ");
+        tvCategoriaActual.setText("Estas en: " + extras.getString("CATEGORIA"));
 
         this.cargarFiltroYBusqueda();
 
