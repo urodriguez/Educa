@@ -5,8 +5,16 @@ import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.daimajia.slider.library.Animations.DescriptionAnimation;
+import com.daimajia.slider.library.SliderLayout;
+import com.daimajia.slider.library.SliderTypes.BaseSliderView;
+import com.daimajia.slider.library.SliderTypes.TextSliderView;
+import com.daimajia.slider.library.Tricks.ViewPagerEx;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
@@ -20,7 +28,9 @@ import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 
-public class Log extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
+import java.util.HashMap;
+
+public class Log extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener,View.OnClickListener{
 
     private static final String TAG = "SignInActivity";
     private static final int RC_SIGN_IN = 9001;
@@ -30,6 +40,8 @@ public class Log extends AppCompatActivity implements GoogleApiClient.OnConnecti
     private CallbackManager callbackManager;
 
     GoogleApiClient mGoogleApiClient;
+
+    private SliderLayout mDemoSlider;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -90,6 +102,38 @@ public class Log extends AppCompatActivity implements GoogleApiClient.OnConnecti
                 info.setText("Login attempt failed.");
             }
         });
+
+        this.cargarSliderLayout();
+    }
+
+    private void cargarSliderLayout() {
+        mDemoSlider = (SliderLayout)findViewById(R.id.slider);
+
+        HashMap<String,Integer> file_maps = new HashMap<String, Integer>();
+        file_maps.put("Descubre el conocimiento",R.drawable.conocimiento);
+        file_maps.put("Descarga material",R.drawable.material);
+        file_maps.put("Rinde el examen",R.drawable.examen);
+        file_maps.put("Recibe el diploma", R.drawable.diploma);
+
+        for(String name : file_maps.keySet()){
+            TextSliderView textSliderView = new TextSliderView(this);
+            // initialize a SliderLayout
+            textSliderView
+                    .description(name)
+                    .image(file_maps.get(name))
+                    .setScaleType(BaseSliderView.ScaleType.Fit);
+
+            //add your extra information
+            textSliderView.bundle(new Bundle());
+            textSliderView.getBundle()
+                    .putString("extra",name);
+
+            mDemoSlider.addSlider(textSliderView);
+        }
+        mDemoSlider.setPresetTransformer(SliderLayout.Transformer.Accordion);
+        mDemoSlider.setPresetIndicator(SliderLayout.PresetIndicators.Center_Bottom);
+        mDemoSlider.setCustomAnimation(new DescriptionAnimation());
+        mDemoSlider.setDuration(3000);
     }
 
     // [START onActivityResult]
@@ -147,4 +191,5 @@ public class Log extends AppCompatActivity implements GoogleApiClient.OnConnecti
         // be available.
         android.util.Log.d(TAG, "onConnectionFailed:" + connectionResult);
     }
+
 }

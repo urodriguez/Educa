@@ -28,12 +28,14 @@
             android:layout_height="wrap_content"
             android:id="@+id/curso_name"
             android:layout_toRightOf="@+id/curso_photo"
+            android:layout_marginLeft="30dp"
             android:textSize="20sp"
             />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="30dp"
             android:id="@+id/curso_profesor"
             android:layout_toRightOf="@+id/curso_photo"
             android:layout_below="@+id/curso_name"
@@ -44,6 +46,7 @@
             style="?android:attr/ratingBarStyleSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginLeft="30dp"
             android:layout_toRightOf="@+id/curso_photo"
             android:layout_below="@+id/curso_profesor"
             android:numStars="5"
