@@ -93,6 +93,9 @@ public class Cursos extends AppCompatActivity implements SearchView.OnQueryTextL
     }
 
     private void setupDrawerContent(NavigationView navigationView) {
+        TextView userName = (TextView)navigationView.getHeaderView(0).findViewById(R.id.username);
+        userName.setText(getIntent().getExtras().getString("USER"));
+
         navigationView.setNavigationItemSelectedListener(
                 new NavigationView.OnNavigationItemSelectedListener() {
 
@@ -126,7 +129,7 @@ public class Cursos extends AppCompatActivity implements SearchView.OnQueryTextL
     }
 
     private void initializeAdapter(){
-        RVAdapter adapter = new RVAdapter(cursos, "VERTICAL");
+        RVAdapter adapter = new RVAdapter(cursos, "VERTICAL",getIntent().getExtras().getString("USER") );
         rv.setAdapter(adapter);
     }
 

@@ -15,6 +15,7 @@ import java.util.List;
 
 public class RVAdapter extends RecyclerView.Adapter<RVAdapter.CursoViewHolder> {
 
+    private final String userName;
     private String orientacion;
 
     public static class CursoViewHolder extends RecyclerView.ViewHolder {
@@ -35,9 +36,10 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.CursoViewHolder> {
 
     List<Curso> cursos;
 
-    RVAdapter(List<Curso> cursos, String orientacion ){
+    RVAdapter(List<Curso> cursos, String orientacion, String userName){
         this.cursos = cursos;
         this.orientacion = orientacion;
+        this.userName = userName;
     }
 
     @Override
@@ -69,6 +71,7 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.CursoViewHolder> {
                 //implementing onClick
                 Intent intentDescripcionCurso = new Intent();
                 intentDescripcionCurso.setClass(v.getContext(), DescripcionCurso.class);
+                intentDescripcionCurso.putExtra("USER", userName);
                 v.getContext().startActivity(intentDescripcionCurso);
                 System.out.println("Clicked " + String.valueOf(i));
             }

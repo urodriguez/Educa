@@ -1,6 +1,7 @@
 package com.example.uciel.educa;
 
 import android.content.Intent;
+import android.content.pm.PackageInstaller;
 import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -15,10 +16,15 @@ import com.daimajia.slider.library.SliderLayout;
 import com.daimajia.slider.library.SliderTypes.BaseSliderView;
 import com.daimajia.slider.library.SliderTypes.TextSliderView;
 import com.daimajia.slider.library.Tricks.ViewPagerEx;
+import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
 import com.facebook.FacebookException;
 import com.facebook.FacebookSdk;
+import com.facebook.GraphRequest;
+import com.facebook.GraphResponse;
+import com.facebook.HttpMethod;
+import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.auth.api.Auth;
@@ -28,6 +34,10 @@ import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
 import com.google.android.gms.common.api.GoogleApiClient;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.util.Arrays;
 import java.util.HashMap;
 
 public class Log extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener,View.OnClickListener{
@@ -35,9 +45,9 @@ public class Log extends AppCompatActivity implements GoogleApiClient.OnConnecti
     private static final String TAG = "SignInActivity";
     private static final int RC_SIGN_IN = 9001;
 
-    private TextView info;
     private LoginButton loginButton;
     private CallbackManager callbackManager;
+    private String fbAccessToken;
 
     GoogleApiClient mGoogleApiClient;
 
@@ -68,38 +78,53 @@ public class Log extends AppCompatActivity implements GoogleApiClient.OnConnecti
                 .addApi(Auth.GOOGLE_SIGN_IN_API, gso)
                 .build();
 
-        info = (TextView)findViewById(R.id.info);
         loginButton = (LoginButton)findViewById(R.id.login_button);
-
+        loginButton.setReadPermissions(Arrays.asList("public_profile", "user_friends", "email", "user_birthday"));
+/*        if(AccessToken.getCurrentAccessToken() != null){
+            LoginManager.getInstance().logOut();
+        }*/
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
-                android.util.Log.d(TAG,
+                new GraphRequest(
+                        AccessToken.getCurrentAccessToken(),
+                        loginResult.getAccessToken().getUserId(),
+                        null,
+                        HttpMethod.GET,
+                        new GraphRequest.Callback() {
+                            public void onCompleted(GraphResponse response) {
+                                try {
+                                    Intent homeIntent = new Intent(Log.this,Home.class);
+                                    homeIntent.putExtra("USER", response.getJSONObject().getString("name"));
+                                    startActivity(homeIntent);
+                                    //nameUser[0] = response.getJSONObject().getString("name");
+                                } catch (JSONException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        }
+                ).executeAsync();
+
+
+/*                android.util.Log.d(TAG,
                         "User ID: "
                                 + loginResult.getAccessToken().getUserId()
                                 + "\n" +
                                 "Auth Token: "
                                 + loginResult.getAccessToken().getToken()
-                        );
-                Intent cursosIntent = new Intent(Log.this,Cursos.class);
-                startActivity(cursosIntent);
-                /*info.setText(
-                        "User ID: "
-                                + loginResult.getAccessToken().getUserId()
-                                + "\n" +
-                                "Auth Token: "
-                                + loginResult.getAccessToken().getToken()
-                );*/
+                        );*/
+
+
             }
 
             @Override
             public void onCancel() {
-                info.setText("Login attempt canceled.");
+                android.util.Log.d(TAG,"Login attempt canceled.");
             }
 
             @Override
             public void onError(FacebookException e) {
-                info.setText("Login attempt failed.");
+                android.util.Log.d(TAG,"Login attempt failed.");
             }
         });
 
@@ -160,7 +185,8 @@ public class Log extends AppCompatActivity implements GoogleApiClient.OnConnecti
             android.util.Log.d(TAG, "account Name: " + acct.getDisplayName());
             android.util.Log.d(TAG, "account Email: " + acct.getEmail());
 
-            Intent homeIntent = new Intent(this,Home.class);
+            Intent homeIntent = new Intent(Log.this,Home.class);
+            homeIntent.putExtra("USER", acct.getDisplayName());
             startActivity(homeIntent);
         } else {
             android.util.Log.d(TAG, "ERROR AL INICIAR SESION");

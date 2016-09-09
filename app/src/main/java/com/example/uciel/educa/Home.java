@@ -96,6 +96,9 @@ public class Home extends AppCompatActivity implements android.widget.SearchView
     }
 
     private void setupDrawerContent(NavigationView navigationView) {
+        TextView userName = (TextView)navigationView.getHeaderView(0).findViewById(R.id.username);
+        userName.setText(getIntent().getExtras().getString("USER"));
+
         navigationView.setNavigationItemSelectedListener(
                 new NavigationView.OnNavigationItemSelectedListener() {
 
@@ -131,6 +134,7 @@ public class Home extends AppCompatActivity implements android.widget.SearchView
                 public void onClick(View v) {
                     Intent cursosIntent = new Intent(Home.this,Cursos.class);
                     cursosIntent.putExtra("CATEGORIA", "Programación");
+                    cursosIntent.putExtra("USER",getIntent().getExtras().getString("USER"));
                     startActivity(cursosIntent);
                 }
             });
@@ -139,6 +143,7 @@ public class Home extends AppCompatActivity implements android.widget.SearchView
                 public void onClick(View v) {
                     Intent cursosIntent = new Intent(Home.this,Cursos.class);
                     cursosIntent.putExtra("CATEGORIA", "Gastronomía");
+                    cursosIntent.putExtra("USER",getIntent().getExtras().getString("USER"));
                     startActivity(cursosIntent);
                 }
             });
@@ -147,6 +152,7 @@ public class Home extends AppCompatActivity implements android.widget.SearchView
                 public void onClick(View v) {
                     Intent cursosIntent = new Intent(Home.this,Cursos.class);
                     cursosIntent.putExtra("CATEGORIA", "Idiomas");
+                    cursosIntent.putExtra("USER",getIntent().getExtras().getString("USER"));
                     startActivity(cursosIntent);
                 }
             });
@@ -155,6 +161,7 @@ public class Home extends AppCompatActivity implements android.widget.SearchView
                 public void onClick(View v) {
                     Intent cursosIntent = new Intent(Home.this,Cursos.class);
                     cursosIntent.putExtra("CATEGORIA", "Gestión");
+                    cursosIntent.putExtra("USER",getIntent().getExtras().getString("USER"));
                     startActivity(cursosIntent);
                 }
             });
@@ -163,6 +170,7 @@ public class Home extends AppCompatActivity implements android.widget.SearchView
                 public void onClick(View v) {
                     Intent cursosIntent = new Intent(Home.this,Cursos.class);
                     cursosIntent.putExtra("CATEGORIA", "Exactas");
+                    cursosIntent.putExtra("USER",getIntent().getExtras().getString("USER"));
                     startActivity(cursosIntent);
                 }
             });
@@ -177,7 +185,7 @@ public class Home extends AppCompatActivity implements android.widget.SearchView
     }
 
     private void initializeAdapter(){
-        RVAdapter adapter = new RVAdapter(cursos, "HORIZONTAL");
+        RVAdapter adapter = new RVAdapter(cursos, "HORIZONTAL",getIntent().getExtras().getString("USER"));
         rv.setAdapter(adapter);
     }
 

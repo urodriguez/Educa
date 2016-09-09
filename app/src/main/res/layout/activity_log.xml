@@ -14,15 +14,6 @@
         android:layout_height="wrap_content"
         android:id="@+id/rl_login"
         >
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/info"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="true"
-            android:textSize="18sp"
-            />
-
         <com.google.android.gms.common.SignInButton
             android:id="@+id/sign_in_button"
             android:layout_width="wrap_content"
