@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "876375738542",
+    "project_id": "firebase-educa"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:876375738542:android:676fd8d3f1571307",
+        "android_client_info": {
+          "package_name": "com.example.uciel.educa"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "876375738542-ai5hlvm7nv782lgbipqqfgvc3n3bpsil.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.example.uciel.educa",
+            "certificate_hash": "FAAE19C93C941E8E5A629CF644145967BD07C190"
+          }
+        },
+        {
+          "client_id": "876375738542-tgcd8jtu4abl21ge6aiggjqcf1me7h0k.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBArYppXhtPLlJgNh5eyT-QCdCjonp7vSs"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
