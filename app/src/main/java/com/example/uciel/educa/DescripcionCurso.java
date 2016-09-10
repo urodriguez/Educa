@@ -13,6 +13,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
 import android.widget.SearchView;
+import android.widget.TextView;
 
 public class DescripcionCurso extends AppCompatActivity implements SearchView.OnQueryTextListener{
 
@@ -78,6 +79,9 @@ public class DescripcionCurso extends AppCompatActivity implements SearchView.On
     }
 
     private void setupDrawerContent(NavigationView navigationView) {
+        TextView userName = (TextView)navigationView.getHeaderView(0).findViewById(R.id.username);
+        userName.setText(getIntent().getExtras().getString("USER"));
+
         navigationView.setNavigationItemSelectedListener(
                 new NavigationView.OnNavigationItemSelectedListener() {
 
