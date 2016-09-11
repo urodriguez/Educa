@@ -35,19 +35,6 @@
                     android:layout_centerInParent="true"
                     />
 
-                <SearchView
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:id="@+id/searchView"
-                    android:icon="@android:drawable/ic_menu_search"
-                    android:title="@string/action_search"
-                    android:queryHint="Buscar..."
-                    android:showAsAction="always"
-                    android:layout_alignParentTop="true"
-                    android:layout_alignParentRight="true"
-                    android:layout_centerInParent="true"
-                    />
-
             </RelativeLayout>
 
         </android.support.v7.widget.Toolbar>
