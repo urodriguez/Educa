@@ -14,17 +14,17 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.*;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-
 import com.example.uciel.educa.domain.Curso;
 import com.example.uciel.educa.network.HttpHandler;
 
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 

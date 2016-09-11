@@ -15,11 +15,10 @@ import android.widget.Button;
 import android.widget.SearchView;
 import android.widget.TextView;
 
-public class DescripcionCurso extends AppCompatActivity implements SearchView.OnQueryTextListener{
+public class DescripcionCurso extends AppCompatActivity {
 
     Button btnInscribirse;
 
-    android.widget.SearchView searchView;
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
 
@@ -36,8 +35,6 @@ public class DescripcionCurso extends AppCompatActivity implements SearchView.On
             setupDrawerContent(navigationView);
         }
 
-        this.cargarFiltroYBusqueda();
-
         btnInscribirse = (Button) findViewById(R.id.buttonInscribirse);
 
         btnInscribirse.setOnClickListener(new View.OnClickListener() {
@@ -50,6 +47,7 @@ public class DescripcionCurso extends AppCompatActivity implements SearchView.On
 
     private void setToolbar() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitle(" ");
         setSupportActionBar(toolbar);
         final ActionBar ab = getSupportActionBar();
         if (ab != null) {
@@ -104,24 +102,6 @@ public class DescripcionCurso extends AppCompatActivity implements SearchView.On
                     }
                 }
         );
-    }
-
-    private void cargarFiltroYBusqueda(){
-        searchView = (android.widget.SearchView) findViewById(R.id.searchView);
-        searchView.setOnQueryTextListener(this);
-    }
-
-    @Override
-    public boolean onQueryTextSubmit(String query) {
-        // User pressed the search button
-        android.util.Log.d("INFO", "Buscando: " + query);
-        return false;
-    }
-
-    @Override
-    public boolean onQueryTextChange(String newText) {
-        // User changed the text
-        return false;
     }
 
 }
