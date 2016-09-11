@@ -7,6 +7,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.example.uciel.educa.domain.Curso;
@@ -24,6 +25,7 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.CursoViewHolder> {
         TextView nombreCurso;
         TextView profesorCurso;
         ImageView fotoCurso;
+        RatingBar ratingBar;
 
         CursoViewHolder(View itemView) {
             super(itemView);
@@ -31,6 +33,7 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.CursoViewHolder> {
             nombreCurso = (TextView)itemView.findViewById(R.id.curso_name);
             profesorCurso = (TextView)itemView.findViewById(R.id.curso_profesor);
             fotoCurso = (ImageView)itemView.findViewById(R.id.curso_photo);
+            ratingBar = (RatingBar)itemView.findViewById(R.id.ratingBar);
         }
     }
 
@@ -63,8 +66,9 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.CursoViewHolder> {
     @Override
     public void onBindViewHolder(CursoViewHolder cursoViewHolder, final int i) {
         cursoViewHolder.nombreCurso.setText(cursos.get(i).getNombre());
-        cursoViewHolder.profesorCurso.setText(cursos.get(i).getDocente().getUsuario().getNombre());
+        //cursoViewHolder.profesorCurso.setText(cursos.get(i).getNombreCompletoDocente());
         cursoViewHolder.fotoCurso.setImageResource(R.drawable.angular);
+        cursoViewHolder.ratingBar.setRating((float)cursos.get(i).getValoracionesPromedio());
         cursoViewHolder.cv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

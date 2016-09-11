@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="com.example.uciel.educa.Home"
+    >
+
+    <ScrollView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:id="@+id/rltvpc">
+
+                <TextView
+                    android:id="@+id/tvProximos"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="20dp"
+                    android:elevation="25dp"
+                    android:text="@string/proximos"
+                    />
+
+            </RelativeLayout>
+
+
+            <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/rlrv"
+                android:layout_below="@+id/rltvpc">
+
+                <android.support.v7.widget.RecyclerView
+                    android:layout_height="wrap_content"
+                    android:layout_width="wrap_content"
+                    android:id="@+id/rv"
+                    >
+
+                </android.support.v7.widget.RecyclerView>
+            </RelativeLayout>
+
+            <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:id="@+id/rltvpc2"
+                android:layout_below="@+id/rlrv">
+
+                <TextView
+                    android:id="@+id/textviewCategorias"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="20dp"
+                    android:elevation="25dp"
+                    android:text="@string/categorias"
+                    />
+
+            </RelativeLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_below="@+id/rltvpc2">
+
+                    <HorizontalScrollView
+                        android:layout_width="match_parent"
+                        android:layout_height="match_parent"
+                        android:layout_marginTop="8dp"
+                        android:id="@+id/scrollView"
+                        android:layout_centerHorizontal="true"
+                        android:layout_below="@+id/rltvc">
+
+                        <LinearLayout
+                            android:id="@+id/LLcategorias"
+                            android:orientation="horizontal"
+                            android:layout_width="match_parent"
+                            android:layout_height="match_parent"
+                            android:layout_alignParentLeft="true"
+                            android:layout_alignParentStart="true"
+                            android:layout_below="@+id/textView">
+
+                            <ImageView
+                                android:src="@drawable/prog"
+                                android:layout_width="200dp"
+                                android:layout_height="200dp"
+                                android:id="@+id/programacion"
+                                android:layout_alignParentLeft="true"
+                                android:layout_alignParentTop="true"
+                                />
+
+                            <ImageView
+                                android:src="@drawable/gastronomia"
+                                android:layout_width="200dp"
+                                android:layout_height="200dp"
+                                android:id="@+id/gastronomia"
+                                android:layout_alignParentLeft="true"
+                                android:layout_alignParentTop="true"
+                                />
+
+                            <ImageView
+                                android:src="@drawable/idiomas"
+                                android:layout_width="200dp"
+                                android:layout_height="200dp"
+                                android:id="@+id/idiomas"
+                                android:layout_alignParentLeft="true"
+                                android:layout_alignParentTop="true"
+                                />
+
+                            <ImageView
+                                android:src="@drawable/gestion"
+                                android:layout_width="200dp"
+                                android:layout_height="200dp"
+                                android:id="@+id/gestion"
+                                android:layout_alignParentLeft="true"
+                                android:layout_alignParentTop="true"
+                                />
+
+                            <ImageView
+                                android:src="@drawable/exactas"
+                                android:layout_width="200dp"
+                                android:layout_height="200dp"
+                                android:id="@+id/exactas"
+                                android:layout_alignParentLeft="true"
+                                android:layout_alignParentTop="true"
+                                />
+                        </LinearLayout>
+                    </HorizontalScrollView>
+
+            </LinearLayout>
+
+        </LinearLayout>
+    </ScrollView>
+</RelativeLayout>

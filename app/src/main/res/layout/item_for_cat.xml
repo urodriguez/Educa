@@ -29,7 +29,7 @@
             android:id="@+id/curso_name"
             android:layout_toRightOf="@+id/curso_photo"
             android:layout_marginLeft="30dp"
-            android:textSize="20sp"
+            android:textSize="10sp"
             />
 
         <TextView

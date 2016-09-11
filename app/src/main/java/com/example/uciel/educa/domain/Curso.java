@@ -71,6 +71,10 @@ public class Curso {
         return docente.getUsuario().getNombre();
     }
 
+    public String getNombreCompletoDocente() {
+        return docente.getUsuario().getNombre() + " " + docente.getUsuario().getApellido();
+    }
+
     public void setDocente(Docente docente) {
         this.docente = docente;
     }

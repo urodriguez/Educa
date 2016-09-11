@@ -2,8 +2,8 @@
 <android.support.v7.widget.CardView
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:card_view="http://schemas.android.com/apk/res-auto"
-    android:layout_width="250dp"
-    android:layout_height="400dp"
+    android:layout_width="200dp"
+    android:layout_height="300dp"
     card_view:cardUseCompatPadding="true"
     card_view:cardElevation="8dp"
     card_view:cardCornerRadius="6dp"
@@ -17,8 +17,8 @@
         >
 
         <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
             android:id="@+id/curso_photo"
             android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"
@@ -30,15 +30,17 @@
             android:layout_height="wrap_content"
             android:id="@+id/curso_name"
             android:layout_below="@+id/curso_photo"
-            android:textSize="30sp"
+            android:textSize="15sp"
             />
 
         <TextView
             android:layout_centerInParent="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:id="@+id/curso_profesor"
+            android:id="@+id/fecha_comienzo"
             android:layout_below="@+id/curso_name"
+            android:textSize="12sp"
+            android:text="Comienza:"
             />
 
         <RatingBar
@@ -47,7 +49,7 @@
             style="?android:attr/ratingBarStyleSmall"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/curso_profesor"
+            android:layout_below="@+id/curso_name"
             android:layout_marginTop="25dp"
             android:numStars="5"
             android:stepSize="1.0"
