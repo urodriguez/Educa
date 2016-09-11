@@ -15,9 +15,19 @@ import android.view.MenuItem;
 import android.widget.SearchView;
 import android.widget.TextView;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
 import com.example.uciel.educa.domain.Curso;
+import com.example.uciel.educa.network.RQSingleton;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 
 public class Cursos extends AppCompatActivity implements SearchView.OnQueryTextListener {
@@ -28,6 +38,7 @@ public class Cursos extends AppCompatActivity implements SearchView.OnQueryTextL
     private List<Curso> cursos;
     private RecyclerView rv;
     private TextView tvCategoriaActual;
+    private String userName = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -45,6 +56,7 @@ public class Cursos extends AppCompatActivity implements SearchView.OnQueryTextL
 
         Intent intent = getIntent();//obtengo el Intent de otra activity
         Bundle extras = intent.getExtras();//obtengo los extras de ese Intent
+        this.userName = "Anonimo";//getIntent().getExtras().getString("USER");
         tvCategoriaActual = (TextView) findViewById(R.id.categoriaActual);
         tvCategoriaActual.setText("Estas en: " + extras.getString("CATEGORIA"));
 
@@ -93,7 +105,8 @@ public class Cursos extends AppCompatActivity implements SearchView.OnQueryTextL
 
     private void setupDrawerContent(NavigationView navigationView) {
         TextView userName = (TextView)navigationView.getHeaderView(0).findViewById(R.id.username);
-        userName.setText(getIntent().getExtras().getString("USER"));
+
+        userName.setText(this.userName);
 
         navigationView.setNavigationItemSelectedListener(
                 new NavigationView.OnNavigationItemSelectedListener() {
@@ -122,13 +135,32 @@ public class Cursos extends AppCompatActivity implements SearchView.OnQueryTextL
 
     private void initializeData(){
         cursos = new ArrayList<>();
-        cursos.add(new Curso("Angular", "Jose", R.drawable.angular));
-        cursos.add(new Curso("JavaScript", "Carlos", R.drawable.cursojs));
-        cursos.add(new Curso("Matematica", "Juan", R.drawable.matematica));
+        String idCategoria = getIntent().getExtras().getString("ID");
+        String url ="http://educa-mnforlenza.rhcloud.com/api/curso/listar/"+idCategoria;
+
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        android.util.Log.i("INFO", "Response is: "+ response.substring(0,10));
+                        parseHomeResponse(response);
+                        initializeAdapter();
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        android.util.Log.d("DEBUG", "That didn't work!");
+                    }
+                }
+        );
+        //queue.add(stringRequest);
+        RQSingleton.getInstance(this).addToRequestQueue(stringRequest);
     }
 
+
     private void initializeAdapter(){
-        RVAdapter adapter = new RVAdapter(cursos, "VERTICAL",getIntent().getExtras().getString("USER") );
+        RVAdapter adapter = new RVAdapter(cursos, "VERTICAL", this.userName );
         rv.setAdapter(adapter);
     }
 
@@ -149,5 +181,20 @@ public class Cursos extends AppCompatActivity implements SearchView.OnQueryTextL
     public boolean onQueryTextChange(String newText) {
         // User changed the text
         return false;
+    }
+
+    public void parseHomeResponse(String response){
+        Gson g = new Gson();
+
+        Type collectionType = new TypeToken<Collection<Curso>>(){}.getType();
+        Collection<Curso> cusos = g.fromJson(response, collectionType);
+
+
+        HashMap<String, String> hm = new HashMap<String,String>();
+        for(Curso c: cusos){
+            cursos.add(c);
+            android.util.Log.d("CATEGORIASCURSO", "NOMBRE :" + c.getNombre() + "Docente: " + c.getNombreDocente());
+        }
+
     }
 }

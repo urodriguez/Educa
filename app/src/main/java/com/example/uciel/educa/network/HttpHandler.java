@@ -28,12 +28,19 @@ public class HttpHandler {
 
     public InputStream makeServiceCall(String reqUrl) {
         InputStream in = null;
+        HttpURLConnection conn = null;
         try {
             URL url = new URL(reqUrl);
-            HttpURLConnection conn = (HttpURLConnection) url.openConnection();
+             conn = (HttpURLConnection) url.openConnection();
+            conn.setRequestProperty("Accept", "application/json");
             conn.setRequestMethod("GET");
+            conn.connect();
+
+            int response = conn.getResponseCode();
+            Log.d("DEBUG", "The response is: " + response);
             // read the response
             in = new BufferedInputStream(conn.getInputStream());
+            String inString = convertStreamToString(in);
         } catch (MalformedURLException e) {
             Log.e(TAG, "MalformedURLException: " + e.getMessage());
         } catch (ProtocolException e) {
@@ -57,12 +64,6 @@ public class HttpHandler {
             }
         } catch (IOException e) {
             e.printStackTrace();
-        } finally {
-            try {
-                is.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
         }
         return sb.toString();
     }

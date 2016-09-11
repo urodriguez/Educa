@@ -62,9 +62,9 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.CursoViewHolder> {
 
     @Override
     public void onBindViewHolder(CursoViewHolder cursoViewHolder, final int i) {
-        cursoViewHolder.nombreCurso.setText(cursos.get(i).name);
-        cursoViewHolder.profesorCurso.setText(cursos.get(i).profesor);
-        cursoViewHolder.fotoCurso.setImageResource(cursos.get(i).photoId);
+        cursoViewHolder.nombreCurso.setText(cursos.get(i).getNombre());
+        cursoViewHolder.profesorCurso.setText(cursos.get(i).getDocente().getUsuario().getNombre());
+        cursoViewHolder.fotoCurso.setImageResource(R.drawable.angular);
         cursoViewHolder.cv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

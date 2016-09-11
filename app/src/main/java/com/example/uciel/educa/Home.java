@@ -22,10 +22,39 @@ import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import com.example.uciel.educa.domain.Curso;
-import com.example.uciel.educa.network.HttpHandler;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkError;
+import com.android.volley.NoConnectionError;
+import com.android.volley.ParseError;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.ServerError;
+import com.android.volley.TimeoutError;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
+import com.example.uciel.educa.domain.Categoria;
+import com.example.uciel.educa.domain.Curso;
+import com.example.uciel.educa.domain.CursoContainer;
+import com.example.uciel.educa.domain.Docente;
+import com.example.uciel.educa.domain.Usuario;
+import com.example.uciel.educa.network.HttpHandler;
+import com.example.uciel.educa.network.RQSingleton;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
+
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
 
 public class Home extends AppCompatActivity implements android.widget.SearchView.OnQueryTextListener{
@@ -144,6 +173,7 @@ public class Home extends AppCompatActivity implements android.widget.SearchView
                     Intent cursosIntent = new Intent(Home.this,Cursos.class);
                     cursosIntent.putExtra("CATEGORIA", "Programación");
                     cursosIntent.putExtra("USER",userName);
+                    cursosIntent.putExtra("ID","1");
                     startActivity(cursosIntent);
                 }
             });
@@ -153,6 +183,7 @@ public class Home extends AppCompatActivity implements android.widget.SearchView
                     Intent cursosIntent = new Intent(Home.this,Cursos.class);
                     cursosIntent.putExtra("CATEGORIA", "Gastronomía");
                     cursosIntent.putExtra("USER",userName);
+                    cursosIntent.putExtra("ID","2");
                     startActivity(cursosIntent);
                 }
             });
@@ -162,6 +193,7 @@ public class Home extends AppCompatActivity implements android.widget.SearchView
                     Intent cursosIntent = new Intent(Home.this,Cursos.class);
                     cursosIntent.putExtra("CATEGORIA", "Idiomas");
                     cursosIntent.putExtra("USER",userName);
+                    cursosIntent.putExtra("ID","6");
                     startActivity(cursosIntent);
                 }
             });
@@ -171,6 +203,7 @@ public class Home extends AppCompatActivity implements android.widget.SearchView
                     Intent cursosIntent = new Intent(Home.this,Cursos.class);
                     cursosIntent.putExtra("CATEGORIA", "Gestión");
                     cursosIntent.putExtra("USER",userName);
+                    cursosIntent.putExtra("ID","4");
                     startActivity(cursosIntent);
                 }
             });
@@ -180,6 +213,7 @@ public class Home extends AppCompatActivity implements android.widget.SearchView
                     Intent cursosIntent = new Intent(Home.this,Cursos.class);
                     cursosIntent.putExtra("CATEGORIA", "Exactas");
                     cursosIntent.putExtra("USER",userName);
+                    cursosIntent.putExtra("ID","5");
                     startActivity(cursosIntent);
                 }
             });
@@ -188,40 +222,51 @@ public class Home extends AppCompatActivity implements android.widget.SearchView
 
     private void initializeData(){
         cursos = new ArrayList<>();
-        cursos.add(new Curso("Angular", "Jose", R.drawable.angular));
-        cursos.add(new Curso("JavaScript", "Carlos", R.drawable.cursojs));
-        cursos.add(new Curso("Matematica", "Juan", R.drawable.matematica));
+        // Instantiate the RequestQueue.
+        //RequestQueue queue = Volley.newRequestQueue(this);
+        String url ="http://educa-mnforlenza.rhcloud.com/api/curso/ultimos-cursos";
 
-        String stringUrl = "http://educa-mnforlenza.rhcloud.com/api/curso/ultimos-cursos";
-        ConnectivityManager connMgr = (ConnectivityManager)
-                getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-        if (networkInfo != null && networkInfo.isConnected()) {
-            new DownloadHomeTask().execute(stringUrl);
-        } else {
-            // display error
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        android.util.Log.i("INFO", "Response is: "+ response.substring(0,10));
+                        parseHomeResponse(response);
+                        initializeAdapter();
+                    }
+                },
+                new Response.ErrorListener() {
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                android.util.Log.d("DEBUG", "That didn't work!");
+            }
         }
+        );
+
+
+        /*JsonObjectRequest jsObjRequest = new JsonObjectRequest
+        (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
+
+            @Override
+            public void onResponse(JSONObject response) {
+                String res = response.toString();
+                android.util.Log.i("INFO", "Res is: "+ res.substring(0,10));
+                parseHomeResponse(res);
+                initializeAdapter();
+            }
+        }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                android.util.Log.e("Volley", "Res is: "+ error.getMessage());
+            }
+        });*/
+
+        //queue.add(stringRequest);
+        RQSingleton.getInstance(this).addToRequestQueue(stringRequest);
+
 
     }
-
-
-    private class DownloadHomeTask extends AsyncTask<String, Void, String> {
-        @Override
-        protected String doInBackground(String... urls) {
-
-            // params comes from the execute() call: params[0] is the url.
-            HttpHandler httpHandler = new HttpHandler();
-            httpHandler.makeServiceCall(urls[0]);
-            return null;
-        }
-        // onPostExecute displays the results of the AsyncTask.
-        @Override
-        protected void onPostExecute(String result) {
-            //TODO: parse json
-            //textView.setText(result);
-        }
-    }
-
 
     private void initializeAdapter(){
         //RVAdapter adapter = new RVAdapter(cursos, "HORIZONTAL",getIntent().getExtras().getString("USER"));
@@ -246,5 +291,22 @@ public class Home extends AppCompatActivity implements android.widget.SearchView
         // User changed the text
         return false;
     }
+
+    public void parseHomeResponse(String response){
+        Gson g = new Gson();
+
+        Type collectionType = new TypeToken<Collection<Curso>>(){}.getType();
+        Collection<Curso> cusos = g.fromJson(response, collectionType);
+
+
+        HashMap<String, String> hm = new HashMap<String,String>();
+        for(Curso c: cusos){
+            cursos.add(c);
+            android.util.Log.d("CURSO", "NOMBRE :" + c.getNombre() + "Docente: " + c.getNombreDocente());
+        }
+
+    }
+
+
 
 }
