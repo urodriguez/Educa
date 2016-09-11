@@ -1,8 +1,10 @@
 package com.example.uciel.educa;
 
-import android.app.SearchManager;
 import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
+import android.os.AsyncTask;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
@@ -11,17 +13,18 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.SearchView;
 import android.support.v7.widget.Toolbar;
-import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
+import com.example.uciel.educa.domain.Curso;
+import com.example.uciel.educa.network.HttpHandler;
+
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,6 +36,8 @@ public class Home extends AppCompatActivity implements android.widget.SearchView
 
     private List<Curso> cursos;
     private RecyclerView rv;
+
+    String userName = "Anonimo";
 
     LinearLayout llCategorias;
 
@@ -97,7 +102,8 @@ public class Home extends AppCompatActivity implements android.widget.SearchView
 
     private void setupDrawerContent(NavigationView navigationView) {
         TextView userName = (TextView)navigationView.getHeaderView(0).findViewById(R.id.username);
-        userName.setText(getIntent().getExtras().getString("USER"));
+        //userName.setText(getIntent().getExtras().getString("USER"));
+        userName.setText("Anonimo");
 
         navigationView.setNavigationItemSelectedListener(
                 new NavigationView.OnNavigationItemSelectedListener() {
@@ -129,12 +135,15 @@ public class Home extends AppCompatActivity implements android.widget.SearchView
         ImageView imgGe = (ImageView) findViewById(R.id.gestion);
         ImageView imgE = (ImageView) findViewById(R.id.exactas);
 
+
+        //userName = getIntent().getExtras().getString("USER");
+
         if (imgP != null && imgG != null && imgI != null && imgGe != null && imgE != null) {
             imgP.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
                     Intent cursosIntent = new Intent(Home.this,Cursos.class);
                     cursosIntent.putExtra("CATEGORIA", "Programación");
-                    cursosIntent.putExtra("USER",getIntent().getExtras().getString("USER"));
+                    cursosIntent.putExtra("USER",userName);
                     startActivity(cursosIntent);
                 }
             });
@@ -143,7 +152,7 @@ public class Home extends AppCompatActivity implements android.widget.SearchView
                 public void onClick(View v) {
                     Intent cursosIntent = new Intent(Home.this,Cursos.class);
                     cursosIntent.putExtra("CATEGORIA", "Gastronomía");
-                    cursosIntent.putExtra("USER",getIntent().getExtras().getString("USER"));
+                    cursosIntent.putExtra("USER",userName);
                     startActivity(cursosIntent);
                 }
             });
@@ -152,7 +161,7 @@ public class Home extends AppCompatActivity implements android.widget.SearchView
                 public void onClick(View v) {
                     Intent cursosIntent = new Intent(Home.this,Cursos.class);
                     cursosIntent.putExtra("CATEGORIA", "Idiomas");
-                    cursosIntent.putExtra("USER",getIntent().getExtras().getString("USER"));
+                    cursosIntent.putExtra("USER",userName);
                     startActivity(cursosIntent);
                 }
             });
@@ -161,7 +170,7 @@ public class Home extends AppCompatActivity implements android.widget.SearchView
                 public void onClick(View v) {
                     Intent cursosIntent = new Intent(Home.this,Cursos.class);
                     cursosIntent.putExtra("CATEGORIA", "Gestión");
-                    cursosIntent.putExtra("USER",getIntent().getExtras().getString("USER"));
+                    cursosIntent.putExtra("USER",userName);
                     startActivity(cursosIntent);
                 }
             });
@@ -170,7 +179,7 @@ public class Home extends AppCompatActivity implements android.widget.SearchView
                 public void onClick(View v) {
                     Intent cursosIntent = new Intent(Home.this,Cursos.class);
                     cursosIntent.putExtra("CATEGORIA", "Exactas");
-                    cursosIntent.putExtra("USER",getIntent().getExtras().getString("USER"));
+                    cursosIntent.putExtra("USER",userName);
                     startActivity(cursosIntent);
                 }
             });
@@ -182,10 +191,41 @@ public class Home extends AppCompatActivity implements android.widget.SearchView
         cursos.add(new Curso("Angular", "Jose", R.drawable.angular));
         cursos.add(new Curso("JavaScript", "Carlos", R.drawable.cursojs));
         cursos.add(new Curso("Matematica", "Juan", R.drawable.matematica));
+
+        String stringUrl = "http://educa-mnforlenza.rhcloud.com/api/curso/ultimos-cursos";
+        ConnectivityManager connMgr = (ConnectivityManager)
+                getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
+        if (networkInfo != null && networkInfo.isConnected()) {
+            new DownloadHomeTask().execute(stringUrl);
+        } else {
+            // display error
+        }
+
     }
 
+
+    private class DownloadHomeTask extends AsyncTask<String, Void, String> {
+        @Override
+        protected String doInBackground(String... urls) {
+
+            // params comes from the execute() call: params[0] is the url.
+            HttpHandler httpHandler = new HttpHandler();
+            httpHandler.makeServiceCall(urls[0]);
+            return null;
+        }
+        // onPostExecute displays the results of the AsyncTask.
+        @Override
+        protected void onPostExecute(String result) {
+            //TODO: parse json
+            //textView.setText(result);
+        }
+    }
+
+
     private void initializeAdapter(){
-        RVAdapter adapter = new RVAdapter(cursos, "HORIZONTAL",getIntent().getExtras().getString("USER"));
+        //RVAdapter adapter = new RVAdapter(cursos, "HORIZONTAL",getIntent().getExtras().getString("USER"));
+        RVAdapter adapter = new RVAdapter(cursos, "HORIZONTAL","anonimo");
         rv.setAdapter(adapter);
     }
 

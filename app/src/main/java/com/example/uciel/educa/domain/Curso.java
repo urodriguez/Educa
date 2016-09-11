@@ -1,11 +1,11 @@
-package com.example.uciel.educa;
+package com.example.uciel.educa.domain;
 
-class Curso {
+public class Curso {
     String name;
     String profesor;
     int photoId;
 
-    Curso(String name, String profesor, int photoId) {
+    public Curso(String name, String profesor, int photoId) {
         this.name = name;
         this.profesor = profesor;
         this.photoId = photoId;
