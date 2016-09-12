@@ -10,7 +10,8 @@
 
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content">
+        android:layout_height="wrap_content"
+        >
 
         <android.support.v7.widget.Toolbar
             android:id="@+id/toolbar"
@@ -100,7 +101,9 @@
                 android:stepSize="1.0"
                 android:rating="1.0"
                 android:layout_centerVertical="true"
-                android:layout_centerHorizontal="true"/>
+                android:layout_centerHorizontal="true"
+                android:layout_below="@+id/textView5"
+                android:layout_marginTop="30dp"/>
 
 
             <TextView

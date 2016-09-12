@@ -282,7 +282,9 @@ public class Home extends AppCompatActivity implements android.widget.SearchView
     @Override
     public boolean onQueryTextSubmit(String query) {
         // User pressed the search button
-        android.util.Log.d("INFO", "Buscando: " + query);
+        Intent cursosBuscadoIntent = new Intent(Home.this,CursosBuscados.class);
+        cursosBuscadoIntent.putExtra("BUSQUEDA", query);
+        startActivity(cursosBuscadoIntent);
         return false;
     }
 

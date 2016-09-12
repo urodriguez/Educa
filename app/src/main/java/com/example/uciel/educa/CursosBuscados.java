@@ -2,18 +2,17 @@ package com.example.uciel.educa;
 
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -32,20 +31,22 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 
-public class Cursos extends AppCompatActivity implements SearchView.OnQueryTextListener {
-    SearchView searchView;
+public class CursosBuscados extends AppCompatActivity {
+
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
 
     private List<Curso> cursos;
     private RecyclerView rv;
-    private TextView tvCategoriaActual;
+
     private String userName = "";
+
+    private String criterioDeBusqueda = "";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_cursos);
+        setContentView(R.layout.activity_cursos_buscados);
 
         setToolbar(); // Setear Toolbar como action bar
 
@@ -55,15 +56,6 @@ public class Cursos extends AppCompatActivity implements SearchView.OnQueryTextL
             setupDrawerContent(navigationView);
         }
 
-
-        Intent intent = getIntent();//obtengo el Intent de otra activity
-        Bundle extras = intent.getExtras();//obtengo los extras de ese Intent
-        this.userName = "Anonimo";//getIntent().getExtras().getString("USER");
-        tvCategoriaActual = (TextView) findViewById(R.id.categoriaActual);
-        tvCategoriaActual.setText("Estas en: " + extras.getString("CATEGORIA"));
-
-        this.cargarFiltroYBusqueda();
-
         rv=(RecyclerView)findViewById(R.id.rv);
 
         LinearLayoutManager llm = new LinearLayoutManager(this);
@@ -71,12 +63,15 @@ public class Cursos extends AppCompatActivity implements SearchView.OnQueryTextL
         rv.setLayoutManager(llm);
         rv.setHasFixedSize(true);
 
+        criterioDeBusqueda = getIntent().getExtras().getString("BUSQUEDA");
+
         initializeData();
         initializeAdapter();
     }
 
     private void setToolbar() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitle(" ");
         setSupportActionBar(toolbar);
         final ActionBar ab = getSupportActionBar();
         if (ab != null) {
@@ -123,7 +118,7 @@ public class Cursos extends AppCompatActivity implements SearchView.OnQueryTextL
                         android.util.Log.d("INFO", "ITEM SELECCIONADO: " + title);
 
                         if(title.equals("Home")){
-                            Intent homeIntent = new Intent(Cursos.this,Home.class);
+                            Intent homeIntent = new Intent(CursosBuscados.this,Home.class);
                             startActivity(homeIntent);
                         }
 
@@ -134,26 +129,18 @@ public class Cursos extends AppCompatActivity implements SearchView.OnQueryTextL
         );
     }
 
-
     private void initializeData(){
         cursos = new ArrayList<>();
-        String idCategoria = getIntent().getExtras().getString("ID");
-        String url ="http://educa-mnforlenza.rhcloud.com/api/curso/listar/"+idCategoria;
+        // Instantiate the RequestQueue.
+        //RequestQueue queue = Volley.newRequestQueue(this);
+        String url ="http://educa-mnforlenza.rhcloud.com/api/curso/listar";
 
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        if(response.equals("[]")){
-                            Context context = getApplicationContext();
-                            CharSequence text = "Aun no hay cursos disponibles para esta categoria";
-                            int duration = Toast.LENGTH_LONG;
-                            Toast toast = Toast.makeText(context, text, duration);
-                            toast.show();
-                        } else {
-                            parseHomeResponse(response);
-                            initializeAdapter();
-                        }
+                        parseHomeResponse(response);
+                        initializeAdapter();
                     }
                 },
                 new Response.ErrorListener() {
@@ -163,7 +150,7 @@ public class Cursos extends AppCompatActivity implements SearchView.OnQueryTextL
                     }
                 }
         );
-        //queue.add(stringRequest);
+
         RQSingleton.getInstance(this).addToRequestQueue(stringRequest);
     }
 
@@ -171,45 +158,6 @@ public class Cursos extends AppCompatActivity implements SearchView.OnQueryTextL
     private void initializeAdapter(){
         RVAdapter adapter = new RVAdapter(cursos, "VERTICAL", this.userName, this);
         rv.setAdapter(adapter);
-    }
-
-
-    private void cargarFiltroYBusqueda(){
-        searchView = (SearchView) findViewById(R.id.searchView);
-        searchView.setOnQueryTextListener(this);
-
-        searchView.setOnCloseListener(new SearchView.OnCloseListener(){
-            @Override
-            public boolean onClose() {
-                //Al cerrar el search reestablezco los cursos por si el alumno se
-                //arrepiente y decide cancelar la busqueda
-                RVAdapter adapter = new RVAdapter(cursos, "VERTICAL", userName, Cursos.this);
-                rv.setAdapter(adapter);
-                return false;
-            }
-        });
-    }
-
-    @Override
-    public boolean onQueryTextSubmit(String query) {
-        // User pressed the search button
-        return false;
-    }
-
-    @Override
-    public boolean onQueryTextChange(String newText) {
-        // User changed the text
-        List<Curso> cursosFiltrados = new ArrayList<>();
-
-        for (Curso c: cursos){
-            if(c.getNombre().toLowerCase().contains(newText.toLowerCase())){
-                cursosFiltrados.add(c);
-            }
-        }
-
-        RVAdapter adapter = new RVAdapter(cursosFiltrados, "VERTICAL", this.userName, this);
-        rv.setAdapter(adapter);
-        return false;
     }
 
     public void parseHomeResponse(String response){
@@ -221,7 +169,9 @@ public class Cursos extends AppCompatActivity implements SearchView.OnQueryTextL
 
         HashMap<String, String> hm = new HashMap<String,String>();
         for(Curso c: cusos){
-            cursos.add(c);
+            if(c.getNombre().toLowerCase().contains(criterioDeBusqueda.toLowerCase())){
+                cursos.add(c);
+            }
             android.util.Log.d("CATEGORIASCURSO", "NOMBRE :" + c.getNombre() + "Docente: " + c.getNombreDocente());
         }
 
