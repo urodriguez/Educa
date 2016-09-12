@@ -83,21 +83,26 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.CursoViewHolder> {
         cursoViewHolder.nombreCurso.setText(cursos.get(i).getNombre());
         cursoViewHolder.ratingBar.setRating(cursos.get(i).getValoracionesPromedio());
 
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(cursos.get(i).getFechaEstimadaProximaSesion());
-        Date fechaComienzo = calendar.getTime();
-        SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
-        String cadenaFechaComienzo = df.format(fechaComienzo);
+        if (orientacion.equals("HORIZONTAL")){
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTimeInMillis(cursos.get(i).getFechaEstimadaProximaSesion());
+            Date fechaComienzo = calendar.getTime();
+            SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+            String cadenaFechaComienzo = df.format(fechaComienzo);
 
-        String comienzo = "Comienza: "  + cadenaFechaComienzo;
-        cursoViewHolder.fechaComienzo.setText(comienzo);
+            String comienzo = "Comienza: "  + cadenaFechaComienzo;
+            cursoViewHolder.fechaComienzo.setText(comienzo);
+
+        } else {
+            //orientacion == "VERTICAL"
+            cursoViewHolder.profesorCurso.setText(cursos.get(i).getNombreCompletoDocente());
+        }
+
         String imageUrl = IMAGE_ROOT_URL + cursos.get(i).getLinkImagen();
         ImageLoader mImageLoader;
-
         // Get the NetworkImageView that will display the image.
         mImageLoader = RQSingleton.getInstance(this.context).getImageLoader();
         cursoViewHolder.fotoCursoNiv.setImageUrl(imageUrl, mImageLoader);
-
 
         cursoViewHolder.cv.setOnClickListener(new View.OnClickListener() {
             @Override
