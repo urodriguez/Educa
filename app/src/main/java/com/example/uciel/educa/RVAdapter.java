@@ -4,6 +4,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
+import android.util.*;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -80,10 +81,10 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.CursoViewHolder> {
     @Override
     public void onBindViewHolder(CursoViewHolder cursoViewHolder, final int i) {
         cursoViewHolder.nombreCurso.setText(cursos.get(i).getNombre());
-        cursoViewHolder.ratingBar.setRating((float)cursos.get(i).getValoracionesPromedio());
+        cursoViewHolder.ratingBar.setRating(cursos.get(i).getValoracionesPromedio());
 
         Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis( cursos.get(i).getFechaEstimadaProximaSesion());
+        calendar.setTimeInMillis(cursos.get(i).getFechaEstimadaProximaSesion());
         Date fechaComienzo = calendar.getTime();
         SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
         String cadenaFechaComienzo = df.format(fechaComienzo);
@@ -104,9 +105,19 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.CursoViewHolder> {
                 //implementing onClick
                 Intent intentDescripcionCurso = new Intent();
                 intentDescripcionCurso.setClass(v.getContext(), DescripcionCurso.class);
-                intentDescripcionCurso.putExtra("USER", userName);
+                this.cargarInformacion(intentDescripcionCurso,cursos.get(i));
+
                 v.getContext().startActivity(intentDescripcionCurso);
                 System.out.println("Clicked " + String.valueOf(i));
+            }
+
+            private void cargarInformacion(Intent intentDescripcionCurso, Curso curso) {
+                intentDescripcionCurso.putExtra("USER", userName);
+                intentDescripcionCurso.putExtra("NOMBRE", curso.getNombre());
+                intentDescripcionCurso.putExtra("ESTADO", curso.getEstado());
+                intentDescripcionCurso.putExtra("PROFESOR", curso.getNombreCompletoDocente());
+                intentDescripcionCurso.putExtra("DESCRIPCION", curso.getDescripcion());
+                intentDescripcionCurso.putExtra("VALORACION", curso.getValoracionesPromedio());
             }
         });
     }

@@ -12,6 +12,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.RatingBar;
 import android.widget.SearchView;
 import android.widget.TextView;
 
@@ -21,6 +22,10 @@ public class DescripcionCurso extends AppCompatActivity {
 
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
+
+    private TextView tvNombre,tvEstado,tvProfesor,tvDescripcion,tvComentarios;
+
+    private RatingBar ratingBar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -35,14 +40,32 @@ public class DescripcionCurso extends AppCompatActivity {
             setupDrawerContent(navigationView);
         }
 
-        btnInscribirse = (Button) findViewById(R.id.buttonInscribirse);
+        this.cargarTextosDescriptivos();
 
+        ratingBar = (RatingBar)findViewById(R.id.ratingBar);
+        ratingBar.setRating(getIntent().getExtras().getFloat("VALORACION"));
+
+        btnInscribirse = (Button) findViewById(R.id.buttonInscribirse);
         btnInscribirse.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 android.util.Log.d("MSG: ", "TE HAS INSCRIPTO");
             }
         });
 
+    }
+
+    private void cargarTextosDescriptivos() {
+        tvNombre = (TextView) findViewById(R.id.textView2);
+        tvEstado = (TextView) findViewById(R.id.textView3);
+        tvProfesor = (TextView) findViewById(R.id.textView4);
+        tvDescripcion = (TextView) findViewById(R.id.textView5);
+        tvComentarios = (TextView) findViewById(R.id.textView7);
+
+        tvNombre.setText("Nombre: " + getIntent().getExtras().getString("NOMBRE"));
+        tvEstado.setText("Estado: " + getIntent().getExtras().getString("ESTADO"));
+        tvProfesor.setText("Profesor: " + getIntent().getExtras().getString("PROFESOR"));
+        tvDescripcion.setText("Descripción: " + getIntent().getExtras().getString("DESCRIPCION"));
+        tvComentarios.setText("Comentarios: \n" + "* Muy buen curso" + "\n" + "* Me sirvio mucho" );//TODO por ahora hardcodeado
     }
 
     private void setToolbar() {

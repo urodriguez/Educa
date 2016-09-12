@@ -1,5 +1,10 @@
 package com.example.uciel.educa.domain;
 
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
+
 public class Curso {
     public String name;
     public String profesor;
@@ -11,7 +16,7 @@ public class Curso {
     private String descripcion;
     private String linkImagen;
     private Docente docente;
-    private int  valoracionesPromedio;
+    private float  valoracionesPromedio;
     private int cantidadValoraciones;
     private long fechaEstimadaProximaSesion;
 
@@ -80,11 +85,11 @@ public class Curso {
         this.docente = docente;
     }
 
-    public int getValoracionesPromedio() {
+    public float getValoracionesPromedio() {
         return valoracionesPromedio;
     }
 
-    public void setValoracionesPromedio(int valoracionesPromedio) {
+    public void setValoracionesPromedio(float valoracionesPromedio) {
         this.valoracionesPromedio = valoracionesPromedio;
     }
 
@@ -102,6 +107,22 @@ public class Curso {
 
     public void setFechaEstimadaProximaSesion(long fechaEstimadaProximaSesion) {
         this.fechaEstimadaProximaSesion = fechaEstimadaProximaSesion;
+    }
+
+    public String getEstado(){
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(fechaEstimadaProximaSesion);
+        Date fechaComienzo = calendar.getTime();
+        SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+        String cadenaFechaComienzo = df.format(fechaComienzo);
+
+        String currentDateTimeString = df.format(Calendar.getInstance().getTime());
+
+        if (currentDateTimeString.compareTo(cadenaFechaComienzo)<0){
+            return ("comienza el "  + cadenaFechaComienzo);
+        } else {
+            return "Dictandose";
+        }
     }
 
     public String getLinkImagen() {
