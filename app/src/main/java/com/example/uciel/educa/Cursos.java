@@ -1,5 +1,6 @@
 package com.example.uciel.educa;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.support.design.widget.NavigationView;
@@ -14,6 +15,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.SearchView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -142,9 +144,16 @@ public class Cursos extends AppCompatActivity implements SearchView.OnQueryTextL
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        android.util.Log.i("INFO", "Response is: "+ response.substring(0,10));
-                        parseHomeResponse(response);
-                        initializeAdapter();
+                        if(response.equals("[]")){
+                            Context context = getApplicationContext();
+                            CharSequence text = "Aun no hay cursos disponibles para esta categoria";
+                            int duration = Toast.LENGTH_LONG;
+                            Toast toast = Toast.makeText(context, text, duration);
+                            toast.show();
+                        } else {
+                            parseHomeResponse(response);
+                            initializeAdapter();
+                        }
                     }
                 },
                 new Response.ErrorListener() {
