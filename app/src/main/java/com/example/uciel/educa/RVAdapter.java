@@ -88,7 +88,8 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.CursoViewHolder> {
         SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
         String cadenaFechaComienzo = df.format(fechaComienzo);
 
-        cursoViewHolder.fechaComienzo.setText(R.string.proximos_comienza + " " + cadenaFechaComienzo);
+        String comienzo = "Comienza: "  + cadenaFechaComienzo;
+        cursoViewHolder.fechaComienzo.setText(comienzo);
         String imageUrl = IMAGE_ROOT_URL + cursos.get(i).getLinkImagen();
         ImageLoader mImageLoader;
 
