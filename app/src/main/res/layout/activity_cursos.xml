@@ -58,50 +58,27 @@
 
         </android.support.v7.widget.Toolbar>
 
-    </RelativeLayout>
-
-    <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="64dp">
+        <TextView
+            android:id="@+id/categoriaActual"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/toolbar"
+            android:textSize="25dp"
+            />
 
         <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:paddingLeft="16dp"
-            android:paddingRight="16dp">
+            android:id="@+id/rlrv"
+            android:layout_below="@+id/categoriaActual">
 
-            <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:layout_width="wrap_content"
+            <android.support.v7.widget.RecyclerView
                 android:layout_height="wrap_content"
-                android:paddingLeft="8dp"
-                android:id="@+id/rltvca">
-
-                <TextView
-                    android:id="@+id/categoriaActual"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:textSize="25dp"
-                    />
-
-            </RelativeLayout>
-
-
-            <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:id="@+id/rlrv"
-                android:layout_below="@+id/rltvca">
+                android:id="@+id/rv"
+                >
 
-                <android.support.v7.widget.RecyclerView
-                    android:layout_height="wrap_content"
-                    android:layout_width="wrap_content"
-                    android:id="@+id/rv"
-                    >
-
-                </android.support.v7.widget.RecyclerView>
-            </RelativeLayout>
-
+            </android.support.v7.widget.RecyclerView>
         </RelativeLayout>
 
     </RelativeLayout>
