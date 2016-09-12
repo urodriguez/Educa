@@ -1,5 +1,6 @@
 package com.example.uciel.educa;
 
+import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
@@ -10,21 +11,32 @@ import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
+import com.android.volley.toolbox.ImageLoader;
+import com.android.volley.toolbox.NetworkImageView;
 import com.example.uciel.educa.domain.Curso;
+import com.example.uciel.educa.network.RQSingleton;
 
+import java.text.SimpleDateFormat;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 public class RVAdapter extends RecyclerView.Adapter<RVAdapter.CursoViewHolder> {
 
     private final String userName;
     private String orientacion;
+    private Context context;
+
+    private static final String IMAGE_ROOT_URL =
+                    "http://educa-mnforlenza.rhcloud.com/api/";
 
     public static class CursoViewHolder extends RecyclerView.ViewHolder {
 
         CardView cv;
         TextView nombreCurso;
         TextView profesorCurso;
-        ImageView fotoCurso;
+        TextView fechaComienzo;
+        NetworkImageView fotoCursoNiv;
         RatingBar ratingBar;
 
         CursoViewHolder(View itemView) {
@@ -32,17 +44,19 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.CursoViewHolder> {
             cv = (CardView)itemView.findViewById(R.id.cv);
             nombreCurso = (TextView)itemView.findViewById(R.id.curso_name);
             profesorCurso = (TextView)itemView.findViewById(R.id.curso_profesor);
-            fotoCurso = (ImageView)itemView.findViewById(R.id.curso_photo);
+            fotoCursoNiv = (NetworkImageView)itemView.findViewById(R.id.curso_photo_niv);
             ratingBar = (RatingBar)itemView.findViewById(R.id.ratingBar);
+            fechaComienzo = (TextView)itemView.findViewById(R.id.fecha_comienzo);
         }
     }
 
     List<Curso> cursos;
 
-    RVAdapter(List<Curso> cursos, String orientacion, String userName){
+    RVAdapter(List<Curso> cursos, String orientacion, String userName, Context context){
         this.cursos = cursos;
         this.orientacion = orientacion;
         this.userName = userName;
+        this.context = context;
     }
 
     @Override
@@ -66,9 +80,23 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.CursoViewHolder> {
     @Override
     public void onBindViewHolder(CursoViewHolder cursoViewHolder, final int i) {
         cursoViewHolder.nombreCurso.setText(cursos.get(i).getNombre());
-        //cursoViewHolder.profesorCurso.setText(cursos.get(i).getNombreCompletoDocente());
-        cursoViewHolder.fotoCurso.setImageResource(R.drawable.angular);
         cursoViewHolder.ratingBar.setRating((float)cursos.get(i).getValoracionesPromedio());
+
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis( cursos.get(i).getFechaEstimadaProximaSesion());
+        Date fechaComienzo = calendar.getTime();
+        SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+        String cadenaFechaComienzo = df.format(fechaComienzo);
+
+        cursoViewHolder.fechaComienzo.setText(R.string.proximos_comienza + " " + cadenaFechaComienzo);
+        String imageUrl = IMAGE_ROOT_URL + cursos.get(i).getLinkImagen();
+        ImageLoader mImageLoader;
+
+        // Get the NetworkImageView that will display the image.
+        mImageLoader = RQSingleton.getInstance(this.context).getImageLoader();
+        cursoViewHolder.fotoCursoNiv.setImageUrl(imageUrl, mImageLoader);
+
+
         cursoViewHolder.cv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {

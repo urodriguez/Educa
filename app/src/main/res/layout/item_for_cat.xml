@@ -15,19 +15,18 @@
         android:layout_height="wrap_content"
         >
 
-        <ImageView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:id="@+id/curso_photo"
+        <com.android.volley.toolbox.NetworkImageView
+            android:id="@+id/curso_photo_niv"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
             android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="true"
-            />
+            android:layout_alignParentTop="true" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/curso_name"
-            android:layout_toRightOf="@+id/curso_photo"
+            android:layout_toRightOf="@+id/curso_photo_niv"
             android:layout_marginLeft="30dp"
             android:textSize="10sp"
             />
@@ -37,7 +36,7 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="30dp"
             android:id="@+id/curso_profesor"
-            android:layout_toRightOf="@+id/curso_photo"
+            android:layout_toRightOf="@+id/curso_photo_niv"
             android:layout_below="@+id/curso_name"
             />
 
@@ -47,7 +46,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="30dp"
-            android:layout_toRightOf="@+id/curso_photo"
+            android:layout_toRightOf="@+id/curso_photo_niv"
             android:layout_below="@+id/curso_profesor"
             android:numStars="5"
             android:stepSize="1.0"

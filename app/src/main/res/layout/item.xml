@@ -16,20 +16,27 @@
         android:padding="16dp"
         >
 
-        <ImageView
+        <!---ImageView
             android:layout_width="150dp"
             android:layout_height="150dp"
             android:id="@+id/curso_photo"
             android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"
-            />
+            /-->
+
+        <com.android.volley.toolbox.NetworkImageView
+            android:id="@+id/curso_photo_niv"
+            android:layout_width="150dp"
+            android:layout_height="150dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true" />
 
         <TextView
             android:layout_centerInParent="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/curso_name"
-            android:layout_below="@+id/curso_photo"
+            android:layout_below="@+id/curso_photo_niv"
             android:textSize="15sp"
             />
 
@@ -40,7 +47,6 @@
             android:id="@+id/fecha_comienzo"
             android:layout_below="@+id/curso_name"
             android:textSize="12sp"
-            android:text="Comienza:"
             />
 
         <RatingBar

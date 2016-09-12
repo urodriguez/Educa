@@ -270,7 +270,7 @@ public class Home extends AppCompatActivity implements android.widget.SearchView
 
     private void initializeAdapter(){
         //RVAdapter adapter = new RVAdapter(cursos, "HORIZONTAL",getIntent().getExtras().getString("USER"));
-        RVAdapter adapter = new RVAdapter(cursos, "HORIZONTAL","anonimo");
+        RVAdapter adapter = new RVAdapter(cursos, "HORIZONTAL","anonimo", this);
         rv.setAdapter(adapter);
     }
 

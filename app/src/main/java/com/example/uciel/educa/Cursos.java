@@ -160,7 +160,7 @@ public class Cursos extends AppCompatActivity implements SearchView.OnQueryTextL
 
 
     private void initializeAdapter(){
-        RVAdapter adapter = new RVAdapter(cursos, "VERTICAL", this.userName );
+        RVAdapter adapter = new RVAdapter(cursos, "VERTICAL", this.userName, this);
         rv.setAdapter(adapter);
     }
 

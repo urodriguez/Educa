@@ -9,6 +9,7 @@ public class Curso {
     private String nombre;
     private Categoria categoria;
     private String descripcion;
+    private String linkImagen;
     private Docente docente;
     private int  valoracionesPromedio;
     private int cantidadValoraciones;
@@ -102,4 +103,13 @@ public class Curso {
     public void setFechaEstimadaProximaSesion(long fechaEstimadaProximaSesion) {
         this.fechaEstimadaProximaSesion = fechaEstimadaProximaSesion;
     }
+
+    public String getLinkImagen() {
+        return linkImagen;
+    }
+
+    public void setLinkImagen(String linkImagen) {
+        this.linkImagen = linkImagen;
+    }
+
 }
