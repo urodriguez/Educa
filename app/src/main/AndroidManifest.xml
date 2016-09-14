@@ -18,22 +18,22 @@
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />
 
-        <activity android:name=".Log" />
+        <activity android:name=".activities.Log" />
         <activity
             android:name="com.facebook.FacebookActivity"
             android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
             android:label="@string/app_name"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
-        <activity android:name=".Cursos" />
-        <activity android:name=".DescripcionCurso" />
-        <activity android:name=".Home">
+        <activity android:name=".activities.Cursos" />
+        <activity android:name=".activities.DescripcionCurso" />
+        <activity android:name=".activities.Home">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".CursosBuscados"></activity>
+        <activity android:name=".activities.CursosBuscados"></activity>
     </application>
 
 </manifest>

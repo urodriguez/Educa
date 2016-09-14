@@ -1,4 +1,4 @@
-package com.example.uciel.educa;
+package com.example.uciel.educa.activities;
 
 import android.content.Context;
 import android.content.Intent;
@@ -21,6 +21,8 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
+import com.example.uciel.educa.R;
+import com.example.uciel.educa.adapters.RVAdapter;
 import com.example.uciel.educa.domain.Curso;
 import com.example.uciel.educa.network.RQSingleton;
 import com.google.gson.Gson;
@@ -60,7 +62,7 @@ public class Cursos extends AppCompatActivity implements SearchView.OnQueryTextL
         Bundle extras = intent.getExtras();//obtengo los extras de ese Intent
         this.userName = "Anonimo";//getIntent().getExtras().getString("USER");
         tvCategoriaActual = (TextView) findViewById(R.id.categoriaActual);
-        tvCategoriaActual.setText("Estas en: " + extras.getString("CATEGORIA"));
+        tvCategoriaActual.setText(extras.getString("CATEGORIA"));
 
         this.cargarFiltroYBusqueda();
 

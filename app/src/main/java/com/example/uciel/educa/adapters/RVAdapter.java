@@ -1,19 +1,19 @@
-package com.example.uciel.educa;
+package com.example.uciel.educa.adapters;
 
 import android.content.Context;
 import android.content.Intent;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
-import android.util.*;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.RatingBar;
 import android.widget.TextView;
 
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
+import com.example.uciel.educa.activities.DescripcionCurso;
+import com.example.uciel.educa.R;
 import com.example.uciel.educa.domain.Curso;
 import com.example.uciel.educa.network.RQSingleton;
 
@@ -53,7 +53,7 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.CursoViewHolder> {
 
     List<Curso> cursos;
 
-    RVAdapter(List<Curso> cursos, String orientacion, String userName, Context context){
+    public RVAdapter(List<Curso> cursos, String orientacion, String userName, Context context){
         this.cursos = cursos;
         this.orientacion = orientacion;
         this.userName = userName;
