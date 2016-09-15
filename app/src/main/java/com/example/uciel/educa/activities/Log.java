@@ -18,6 +18,7 @@ import com.facebook.FacebookSdk;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.HttpMethod;
+import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
 import com.google.android.gms.auth.api.Auth;
@@ -72,9 +73,9 @@ public class Log extends AppCompatActivity implements GoogleApiClient.OnConnecti
 
         loginButton = (LoginButton)findViewById(R.id.login_button);
         loginButton.setReadPermissions(Arrays.asList("public_profile", "user_friends", "email", "user_birthday"));
-/*        if(AccessToken.getCurrentAccessToken() != null){
+        if(AccessToken.getCurrentAccessToken() != null){
             LoginManager.getInstance().logOut();
-        }*/
+        }
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
             public void onSuccess(LoginResult loginResult) {
@@ -184,7 +185,7 @@ public class Log extends AppCompatActivity implements GoogleApiClient.OnConnecti
             android.util.Log.d(TAG, "ERROR AL INICIAR SESION");
         }
     }
-// [END handleSignInResult]
+    // [END handleSignInResult]
 
     // [START signIn]
     private void signIn() {

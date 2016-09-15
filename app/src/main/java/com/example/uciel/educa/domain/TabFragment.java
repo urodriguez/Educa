@@ -20,8 +20,6 @@ public class TabFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         if(tabNumber == 0){
             View view = inflater.inflate(R.layout.tab_one, container, false);
-            /*TextView textTabOne = (TextView) view.findViewById(R.id.textTabOne);
-            textTabOne.setText("CAMBIEE MI FOMARTO :D");*/
             return view;
         } else if (tabNumber == 1) {
             return inflater.inflate(R.layout.tab_two, container, false);

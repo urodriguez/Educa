@@ -19,7 +19,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
-            android:layout_marginTop="160dp"
+            android:layout_marginTop="120dp"
             />
 
         <com.facebook.login.widget.LoginButton
@@ -40,11 +40,12 @@
         xmlns:custom="http://schemas.android.com/apk/res-auto"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/rl_login"
-        android:paddingBottom="64dp"
-        android:paddingLeft="64dp"
-        android:paddingRight="64dp"
-        android:paddingTop="64dp"
+        android:layout_below="@id/rl_login"
+        android:layout_marginTop="50dp"
+        android:paddingBottom="32dp"
+        android:paddingLeft="32dp"
+        android:paddingRight="32dp"
+        android:paddingTop="32dp"
         >
         <com.daimajia.slider.library.SliderLayout
             android:id="@+id/slider"
@@ -52,9 +53,8 @@
             custom:auto_cycle="true"
             custom:indicator_visibility="visible"
             custom:pager_animation_span="1100"
-            android:layout_marginTop="150dp"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="400dp"
+            android:layout_height="350dp"
             />
 
     </RelativeLayout>

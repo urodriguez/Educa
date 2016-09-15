@@ -111,6 +111,7 @@ public class Home extends AppCompatActivity implements android.widget.SearchView
         //userName.setText(getIntent().getExtras().getString("USER"));
         userName.setText("Anonimo");
 
+        navigationView.getMenu().getItem(0).setChecked(true);//home = item 0
         navigationView.setNavigationItemSelectedListener(
                 new NavigationView.OnNavigationItemSelectedListener() {
 
@@ -123,11 +124,19 @@ public class Home extends AppCompatActivity implements android.widget.SearchView
                         //selectItem(title);
                         android.util.Log.d("INFO", "ITEM SELECCIONADO: " + title);
 
-                        if(title.equals("Home")){
-                            drawerLayout.closeDrawers(); // Cerrar drawer
+                        switch (title) {
+                            case "Home":
+                                drawerLayout.closeDrawers(); // Cerrar drawer
+                                break;
+                            case "Mis Cursos":
+                                Intent misCursos = new Intent(Home.this,MisCursos.class);
+                                startActivity(misCursos);
+                                break;
+                            case "Mis Diplomas":
+                                Intent misDiplomas = new Intent(Home.this,MisDiplomas.class);
+                                startActivity(misDiplomas);
+                                break;
                         }
-
-                        //drawerLayout.closeDrawers(); // Cerrar drawer
                         return true;
                     }
                 }
@@ -285,7 +294,4 @@ public class Home extends AppCompatActivity implements android.widget.SearchView
         }
 
     }
-
-
-
 }

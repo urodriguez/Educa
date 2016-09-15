@@ -211,9 +211,19 @@ public class DescripcionCurso extends AppCompatActivity {
                         //selectItem(title);
                         android.util.Log.d("INFO", "ITEM SELECCIONADO: " + title);
 
-                        if(title.equals("Home")){
-                            Intent homeIntent = new Intent(DescripcionCurso.this,Home.class);
-                            startActivity(homeIntent);
+                        switch (title) {
+                            case "Home":
+                                Intent home = new Intent(DescripcionCurso.this,Home.class);
+                                startActivity(home);
+                                break;
+                            case "Mis Cursos":
+                                Intent misCursos = new Intent(DescripcionCurso.this,MisCursos.class);
+                                startActivity(misCursos);
+                                break;
+                            case "Mis Diplomas":
+                                Intent misDiplomas = new Intent(DescripcionCurso.this,MisDiplomas.class);
+                                startActivity(misDiplomas);
+                                break;
                         }
 
                         drawerLayout.closeDrawers(); // Cerrar drawer

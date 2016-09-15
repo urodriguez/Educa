@@ -124,9 +124,19 @@ public class Cursos extends AppCompatActivity implements SearchView.OnQueryTextL
                         //selectItem(title);
                         android.util.Log.d("INFO", "ITEM SELECCIONADO: " + title);
 
-                        if(title.equals("Home")){
-                            Intent homeIntent = new Intent(Cursos.this,Home.class);
-                            startActivity(homeIntent);
+                        switch (title) {
+                            case "Home":
+                                Intent home = new Intent(Cursos.this,Home.class);
+                                startActivity(home);
+                                break;
+                            case "Mis Cursos":
+                                Intent misCursos = new Intent(Cursos.this,MisCursos.class);
+                                startActivity(misCursos);
+                                break;
+                            case "Mis Diplomas":
+                                Intent misDiplomas = new Intent(Cursos.this,MisDiplomas.class);
+                                startActivity(misDiplomas);
+                                break;
                         }
 
                         drawerLayout.closeDrawers(); // Cerrar drawer

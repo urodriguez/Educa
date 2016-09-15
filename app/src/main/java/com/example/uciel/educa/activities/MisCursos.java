@@ -12,27 +12,18 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.SearchView;
 import android.widget.TextView;
 
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
 import com.example.uciel.educa.R;
 import com.example.uciel.educa.adapters.RVAdapter;
 import com.example.uciel.educa.domain.Curso;
-import com.example.uciel.educa.network.RQSingleton;
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 
-import java.lang.reflect.Type;
 import java.util.ArrayList;
-import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 
-public class CursosBuscados extends AppCompatActivity {
-
+public class MisCursos extends AppCompatActivity implements SearchView.OnQueryTextListener {
+    private SearchView searchView;
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
 
@@ -41,12 +32,10 @@ public class CursosBuscados extends AppCompatActivity {
 
     private String userName = "";
 
-    private String criterioDeBusqueda = "";
-
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_cursos_buscados);
+        setContentView(R.layout.activity_mis_cursos);
 
         setToolbar(); // Setear Toolbar como action bar
 
@@ -56,22 +45,18 @@ public class CursosBuscados extends AppCompatActivity {
             setupDrawerContent(navigationView);
         }
 
+        this.cargarFiltroYBusqueda();
+
         rv=(RecyclerView)findViewById(R.id.rv);
 
         LinearLayoutManager llm = new LinearLayoutManager(this);
         llm.setOrientation(LinearLayoutManager.VERTICAL);
         rv.setLayoutManager(llm);
         rv.setHasFixedSize(true);
-
-        criterioDeBusqueda = getIntent().getExtras().getString("BUSQUEDA");
-
-        initializeData();
-        initializeAdapter();
     }
 
     private void setToolbar() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
-        toolbar.setTitle(" ");
         setSupportActionBar(toolbar);
         final ActionBar ab = getSupportActionBar();
         if (ab != null) {
@@ -102,9 +87,10 @@ public class CursosBuscados extends AppCompatActivity {
 
     private void setupDrawerContent(NavigationView navigationView) {
         TextView userName = (TextView)navigationView.getHeaderView(0).findViewById(R.id.username);
+        //userName.setText(getIntent().getExtras().getString("USER"));
+        userName.setText("Anonimo");
 
-        userName.setText(this.userName);
-
+        navigationView.getMenu().getItem(1).setChecked(true);//mis cursos = item 1
         navigationView.setNavigationItemSelectedListener(
                 new NavigationView.OnNavigationItemSelectedListener() {
 
@@ -119,71 +105,65 @@ public class CursosBuscados extends AppCompatActivity {
 
                         switch (title) {
                             case "Home":
-                                Intent home = new Intent(CursosBuscados.this,Home.class);
+                                Intent home = new Intent(MisCursos.this,Home.class);
                                 startActivity(home);
                                 break;
                             case "Mis Cursos":
-                                Intent misCursos = new Intent(CursosBuscados.this,MisCursos.class);
-                                startActivity(misCursos);
+                                drawerLayout.closeDrawers(); // Cerrar drawer
                                 break;
                             case "Mis Diplomas":
-                                Intent misDiplomas = new Intent(CursosBuscados.this,MisDiplomas.class);
+                                Intent misDiplomas = new Intent(MisCursos.this,MisDiplomas.class);
                                 startActivity(misDiplomas);
                                 break;
                         }
-
-                        drawerLayout.closeDrawers(); // Cerrar drawer
                         return true;
                     }
                 }
         );
     }
 
-    private void initializeData(){
-        cursos = new ArrayList<>();
-        // Instantiate the RequestQueue.
-        //RequestQueue queue = Volley.newRequestQueue(this);
-        String url ="http://educa-mnforlenza.rhcloud.com/api/curso/listar";
-
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        parseHomeResponse(response);
-                        initializeAdapter();
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        android.util.Log.d("DEBUG", "That didn't work!");
-                    }
-                }
-        );
-
-        RQSingleton.getInstance(this).addToRequestQueue(stringRequest);
-    }
-
-
     private void initializeAdapter(){
-        RVAdapter adapter = new RVAdapter(cursos, "VERTICAL", this.userName, this);
+        //RVAdapter adapter = new RVAdapter(cursos, "HORIZONTAL",getIntent().getExtras().getString("USER"));
+        RVAdapter adapter = new RVAdapter(cursos, "VERTICAL","anonimo", this);
         rv.setAdapter(adapter);
     }
 
-    public void parseHomeResponse(String response){
-        Gson g = new Gson();
+    private void cargarFiltroYBusqueda(){
+        searchView = (SearchView) findViewById(R.id.searchView);
+        searchView.setOnQueryTextListener(this);
 
-        Type collectionType = new TypeToken<Collection<Curso>>(){}.getType();
-        Collection<Curso> cusos = g.fromJson(response, collectionType);
-
-
-        HashMap<String, String> hm = new HashMap<String,String>();
-        for(Curso c: cusos){
-            if(c.getNombre().toLowerCase().contains(criterioDeBusqueda.toLowerCase())){
-                cursos.add(c);
+        searchView.setOnCloseListener(new SearchView.OnCloseListener(){
+            @Override
+            public boolean onClose() {
+                //Al cerrar el search reestablezco los cursos por si el alumno se
+                //arrepiente y decide cancelar la busqueda
+                RVAdapter adapter = new RVAdapter(cursos, "VERTICAL", userName, MisCursos.this);
+                rv.setAdapter(adapter);
+                return false;
             }
-            android.util.Log.d("CATEGORIASCURSO", "NOMBRE :" + c.getNombre() + "Docente: " + c.getNombreDocente());
+        });
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        // User pressed the search button
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        // User changed the text
+        List<Curso> cursosFiltrados = new ArrayList<>();
+
+        for (Curso c: cursos){
+            if(c.getNombre().toLowerCase().contains(newText.toLowerCase())){
+                cursosFiltrados.add(c);
+            }
         }
 
+        RVAdapter adapter = new RVAdapter(cursosFiltrados, "VERTICAL", this.userName, this);
+        rv.setAdapter(adapter);
+        return false;
     }
+
 }
