@@ -1,6 +1,7 @@
 package com.example.uciel.educa.activities;
 
 import android.content.Intent;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.NavigationView;
@@ -11,21 +12,25 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
+import android.util.*;
+import android.util.Log;
 import android.view.ContextMenu;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RatingBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.uciel.educa.R;
 import com.example.uciel.educa.adapters.ViewPagerAdapter;
 
 public class DescripcionCurso extends AppCompatActivity {
-
-    Button btnInscribirse;
 
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
@@ -37,6 +42,8 @@ public class DescripcionCurso extends AppCompatActivity {
     private TextView tvNombre,tvEstado,tvProfesor,tvDescripcion,tvComentarios;
 
     private RatingBar ratingBar;
+
+    private LinearLayout llComentarios, llUnidades, llSesiones;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -79,34 +86,33 @@ public class DescripcionCurso extends AppCompatActivity {
         tabs.setTabTextColors(ContextCompat.getColorStateList(this, R.color.white));
         tabs.setSelectedTabIndicatorColor(ContextCompat.getColor(this, R.color.black_overlay));
 
-        /*TextView textTabOne = (TextView) viewPager.findViewById(R.id.textTabOne);
-        textTabOne.setText("CAMBIEE MI FOMARTO :D");*/
-
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabs));
 
         tabs.setOnTabSelectedListener(
                 new TabLayout.OnTabSelectedListener() {
                     @Override
                     public void onTabSelected(TabLayout.Tab tab) {
-                        viewPager.setCurrentItem(tab.getPosition());
-                        switch (tab.getPosition()) {
-                            case 0:
-                                cargarTextosDescriptivos();
 
-                                ratingBar = (RatingBar)viewPager.findViewById(R.id.ratingBar);
-                                ratingBar.setRating(getIntent().getExtras().getFloat("VALORACION"));
+                        /*OBS: NO REEMPLAZAR LOS 'IF' POR UN 'SWITCH' ==> NO ANDA PARA TABS*/
 
-                                btnInscribirse = (Button) viewPager.findViewById(R.id.buttonInscribirse);
-                                btnInscribirse.setOnClickListener(new View.OnClickListener() {
-                                    public void onClick(View v) {
-                                        android.util.Log.d("MSG: ", "TE HAS INSCRIPTO");
-                                    }
-                                });
-                            case 1:
-                                cargarUnidades();
-                            case 2:
-                                cargarSesiones();
+                        if(tab.getPosition() == 0){
+                            viewPager.setCurrentItem(0);
+                            cargarTextosDescriptivos();
+
+                            ratingBar = (RatingBar)viewPager.findViewById(R.id.ratingBar);
+                            ratingBar.setRating(getIntent().getExtras().getFloat("VALORACION"));
+
+                            cargarComentarios();
+                        } else if (tab.getPosition() == 1) {
+                            Log.d("tag","CARGANDO UNIDADES");
+                            viewPager.setCurrentItem(1);
+                            cargarUnidades();
+                        } else {
+                            Log.d("tag","CARGANDO SESIONES");
+                            viewPager.setCurrentItem(2);
+                            cargarSesiones();
                         }
+
                     }
 
                     @Override
@@ -131,12 +137,7 @@ public class DescripcionCurso extends AppCompatActivity {
                 ratingBar = (RatingBar)viewPager.findViewById(R.id.ratingBar);
                 ratingBar.setRating(getIntent().getExtras().getFloat("VALORACION"));
 
-                btnInscribirse = (Button) viewPager.findViewById(R.id.buttonInscribirse);
-                btnInscribirse.setOnClickListener(new View.OnClickListener() {
-                    public void onClick(View v) {
-                        android.util.Log.d("MSG: ", "TE HAS INSCRIPTO");
-                    }
-                });
+                cargarComentarios();
             }
         };
         handler.postDelayed(r, 500);
@@ -148,19 +149,86 @@ public class DescripcionCurso extends AppCompatActivity {
         tvEstado = (TextView) viewPager.findViewById(R.id.textView3);
         tvProfesor = (TextView) viewPager.findViewById(R.id.textView4);
         tvDescripcion = (TextView) viewPager.findViewById(R.id.textView5);
-        tvComentarios = (TextView) viewPager.findViewById(R.id.textView7);
 
         tvNombre.setText("Nombre: " + getIntent().getExtras().getString("NOMBRE"));
         tvEstado.setText("Estado: " + getIntent().getExtras().getString("ESTADO"));
         tvProfesor.setText("Profesor: " + getIntent().getExtras().getString("PROFESOR"));
         tvDescripcion.setText("Descripción: " + getIntent().getExtras().getString("DESCRIPCION"));
-        tvComentarios.setText("Comentarios: \n" + "* Muy buen curso" + "\n" + "* Me sirvio mucho" );//TODO por ahora hardcodeado
+    }
+
+
+    private void cargarComentarios() {
+        llComentarios = (LinearLayout) viewPager.findViewById(R.id.llComentarios);
+
+        for(int i = 0; i < 150; i++){
+            TextView txt = new TextView(this);
+            txt.setText("SOY UN COMENTARIO");
+            llComentarios.addView(txt);
+
+            /* INICIO: Creo un divisor para cada comentario*/
+            ImageView divider = new ImageView(this);
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 1);
+            lp.setMargins(10, 10, 10, 10);
+            divider.setLayoutParams(lp);
+            divider.setBackgroundColor(Color.GRAY);
+
+            // Agrego el divisor
+            llComentarios.addView(divider);
+            /* FIN: Divisor agregado para ese comentario*/
+        }
     }
 
     private void cargarUnidades() {
+        llUnidades = (LinearLayout) viewPager.findViewById(R.id.llUnidades);
+
+        for(int i = 0; i < 150; i++){
+            TextView txt = new TextView(this);
+            txt.setText("SOY UNA UNIDAD");
+            llUnidades.addView(txt);
+
+            /* INICIO: Creo un divisor para cada comentario*/
+            ImageView divider = new ImageView(this);
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 1);
+            lp.setMargins(10, 10, 10, 10);
+            divider.setLayoutParams(lp);
+            divider.setBackgroundColor(Color.GRAY);
+
+            // Agrego el divisor
+            llUnidades.addView(divider);
+            /* FIN: Divisor agregado para ese comentario*/
+        }
     }
 
     private void cargarSesiones() {
+        llSesiones = (LinearLayout) viewPager.findViewById(R.id.sesiones_linear);
+
+        for(int i = 0; i < 3; i++){
+            LinearLayout llH = new LinearLayout(this);
+            llH.setOrientation(LinearLayout.HORIZONTAL);
+
+            TextView txt = new TextView(this);
+            txt.setText("S1");
+            llH.addView(txt);
+
+            Button button = new Button(this);
+            button.setText("INSCRIBIRSE");
+            llH.addView(button);
+
+            llSesiones.addView(llH);
+
+            /* INICIO: Creo un divisor para cada comentario*/
+            ImageView divider = new ImageView(this);
+            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 1);
+            lp.setMargins(10, 10, 10, 10);
+            divider.setLayoutParams(lp);
+            divider.setBackgroundColor(Color.GRAY);
+
+            // Agrego el divisor
+            llSesiones.addView(divider);
+            /* FIN: Divisor agregado para ese comentario*/
+
+
+        }
     }
 
     private void setToolbar() {
