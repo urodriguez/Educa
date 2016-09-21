@@ -51,18 +51,15 @@ public class Cursos extends AppCompatActivity implements SearchView.OnQueryTextL
 
         setToolbar(); // Setear Toolbar como action bar
 
+        userName = getIntent().getExtras().getString("USER");
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         if (navigationView != null) {
             setupDrawerContent(navigationView);
         }
 
-
-        Intent intent = getIntent();//obtengo el Intent de otra activity
-        Bundle extras = intent.getExtras();//obtengo los extras de ese Intent
-        this.userName = "Anonimo";//getIntent().getExtras().getString("USER");
         tvCategoriaActual = (TextView) findViewById(R.id.categoriaActual);
-        tvCategoriaActual.setText(extras.getString("CATEGORIA"));
+        tvCategoriaActual.setText(getIntent().getExtras().getString("CATEGORIA"));
 
         this.cargarFiltroYBusqueda();
 
@@ -109,7 +106,6 @@ public class Cursos extends AppCompatActivity implements SearchView.OnQueryTextL
 
     private void setupDrawerContent(NavigationView navigationView) {
         TextView userName = (TextView)navigationView.getHeaderView(0).findViewById(R.id.username);
-
         userName.setText(this.userName);
 
         navigationView.setNavigationItemSelectedListener(
@@ -127,14 +123,17 @@ public class Cursos extends AppCompatActivity implements SearchView.OnQueryTextL
                         switch (title) {
                             case "Home":
                                 Intent home = new Intent(Cursos.this,Home.class);
+                                home.putExtra("USER", Cursos.this.userName);
                                 startActivity(home);
                                 break;
                             case "Mis Cursos":
                                 Intent misCursos = new Intent(Cursos.this,MisCursos.class);
+                                misCursos.putExtra("USER", Cursos.this.userName);
                                 startActivity(misCursos);
                                 break;
                             case "Mis Diplomas":
                                 Intent misDiplomas = new Intent(Cursos.this,MisDiplomas.class);
+                                misDiplomas.putExtra("USER", Cursos.this.userName);
                                 startActivity(misDiplomas);
                                 break;
                         }

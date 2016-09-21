@@ -30,6 +30,9 @@ import android.widget.TextView;
 import com.example.uciel.educa.R;
 import com.example.uciel.educa.adapters.ViewPagerAdapter;
 
+import java.util.ArrayList;
+import java.util.List;
+
 public class DescripcionCurso extends AppCompatActivity {
 
     private DrawerLayout drawerLayout;
@@ -45,6 +48,9 @@ public class DescripcionCurso extends AppCompatActivity {
 
     private LinearLayout llComentarios, llUnidades, llSesiones;
 
+    private String userName = "";
+    private List<Button> botonesInscripcion;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -54,14 +60,14 @@ public class DescripcionCurso extends AppCompatActivity {
 
         setTabs();
 
+        cargarBotonesDeIncripcion();
+
+        userName = getIntent().getExtras().getString("USER");
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         if (navigationView != null) {
             setupDrawerContent(navigationView);
         }
-
-
-
     }
 
     private void setTabs() {
@@ -93,26 +99,26 @@ public class DescripcionCurso extends AppCompatActivity {
                     @Override
                     public void onTabSelected(TabLayout.Tab tab) {
 
-                        /*OBS: NO REEMPLAZAR LOS 'IF' POR UN 'SWITCH' ==> NO ANDA PARA TABS*/
+                        viewPager.setCurrentItem(tab.getPosition());
 
-                        if(tab.getPosition() == 0){
-                            viewPager.setCurrentItem(0);
-                            cargarTextosDescriptivos();
+                        switch (tab.getPosition()) {
+                            case 0:
+                                cargarTextosDescriptivos();
 
-                            ratingBar = (RatingBar)viewPager.findViewById(R.id.ratingBar);
-                            ratingBar.setRating(getIntent().getExtras().getFloat("VALORACION"));
+                                ratingBar = (RatingBar)viewPager.findViewById(R.id.ratingBar);
+                                ratingBar.setRating(getIntent().getExtras().getFloat("VALORACION"));
 
-                            cargarComentarios();
-                        } else if (tab.getPosition() == 1) {
-                            Log.d("tag","CARGANDO UNIDADES");
-                            viewPager.setCurrentItem(1);
-                            cargarUnidades();
-                        } else {
-                            Log.d("tag","CARGANDO SESIONES");
-                            viewPager.setCurrentItem(2);
-                            cargarSesiones();
+                                cargarComentarios();
+                                break;
+
+                            case 1:
+                                cargarUnidades();
+                                break;
+
+                            case 2:
+                                cargarSesiones();
+                                break;
                         }
-
                     }
 
                     @Override
@@ -168,9 +174,9 @@ public class DescripcionCurso extends AppCompatActivity {
             /* INICIO: Creo un divisor para cada comentario*/
             ImageView divider = new ImageView(this);
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 1);
-            lp.setMargins(10, 10, 10, 10);
+            lp.setMargins(10, 15, 10, 15);
             divider.setLayoutParams(lp);
-            divider.setBackgroundColor(Color.GRAY);
+            divider.setBackgroundColor(Color.LTGRAY);
 
             // Agrego el divisor
             llComentarios.addView(divider);
@@ -189,9 +195,9 @@ public class DescripcionCurso extends AppCompatActivity {
             /* INICIO: Creo un divisor para cada comentario*/
             ImageView divider = new ImageView(this);
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 1);
-            lp.setMargins(10, 10, 10, 10);
+            lp.setMargins(10, 15, 10, 15);
             divider.setLayoutParams(lp);
-            divider.setBackgroundColor(Color.GRAY);
+            divider.setBackgroundColor(Color.LTGRAY);
 
             // Agrego el divisor
             llUnidades.addView(divider);
@@ -210,24 +216,65 @@ public class DescripcionCurso extends AppCompatActivity {
             txt.setText("S1");
             llH.addView(txt);
 
-            Button button = new Button(this);
-            button.setText("INSCRIBIRSE");
-            llH.addView(button);
+            llH.addView(botonesInscripcion.get(i));
 
             llSesiones.addView(llH);
 
             /* INICIO: Creo un divisor para cada comentario*/
             ImageView divider = new ImageView(this);
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 1);
-            lp.setMargins(10, 10, 10, 10);
+            lp.setMargins(10, 15, 10, 15);
             divider.setLayoutParams(lp);
-            divider.setBackgroundColor(Color.GRAY);
+            divider.setBackgroundColor(Color.LTGRAY);
 
             // Agrego el divisor
             llSesiones.addView(divider);
             /* FIN: Divisor agregado para ese comentario*/
 
 
+        }
+    }
+
+    private void cargarBotonesDeIncripcion(){
+        botonesInscripcion = new ArrayList<>();
+
+        final int cantDeSesiones = 3;
+        for(int i = 0; i < cantDeSesiones; i++){
+            Button button = new Button(this);
+            button.setText("INSCRIBIRSE");
+            button.setBackgroundColor(Color.GREEN);
+            botonesInscripcion.add(button);
+        }
+
+        for(int i = 0; i < cantDeSesiones; i++){
+            final int finalI = i;
+            botonesInscripcion.get(i).setOnClickListener(new View.OnClickListener() {
+                public void onClick(View v) {
+                    if(botonesInscripcion.get(finalI).getText().equals("INSCRIBIRSE")){
+                        botonesInscripcion.get(finalI).setText("DESUSCRIBIRSE");
+
+                        //Deshabilito los demas botones
+                        for (int j = 0; j < cantDeSesiones; j++){
+                            if (j != finalI){
+                                botonesInscripcion.get(j).setText("NO DISPONIBLE");
+                                botonesInscripcion.get(j).setEnabled(false);
+                                botonesInscripcion.get(j).setBackgroundColor(Color.LTGRAY);
+                            }
+                        }
+                    } else {
+                        botonesInscripcion.get(finalI).setText("INSCRIBIRSE");
+
+                        //Reestablezco los demas botones
+                        for (int j = 0; j < cantDeSesiones; j++){
+                            if (j != finalI){
+                                botonesInscripcion.get(j).setText("INSCRIBIRSE");
+                                botonesInscripcion.get(j).setEnabled(true);
+                                botonesInscripcion.get(j).setBackgroundColor(Color.GREEN);
+                            }
+                        }
+                    }
+                }
+            });
         }
     }
 
@@ -265,7 +312,7 @@ public class DescripcionCurso extends AppCompatActivity {
 
     private void setupDrawerContent(NavigationView navigationView) {
         TextView userName = (TextView)navigationView.getHeaderView(0).findViewById(R.id.username);
-        userName.setText(getIntent().getExtras().getString("USER"));
+        userName.setText(this.userName);
 
         navigationView.setNavigationItemSelectedListener(
                 new NavigationView.OnNavigationItemSelectedListener() {
@@ -282,14 +329,17 @@ public class DescripcionCurso extends AppCompatActivity {
                         switch (title) {
                             case "Home":
                                 Intent home = new Intent(DescripcionCurso.this,Home.class);
+                                home.putExtra("USER", DescripcionCurso.this.userName);
                                 startActivity(home);
                                 break;
                             case "Mis Cursos":
                                 Intent misCursos = new Intent(DescripcionCurso.this,MisCursos.class);
+                                misCursos.putExtra("USER", DescripcionCurso.this.userName);
                                 startActivity(misCursos);
                                 break;
                             case "Mis Diplomas":
                                 Intent misDiplomas = new Intent(DescripcionCurso.this,MisDiplomas.class);
+                                misDiplomas.putExtra("USER", DescripcionCurso.this.userName);
                                 startActivity(misDiplomas);
                                 break;
                         }

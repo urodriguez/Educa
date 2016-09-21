@@ -42,7 +42,7 @@ public class Log extends AppCompatActivity implements GoogleApiClient.OnConnecti
     private CallbackManager callbackManager;
     private String fbAccessToken;
 
-    GoogleApiClient mGoogleApiClient;
+    private GoogleApiClient mGoogleApiClient;
 
     private SliderLayout mDemoSlider;
 
@@ -90,7 +90,6 @@ public class Log extends AppCompatActivity implements GoogleApiClient.OnConnecti
                                     Intent homeIntent = new Intent(Log.this,Home.class);
                                     homeIntent.putExtra("USER", response.getJSONObject().getString("name"));
                                     startActivity(homeIntent);
-                                    //nameUser[0] = response.getJSONObject().getString("name");
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }

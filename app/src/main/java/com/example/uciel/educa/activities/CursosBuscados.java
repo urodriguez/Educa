@@ -50,6 +50,7 @@ public class CursosBuscados extends AppCompatActivity {
 
         setToolbar(); // Setear Toolbar como action bar
 
+        userName = getIntent().getExtras().getString("USER");
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         if (navigationView != null) {
@@ -102,7 +103,6 @@ public class CursosBuscados extends AppCompatActivity {
 
     private void setupDrawerContent(NavigationView navigationView) {
         TextView userName = (TextView)navigationView.getHeaderView(0).findViewById(R.id.username);
-
         userName.setText(this.userName);
 
         navigationView.setNavigationItemSelectedListener(
@@ -120,14 +120,17 @@ public class CursosBuscados extends AppCompatActivity {
                         switch (title) {
                             case "Home":
                                 Intent home = new Intent(CursosBuscados.this,Home.class);
+                                home.putExtra("USER", CursosBuscados.this.userName);
                                 startActivity(home);
                                 break;
                             case "Mis Cursos":
                                 Intent misCursos = new Intent(CursosBuscados.this,MisCursos.class);
+                                misCursos.putExtra("USER", CursosBuscados.this.userName);
                                 startActivity(misCursos);
                                 break;
                             case "Mis Diplomas":
                                 Intent misDiplomas = new Intent(CursosBuscados.this,MisDiplomas.class);
+                                misDiplomas.putExtra("USER", CursosBuscados.this.userName);
                                 startActivity(misDiplomas);
                                 break;
                         }

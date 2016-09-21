@@ -39,6 +39,7 @@ public class MisCursos extends AppCompatActivity implements SearchView.OnQueryTe
 
         setToolbar(); // Setear Toolbar como action bar
 
+        userName = getIntent().getExtras().getString("USER");
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         if (navigationView != null) {
@@ -87,8 +88,7 @@ public class MisCursos extends AppCompatActivity implements SearchView.OnQueryTe
 
     private void setupDrawerContent(NavigationView navigationView) {
         TextView userName = (TextView)navigationView.getHeaderView(0).findViewById(R.id.username);
-        //userName.setText(getIntent().getExtras().getString("USER"));
-        userName.setText("Anonimo");
+        userName.setText(this.userName);
 
         navigationView.getMenu().getItem(1).setChecked(true);//mis cursos = item 1
         navigationView.setNavigationItemSelectedListener(
@@ -106,13 +106,15 @@ public class MisCursos extends AppCompatActivity implements SearchView.OnQueryTe
                         switch (title) {
                             case "Home":
                                 Intent home = new Intent(MisCursos.this,Home.class);
+                                home.putExtra("USER", MisCursos.this.userName);
                                 startActivity(home);
                                 break;
                             case "Mis Cursos":
                                 drawerLayout.closeDrawers(); // Cerrar drawer
                                 break;
                             case "Mis Diplomas":
-                                Intent misDiplomas = new Intent(MisCursos.this,MisDiplomas.class);
+                                Intent misDiplomas = new Intent(MisCursos.this, MisDiplomas.class);
+                                misDiplomas.putExtra("USER", MisCursos.this.userName);
                                 startActivity(misDiplomas);
                                 break;
                         }
@@ -123,8 +125,7 @@ public class MisCursos extends AppCompatActivity implements SearchView.OnQueryTe
     }
 
     private void initializeAdapter(){
-        //RVAdapter adapter = new RVAdapter(cursos, "HORIZONTAL",getIntent().getExtras().getString("USER"));
-        RVAdapter adapter = new RVAdapter(cursos, "VERTICAL","anonimo", this);
+        RVAdapter adapter = new RVAdapter(cursos, "VERTICAL", userName, this);
         rv.setAdapter(adapter);
     }
 

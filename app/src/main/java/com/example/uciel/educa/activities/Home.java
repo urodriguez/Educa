@@ -43,7 +43,7 @@ public class Home extends AppCompatActivity implements android.widget.SearchView
     private List<Curso> cursos;
     private RecyclerView rv;
 
-    String userName = "Anonimo";
+    private String userName = "";
 
     LinearLayout llCategorias;
 
@@ -54,6 +54,7 @@ public class Home extends AppCompatActivity implements android.widget.SearchView
 
         setToolbar(); // Setear Toolbar como action bar
 
+        userName = getIntent().getExtras().getString("USER");
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         if (navigationView != null) {
@@ -107,9 +108,8 @@ public class Home extends AppCompatActivity implements android.widget.SearchView
     }
 
     private void setupDrawerContent(NavigationView navigationView) {
-        TextView userName = (TextView)navigationView.getHeaderView(0).findViewById(R.id.username);
-        //userName.setText(getIntent().getExtras().getString("USER"));
-        userName.setText("Anonimo");
+        final TextView userName = (TextView)navigationView.getHeaderView(0).findViewById(R.id.username);
+        userName.setText(this.userName);
 
         navigationView.getMenu().getItem(0).setChecked(true);//home = item 0
         navigationView.setNavigationItemSelectedListener(
@@ -130,10 +130,12 @@ public class Home extends AppCompatActivity implements android.widget.SearchView
                                 break;
                             case "Mis Cursos":
                                 Intent misCursos = new Intent(Home.this,MisCursos.class);
+                                misCursos.putExtra("USER", Home.this.userName);
                                 startActivity(misCursos);
                                 break;
                             case "Mis Diplomas":
                                 Intent misDiplomas = new Intent(Home.this,MisDiplomas.class);
+                                misDiplomas.putExtra("USER", Home.this.userName);
                                 startActivity(misDiplomas);
                                 break;
                         }
@@ -255,8 +257,7 @@ public class Home extends AppCompatActivity implements android.widget.SearchView
     }
 
     private void initializeAdapter(){
-        //RVAdapter adapter = new RVAdapter(cursos, "HORIZONTAL",getIntent().getExtras().getString("USER"));
-        RVAdapter adapter = new RVAdapter(cursos, "HORIZONTAL","anonimo", this);
+        RVAdapter adapter = new RVAdapter(cursos, "HORIZONTAL",userName, this);
         rv.setAdapter(adapter);
     }
 
@@ -270,6 +271,7 @@ public class Home extends AppCompatActivity implements android.widget.SearchView
         // User pressed the search button
         Intent cursosBuscadoIntent = new Intent(Home.this,CursosBuscados.class);
         cursosBuscadoIntent.putExtra("BUSQUEDA", query);
+        cursosBuscadoIntent.putExtra("USER", this.userName);
         startActivity(cursosBuscadoIntent);
         return false;
     }
