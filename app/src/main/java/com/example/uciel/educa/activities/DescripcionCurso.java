@@ -60,8 +60,6 @@ public class DescripcionCurso extends AppCompatActivity {
 
         setTabs();
 
-        cargarBotonesDeIncripcion();
-
         userName = getIntent().getExtras().getString("USER");
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         navigationView = (NavigationView) findViewById(R.id.nav_view);
@@ -207,13 +205,16 @@ public class DescripcionCurso extends AppCompatActivity {
 
     private void cargarSesiones() {
         llSesiones = (LinearLayout) viewPager.findViewById(R.id.sesiones_linear);
+        llSesiones.removeAllViews();
+
+        cargarBotonesDeIncripcion();
 
         for(int i = 0; i < 3; i++){
             LinearLayout llH = new LinearLayout(this);
             llH.setOrientation(LinearLayout.HORIZONTAL);
 
             TextView txt = new TextView(this);
-            txt.setText("S1");
+            txt.setText("SESION 1");
             llH.addView(txt);
 
             llH.addView(botonesInscripcion.get(i));
@@ -230,8 +231,6 @@ public class DescripcionCurso extends AppCompatActivity {
             // Agrego el divisor
             llSesiones.addView(divider);
             /* FIN: Divisor agregado para ese comentario*/
-
-
         }
     }
 
