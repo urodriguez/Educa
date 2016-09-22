@@ -17,6 +17,7 @@ import android.support.v7.widget.Toolbar;
 import android.util.*;
 import android.util.Log;
 import android.view.ContextMenu;
+import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -29,6 +30,8 @@ import android.widget.TextView;
 
 import com.example.uciel.educa.R;
 import com.example.uciel.educa.adapters.ViewPagerAdapter;
+import com.example.uciel.educa.domain.Sesion;
+import com.example.uciel.educa.domain.Unidad;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -51,16 +54,20 @@ public class DescripcionCurso extends AppCompatActivity {
     private String userName = "";
     private List<Button> botonesInscripcion;
 
+    private Bundle extras;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_descripcion_curso);
 
+        extras = getIntent().getExtras();
+
         setToolbar(); // Setear Toolbar como action bar
 
         setTabs();
 
-        userName = getIntent().getExtras().getString("USER");
+        userName = extras.getString("USER");
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         if (navigationView != null) {
@@ -104,7 +111,7 @@ public class DescripcionCurso extends AppCompatActivity {
                                 cargarTextosDescriptivos();
 
                                 ratingBar = (RatingBar)viewPager.findViewById(R.id.ratingBar);
-                                ratingBar.setRating(getIntent().getExtras().getFloat("VALORACION"));
+                                ratingBar.setRating(extras.getFloat("VALORACION"));
 
                                 cargarComentarios();
                                 break;
@@ -139,7 +146,7 @@ public class DescripcionCurso extends AppCompatActivity {
                 cargarTextosDescriptivos();
 
                 ratingBar = (RatingBar)viewPager.findViewById(R.id.ratingBar);
-                ratingBar.setRating(getIntent().getExtras().getFloat("VALORACION"));
+                ratingBar.setRating(extras.getFloat("VALORACION"));
 
                 cargarComentarios();
             }
@@ -154,17 +161,28 @@ public class DescripcionCurso extends AppCompatActivity {
         tvProfesor = (TextView) viewPager.findViewById(R.id.textView4);
         tvDescripcion = (TextView) viewPager.findViewById(R.id.textView5);
 
-        tvNombre.setText("Nombre: " + getIntent().getExtras().getString("NOMBRE"));
-        tvEstado.setText("Estado: " + getIntent().getExtras().getString("ESTADO"));
-        tvProfesor.setText("Profesor: " + getIntent().getExtras().getString("PROFESOR"));
-        tvDescripcion.setText("Descripción: " + getIntent().getExtras().getString("DESCRIPCION"));
+        tvNombre.setText("Nombre: " + extras.getString("NOMBRE"));
+        tvEstado.setText("Estado: " + extras.getString("ESTADO"));
+        tvProfesor.setText("Profesor: " + extras.getString("PROFESOR"));
+        tvDescripcion.setText("Descripción: " + extras.getString("DESCRIPCION"));
     }
 
 
     private void cargarComentarios() {
         llComentarios = (LinearLayout) viewPager.findViewById(R.id.llComentarios);
 
-        for(int i = 0; i < 150; i++){
+        agregarDivisorInicial();
+
+        for(int i = 0; i < 50; i++){
+            LinearLayout llRB = new LinearLayout(this);
+            llRB.setLayoutParams(new LinearLayout.LayoutParams(100, 24));
+
+            RatingBar rBar = new RatingBar(this, null, android.R.attr.ratingBarStyleSmall);
+            rBar.setNumStars(5);
+            llRB.addView(rBar);
+
+            llComentarios.addView(llRB);
+
             TextView txt = new TextView(this);
             txt.setText("SOY UN COMENTARIO");
             llComentarios.addView(txt);
@@ -182,15 +200,41 @@ public class DescripcionCurso extends AppCompatActivity {
         }
     }
 
+    private void agregarDivisorInicial() {
+        /* INICIO: Creo un divisor inicial*/
+        ImageView dividerInitial = new ImageView(this);
+        LinearLayout.LayoutParams lpInitial = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 1);
+        lpInitial.setMargins(10, 10, 10, 10);
+        dividerInitial.setLayoutParams(lpInitial);
+        dividerInitial.setBackgroundColor(Color.WHITE);
+
+        // Agrego el divisor
+        llComentarios.addView(dividerInitial);
+        /* FIN: Divisor inicial*/
+    }
+
     private void cargarUnidades() {
         llUnidades = (LinearLayout) viewPager.findViewById(R.id.llUnidades);
+        llUnidades.removeAllViews();
 
-        for(int i = 0; i < 150; i++){
+        List<Unidad> unidades = new ArrayList<>();
+        for (int i = 0; i < extras.getInt("CANT_UNIDADES"); i++){
+            unidades.add(new Unidad(
+                    extras.getString("UNIDAD" + String.valueOf(i) + "TITULO"),
+                    extras.getString("UNIDAD" + String.valueOf(i) + "DESCRIPCION"),
+                    extras.getInt("UNIDAD" + String.valueOf(i) + "DURACIONESTIMADA")
+            ));
+        }
+
+        for(int i = 0; i < unidades.size(); i++){
             TextView txt = new TextView(this);
-            txt.setText("SOY UNA UNIDAD");
+            txt.setText("Unidad nº: " + String.valueOf(i + 1) + "\n" +
+                        "Titulo: " + unidades.get(i).getTitulo() + "\n" +
+                        "Descripción: " + unidades.get(i).getDescripcion() + "\n" +
+                        "Duración estimada: " + unidades.get(i).getDuracionEstimada() + "\n");
             llUnidades.addView(txt);
 
-            /* INICIO: Creo un divisor para cada comentario*/
+            /* INICIO: Creo un divisor para cada unidad*/
             ImageView divider = new ImageView(this);
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 1);
             lp.setMargins(10, 15, 10, 15);
@@ -199,7 +243,7 @@ public class DescripcionCurso extends AppCompatActivity {
 
             // Agrego el divisor
             llUnidades.addView(divider);
-            /* FIN: Divisor agregado para ese comentario*/
+            /* FIN: Divisor agregado para esa unidad*/
         }
     }
 
@@ -207,21 +251,33 @@ public class DescripcionCurso extends AppCompatActivity {
         llSesiones = (LinearLayout) viewPager.findViewById(R.id.sesiones_linear);
         llSesiones.removeAllViews();
 
-        cargarBotonesDeIncripcion();
+        List<Sesion> sesiones = new ArrayList<>();
+        for (int i = 0; i < extras.getInt("CANT_SESIONES"); i++){
+            sesiones.add(new Sesion(
+                    extras.getString("SESION" + String.valueOf(i) + "FECHADESDE"),
+                    extras.getString("SESION" + String.valueOf(i) + "FECHAHASTA"),
+                    extras.getString("SESION" + String.valueOf(i) + "FECHADESDEINCRIP")
+            ));
+        }
 
-        for(int i = 0; i < 3; i++){
+        cargarBotonesDeIncripcion(sesiones.size());
+
+        for(int i = 0; i < sesiones.size(); i++){
             LinearLayout llH = new LinearLayout(this);
             llH.setOrientation(LinearLayout.HORIZONTAL);
 
             TextView txt = new TextView(this);
-            txt.setText("SESION 1");
+            txt.setText("Sesión nº: " + String.valueOf(i + 1) + "\n" +
+                        "Comienzo: " + sesiones.get(i).getCadenaFechaDesde() + "\n" +
+                        "Fin: " + sesiones.get(i).getCadenaFechaHasta() + "\n" +
+                        "Inscripciones el: " + sesiones.get(i).getCadenaFechaDesdeInscripcion() + "\n");
             llH.addView(txt);
 
             llH.addView(botonesInscripcion.get(i));
 
             llSesiones.addView(llH);
 
-            /* INICIO: Creo un divisor para cada comentario*/
+            /* INICIO: Creo un divisor para cada sesion*/
             ImageView divider = new ImageView(this);
             LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 1);
             lp.setMargins(10, 15, 10, 15);
@@ -230,14 +286,13 @@ public class DescripcionCurso extends AppCompatActivity {
 
             // Agrego el divisor
             llSesiones.addView(divider);
-            /* FIN: Divisor agregado para ese comentario*/
+            /* FIN: Divisor agregado para esa sesion*/
         }
     }
 
-    private void cargarBotonesDeIncripcion(){
+    private void cargarBotonesDeIncripcion(final int cantDeSesiones){
         botonesInscripcion = new ArrayList<>();
 
-        final int cantDeSesiones = 3;
         for(int i = 0; i < cantDeSesiones; i++){
             Button button = new Button(this);
             button.setText("INSCRIBIRSE");

@@ -44,14 +44,18 @@ public class Cursos extends AppCompatActivity implements SearchView.OnQueryTextL
     private TextView tvCategoriaActual;
     private String userName = "";
 
+    private Bundle extras;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cursos);
 
+        extras = getIntent().getExtras();
+
         setToolbar(); // Setear Toolbar como action bar
 
-        userName = getIntent().getExtras().getString("USER");
+        userName = extras.getString("USER");
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         if (navigationView != null) {
@@ -59,7 +63,7 @@ public class Cursos extends AppCompatActivity implements SearchView.OnQueryTextL
         }
 
         tvCategoriaActual = (TextView) findViewById(R.id.categoriaActual);
-        tvCategoriaActual.setText(getIntent().getExtras().getString("CATEGORIA"));
+        tvCategoriaActual.setText(extras.getString("CATEGORIA"));
 
         this.cargarFiltroYBusqueda();
 
@@ -148,7 +152,7 @@ public class Cursos extends AppCompatActivity implements SearchView.OnQueryTextL
 
     private void initializeData(){
         cursos = new ArrayList<>();
-        String idCategoria = getIntent().getExtras().getString("ID");
+        String idCategoria = extras.getString("ID");
         String url ="http://educa-mnforlenza.rhcloud.com/api/curso/listar/"+idCategoria;
 
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,

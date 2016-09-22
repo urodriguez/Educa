@@ -152,9 +152,6 @@ public class Home extends AppCompatActivity implements android.widget.SearchView
         ImageView imgGe = (ImageView) findViewById(R.id.gestion);
         ImageView imgE = (ImageView) findViewById(R.id.exactas);
 
-
-        //userName = getIntent().getExtras().getString("USER");
-
         if (imgP != null && imgG != null && imgI != null && imgGe != null && imgE != null) {
             imgP.setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
@@ -288,11 +285,13 @@ public class Home extends AppCompatActivity implements android.widget.SearchView
         Type collectionType = new TypeToken<Collection<Curso>>(){}.getType();
         Collection<Curso> cusos = g.fromJson(response, collectionType);
 
-
-        HashMap<String, String> hm = new HashMap<String,String>();
         for(Curso c: cusos){
             cursos.add(c);
-            android.util.Log.d("CURSO", "NOMBRE :" + c.getNombre() + "Docente: " + c.getNombreDocente());
+            android.util.Log.d("CURSO", "NOMBRE :" + c.getNombre());
+
+            /*android.util.Log.d("CURSO", "UNIDAD :" + c.getUnidades().get(1).getTitulo());
+            android.util.Log.d("CURSO", "UNIDAD :" + c.getUnidades().get(1).getDescripcion());
+            android.util.Log.d("CURSO", "UNIDAD :" + c.getUnidades().get(1).getDuracionEstimada());*/
         }
 
     }

@@ -4,6 +4,7 @@ import java.text.DateFormat;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.List;
 
 public class Curso {
     public String name;
@@ -19,6 +20,9 @@ public class Curso {
     private float  valoracionesPromedio;
     private int cantidadValoraciones;
     private long fechaEstimadaProximaSesion;
+    private List<Sesion> sesiones;
+    private List<Unidad> unidades;
+    private List<Critica> criticas;
 
     public Curso(String name, String profesor, int photoId) {
         this.name = name;
@@ -133,4 +137,11 @@ public class Curso {
         this.linkImagen = linkImagen;
     }
 
+    public List<Sesion> getSesiones() {
+        return sesiones;
+    }
+
+    public List<Unidad> getUnidades() {
+        return unidades;
+    }
 }

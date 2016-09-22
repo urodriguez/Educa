@@ -123,6 +123,20 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.CursoViewHolder> {
                 intentDescripcionCurso.putExtra("PROFESOR", curso.getNombreCompletoDocente());
                 intentDescripcionCurso.putExtra("DESCRIPCION", curso.getDescripcion());
                 intentDescripcionCurso.putExtra("VALORACION", curso.getValoracionesPromedio());
+
+                intentDescripcionCurso.putExtra("CANT_SESIONES", curso.getSesiones().size());
+                for (int i = 0; i < curso.getSesiones().size(); i++){
+                    intentDescripcionCurso.putExtra("SESION" + String.valueOf(i) + "FECHADESDE", curso.getSesiones().get(i).getFechaDesde());
+                    intentDescripcionCurso.putExtra("SESION" + String.valueOf(i) + "FECHAHASTA", curso.getSesiones().get(i).getFechaHasta());
+                    intentDescripcionCurso.putExtra("SESION" + String.valueOf(i) + "FECHADESDEINCRIP", curso.getSesiones().get(i).getFechaDesdeInscripcion());
+                }
+
+                intentDescripcionCurso.putExtra("CANT_UNIDADES", curso.getUnidades().size());
+                for (int i = 0; i < curso.getUnidades().size(); i++){
+                    intentDescripcionCurso.putExtra("UNIDAD" + String.valueOf(i) + "TITULO", curso.getUnidades().get(i).getTitulo());
+                    intentDescripcionCurso.putExtra("UNIDAD" + String.valueOf(i) + "DESCRIPCION", curso.getUnidades().get(i).getDescripcion());
+                    intentDescripcionCurso.putExtra("UNIDAD" + String.valueOf(i) + "DURACIONESTIMADA", curso.getUnidades().get(i).getDuracionEstimada());
+                }
             }
         });
     }

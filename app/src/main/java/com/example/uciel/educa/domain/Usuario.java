@@ -1,8 +1,5 @@
 package com.example.uciel.educa.domain;
 
-/**
- * Created by nestor on 11/09/16.
- */
 public class Usuario {
     private int id;
     private String nombre;
