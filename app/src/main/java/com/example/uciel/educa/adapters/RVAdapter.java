@@ -137,6 +137,13 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.CursoViewHolder> {
                     intentDescripcionCurso.putExtra("UNIDAD" + String.valueOf(i) + "DESCRIPCION", curso.getUnidades().get(i).getDescripcion());
                     intentDescripcionCurso.putExtra("UNIDAD" + String.valueOf(i) + "DURACIONESTIMADA", curso.getUnidades().get(i).getDuracionEstimada());
                 }
+
+                intentDescripcionCurso.putExtra("CANT_CRITICAS", curso.getCriticas().size());
+                for (int i = 0; i < curso.getCriticas().size(); i++){
+                    intentDescripcionCurso.putExtra("CRITICA" + String.valueOf(i) + "FECHA", curso.getCriticas().get(i).getFecha());
+                    intentDescripcionCurso.putExtra("CRITICA" + String.valueOf(i) + "CALIFICACION", curso.getCriticas().get(i).getCalificacion());
+                    intentDescripcionCurso.putExtra("CRITICA" + String.valueOf(i) + "COMENTARIO", curso.getCriticas().get(i).getComentario());
+                }
             }
         });
     }

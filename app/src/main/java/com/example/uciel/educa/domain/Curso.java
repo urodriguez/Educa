@@ -144,4 +144,8 @@ public class Curso {
     public List<Unidad> getUnidades() {
         return unidades;
     }
+
+    public List<Critica> getCriticas() {
+        return criticas;
+    }
 }

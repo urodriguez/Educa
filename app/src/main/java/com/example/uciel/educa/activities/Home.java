@@ -289,9 +289,9 @@ public class Home extends AppCompatActivity implements android.widget.SearchView
             cursos.add(c);
             android.util.Log.d("CURSO", "NOMBRE :" + c.getNombre());
 
-            /*android.util.Log.d("CURSO", "UNIDAD :" + c.getUnidades().get(1).getTitulo());
-            android.util.Log.d("CURSO", "UNIDAD :" + c.getUnidades().get(1).getDescripcion());
-            android.util.Log.d("CURSO", "UNIDAD :" + c.getUnidades().get(1).getDuracionEstimada());*/
+            /*android.util.Log.d("CURSO", "CRITICA :" + c.getCriticas().get(1).getFecha());
+            android.util.Log.d("CURSO", "CRITICA :" + c.getCriticas().get(0).getCalificacion());
+            android.util.Log.d("CURSO", "CRITICA :" + c.getCriticas().get(1).getComentario());*/
         }
 
     }

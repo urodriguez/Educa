@@ -2,6 +2,7 @@ package com.example.uciel.educa.activities;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.NavigationView;
@@ -12,11 +13,7 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
-import android.util.*;
-import android.util.Log;
-import android.view.ContextMenu;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -25,11 +22,11 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RatingBar;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.uciel.educa.R;
 import com.example.uciel.educa.adapters.ViewPagerAdapter;
+import com.example.uciel.educa.domain.Critica;
 import com.example.uciel.educa.domain.Sesion;
 import com.example.uciel.educa.domain.Unidad;
 
@@ -171,46 +168,36 @@ public class DescripcionCurso extends AppCompatActivity {
     private void cargarComentarios() {
         llComentarios = (LinearLayout) viewPager.findViewById(R.id.llComentarios);
 
-        agregarDivisorInicial();
+        List<Critica> criticas = new ArrayList<>();
+        for (int i = 0; i < extras.getInt("CANT_CRITICAS"); i++){
+            criticas.add(new Critica(
+                    extras.getString("CRITICA" + String.valueOf(i) + "FECHA"),
+                    extras.getFloat("CRITICA" + String.valueOf(i) + "CALIFICACION"),
+                    extras.getString("CRITICA" + String.valueOf(i) + "COMENTARIO")
+            ));
+        }
 
-        for(int i = 0; i < 50; i++){
+        llComentarios.addView(crearDivisor(LinearLayout.LayoutParams.MATCH_PARENT, 0, 10, 10, 10, 10, Color.WHITE));
+
+        for(int i = 0; i < criticas.size(); i++){
             LinearLayout llRB = new LinearLayout(this);
-            llRB.setLayoutParams(new LinearLayout.LayoutParams(100, 24));
+            llRB.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, 24));
 
             RatingBar rBar = new RatingBar(this, null, android.R.attr.ratingBarStyleSmall);
             rBar.setNumStars(5);
+            rBar.setRating(criticas.get(i).getCalificacion());
             llRB.addView(rBar);
 
             llComentarios.addView(llRB);
 
             TextView txt = new TextView(this);
-            txt.setText("SOY UN COMENTARIO");
+            txt.setText("Fecha: " + criticas.get(i).getCadenaFecha() + "\n" +
+                        "Comentario: " + criticas.get(i).getComentario() + "\n");
             llComentarios.addView(txt);
 
-            /* INICIO: Creo un divisor para cada comentario*/
-            ImageView divider = new ImageView(this);
-            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 1);
-            lp.setMargins(10, 15, 10, 15);
-            divider.setLayoutParams(lp);
-            divider.setBackgroundColor(Color.LTGRAY);
-
-            // Agrego el divisor
-            llComentarios.addView(divider);
-            /* FIN: Divisor agregado para ese comentario*/
+            // Agrego un divisor
+            llComentarios.addView(crearDivisor(LinearLayout.LayoutParams.MATCH_PARENT, 1, 10, 15, 10, 15, Color.LTGRAY));
         }
-    }
-
-    private void agregarDivisorInicial() {
-        /* INICIO: Creo un divisor inicial*/
-        ImageView dividerInitial = new ImageView(this);
-        LinearLayout.LayoutParams lpInitial = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 1);
-        lpInitial.setMargins(10, 10, 10, 10);
-        dividerInitial.setLayoutParams(lpInitial);
-        dividerInitial.setBackgroundColor(Color.WHITE);
-
-        // Agrego el divisor
-        llComentarios.addView(dividerInitial);
-        /* FIN: Divisor inicial*/
     }
 
     private void cargarUnidades() {
@@ -228,22 +215,15 @@ public class DescripcionCurso extends AppCompatActivity {
 
         for(int i = 0; i < unidades.size(); i++){
             TextView txt = new TextView(this);
+            txt.setTextSize(18);
             txt.setText("Unidad nº: " + String.valueOf(i + 1) + "\n" +
                         "Titulo: " + unidades.get(i).getTitulo() + "\n" +
                         "Descripción: " + unidades.get(i).getDescripcion() + "\n" +
                         "Duración estimada: " + unidades.get(i).getDuracionEstimada() + "\n");
             llUnidades.addView(txt);
 
-            /* INICIO: Creo un divisor para cada unidad*/
-            ImageView divider = new ImageView(this);
-            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 1);
-            lp.setMargins(10, 15, 10, 15);
-            divider.setLayoutParams(lp);
-            divider.setBackgroundColor(Color.LTGRAY);
-
-            // Agrego el divisor
-            llUnidades.addView(divider);
-            /* FIN: Divisor agregado para esa unidad*/
+            // Agrego un divisor
+            llUnidades.addView(crearDivisor(LinearLayout.LayoutParams.MATCH_PARENT, 1, 10, 15, 10, 15, Color.LTGRAY));
         }
     }
 
@@ -267,26 +247,25 @@ public class DescripcionCurso extends AppCompatActivity {
             llH.setOrientation(LinearLayout.HORIZONTAL);
 
             TextView txt = new TextView(this);
+            txt.setTextSize(18);
             txt.setText("Sesión nº: " + String.valueOf(i + 1) + "\n" +
                         "Comienzo: " + sesiones.get(i).getCadenaFechaDesde() + "\n" +
                         "Fin: " + sesiones.get(i).getCadenaFechaHasta() + "\n" +
-                        "Inscripciones el: " + sesiones.get(i).getCadenaFechaDesdeInscripcion() + "\n");
+                        "Inscripciones: " + sesiones.get(i).getCadenaFechaDesdeInscripcion() + "\n");
             llH.addView(txt);
 
+            // Agrego un divisor
+            llH.addView(crearDivisor(0, LinearLayout.LayoutParams.MATCH_PARENT, 64, 8, 64, 8, Color.WHITE));
+
             llH.addView(botonesInscripcion.get(i));
+            LinearLayout.LayoutParams ll = (LinearLayout.LayoutParams)botonesInscripcion.get(i).getLayoutParams();
+            ll.gravity = Gravity.CENTER;
+            botonesInscripcion.get(i).setLayoutParams(ll);
 
             llSesiones.addView(llH);
 
-            /* INICIO: Creo un divisor para cada sesion*/
-            ImageView divider = new ImageView(this);
-            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, 1);
-            lp.setMargins(10, 15, 10, 15);
-            divider.setLayoutParams(lp);
-            divider.setBackgroundColor(Color.LTGRAY);
-
-            // Agrego el divisor
-            llSesiones.addView(divider);
-            /* FIN: Divisor agregado para esa sesion*/
+            // Agrego un divisor
+            llSesiones.addView(crearDivisor(LinearLayout.LayoutParams.MATCH_PARENT, 1, 10, 15, 10, 15, Color.LTGRAY));
         }
     }
 
@@ -330,6 +309,17 @@ public class DescripcionCurso extends AppCompatActivity {
                 }
             });
         }
+    }
+
+
+    private ImageView crearDivisor(int ancho, int alto, int margenI, int margenTop, int margenD, int margenBottom, int c) {
+        ImageView divisor = new ImageView(this);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ancho, alto);
+        lp.setMargins(margenI, margenTop, margenD, margenBottom);
+        divisor.setLayoutParams(lp);
+        divisor.setBackgroundColor(c);
+
+        return divisor;
     }
 
     private void setToolbar() {
