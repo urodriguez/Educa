@@ -1,5 +1,6 @@
 package com.example.uciel.educa.activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.os.Build;
@@ -23,12 +24,16 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.android.volley.toolbox.ImageLoader;
+import com.android.volley.toolbox.NetworkImageView;
 import com.example.uciel.educa.R;
 import com.example.uciel.educa.adapters.ViewPagerAdapter;
 import com.example.uciel.educa.domain.Critica;
 import com.example.uciel.educa.domain.Sesion;
 import com.example.uciel.educa.domain.Unidad;
+import com.example.uciel.educa.network.RQSingleton;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -42,7 +47,9 @@ public class DescripcionCurso extends AppCompatActivity {
     private ViewPager viewPager;
     private ViewPagerAdapter viewPagerAdapter;
 
-    private TextView tvNombre,tvEstado,tvProfesor,tvDescripcion,tvComentarios;
+    private NetworkImageView fotoCursoNiv;
+
+    private TextView tvNombre,tvEstado,tvProfesor,tvDescripcion;
 
     private RatingBar ratingBar;
 
@@ -105,12 +112,7 @@ public class DescripcionCurso extends AppCompatActivity {
 
                         switch (tab.getPosition()) {
                             case 0:
-                                cargarTextosDescriptivos();
-
-                                ratingBar = (RatingBar)viewPager.findViewById(R.id.ratingBar);
-                                ratingBar.setRating(extras.getFloat("VALORACION"));
-
-                                cargarComentarios();
+                                cargarDetalle();
                                 break;
 
                             case 1:
@@ -139,17 +141,26 @@ public class DescripcionCurso extends AppCompatActivity {
         final Runnable r = new Runnable() {
             public void run() {
                 viewPager.setCurrentItem(0);
-
-                cargarTextosDescriptivos();
-
-                ratingBar = (RatingBar)viewPager.findViewById(R.id.ratingBar);
-                ratingBar.setRating(extras.getFloat("VALORACION"));
-
-                cargarComentarios();
+                cargarDetalle();
             }
         };
         handler.postDelayed(r, 500);
 
+    }
+
+    void cargarDetalle(){
+        fotoCursoNiv = (NetworkImageView)viewPager.findViewById(R.id.curso_photo_niv);
+        ImageLoader mImageLoader;
+        // Get the NetworkImageView that will display the image.
+        mImageLoader = RQSingleton.getInstance(getApplicationContext()).getImageLoader();
+        fotoCursoNiv.setImageUrl(extras.getString("LINKIMAGE"), mImageLoader);
+
+        cargarTextosDescriptivos();
+
+        ratingBar = (RatingBar)viewPager.findViewById(R.id.ratingBar);
+        ratingBar.setRating(extras.getFloat("VALORACION"));
+
+        cargarComentarios();
     }
 
     private void cargarTextosDescriptivos() {
@@ -167,6 +178,13 @@ public class DescripcionCurso extends AppCompatActivity {
 
     private void cargarComentarios() {
         llComentarios = (LinearLayout) viewPager.findViewById(R.id.llComentarios);
+
+        if(extras.getInt("CANT_CRITICAS") == 0){
+            CharSequence text = "Este curso aún no ha recibido críticas";
+            int duration = Toast.LENGTH_SHORT;
+            Toast toast = Toast.makeText(getApplicationContext(), text, duration);
+            toast.show();
+        }
 
         List<Critica> criticas = new ArrayList<>();
         for (int i = 0; i < extras.getInt("CANT_CRITICAS"); i++){
@@ -219,7 +237,7 @@ public class DescripcionCurso extends AppCompatActivity {
             txt.setText("Unidad nº: " + String.valueOf(i + 1) + "\n" +
                         "Titulo: " + unidades.get(i).getTitulo() + "\n" +
                         "Descripción: " + unidades.get(i).getDescripcion() + "\n" +
-                        "Duración estimada: " + unidades.get(i).getDuracionEstimada() + "\n");
+                        "Duración estimada: " + unidades.get(i).getDuracionEstimada() + "hs" + "\n");
             llUnidades.addView(txt);
 
             // Agrego un divisor
@@ -261,7 +279,7 @@ public class DescripcionCurso extends AppCompatActivity {
             llH.addView(txt);
 
             // Agrego un divisor
-            llH.addView(crearDivisor(0, LinearLayout.LayoutParams.WRAP_CONTENT, 40, 8, 40, 8, Color.WHITE));
+            llH.addView(crearDivisor(0, LinearLayout.LayoutParams.WRAP_CONTENT, 24, 8, 24, 8, Color.WHITE));
 
             llH.addView(botonesInscripcion.get(i));
             LinearLayout.LayoutParams ll = (LinearLayout.LayoutParams)botonesInscripcion.get(i).getLayoutParams();

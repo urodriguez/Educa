@@ -5,7 +5,7 @@ import java.util.Calendar;
 import java.util.Date;
 
 public class Sesion {
-    private int id;
+    private ID id;
     private long fechaDesde;
     private long fechaHasta;
     private long fechaDesdeInscripcion;

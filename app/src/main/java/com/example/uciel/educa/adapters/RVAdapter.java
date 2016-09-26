@@ -118,6 +118,7 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.CursoViewHolder> {
 
             private void cargarInformacion(Intent intentDescripcionCurso, Curso curso) {
                 intentDescripcionCurso.putExtra("USER", userName);
+                intentDescripcionCurso.putExtra("LINKIMAGE", IMAGE_ROOT_URL + curso.getLinkImagen());
                 intentDescripcionCurso.putExtra("NOMBRE", curso.getNombre());
                 intentDescripcionCurso.putExtra("ESTADO", curso.getEstado());
                 intentDescripcionCurso.putExtra("PROFESOR", curso.getNombreCompletoDocente());

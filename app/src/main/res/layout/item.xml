@@ -16,14 +16,6 @@
         android:padding="16dp"
         >
 
-        <!---ImageView
-            android:layout_width="150dp"
-            android:layout_height="150dp"
-            android:id="@+id/curso_photo"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="true"
-            /-->
-
         <com.android.volley.toolbox.NetworkImageView
             android:id="@+id/curso_photo_niv"
             android:layout_width="150dp"
