@@ -246,6 +246,12 @@ public class DescripcionCurso extends AppCompatActivity {
             LinearLayout llH = new LinearLayout(this);
             llH.setOrientation(LinearLayout.HORIZONTAL);
 
+            //ImageView Setup
+            ImageView imageView = new ImageView(this);
+            imageView.setImageResource(R.drawable.calendario);
+            imageView.setLayoutParams(new LinearLayout.LayoutParams(64,LinearLayout.LayoutParams.MATCH_PARENT));
+            llH.addView(imageView);
+
             TextView txt = new TextView(this);
             txt.setTextSize(18);
             txt.setText("Sesión nº: " + String.valueOf(i + 1) + "\n" +
@@ -255,7 +261,7 @@ public class DescripcionCurso extends AppCompatActivity {
             llH.addView(txt);
 
             // Agrego un divisor
-            llH.addView(crearDivisor(0, LinearLayout.LayoutParams.MATCH_PARENT, 64, 8, 64, 8, Color.WHITE));
+            llH.addView(crearDivisor(0, LinearLayout.LayoutParams.WRAP_CONTENT, 40, 8, 40, 8, Color.WHITE));
 
             llH.addView(botonesInscripcion.get(i));
             LinearLayout.LayoutParams ll = (LinearLayout.LayoutParams)botonesInscripcion.get(i).getLayoutParams();

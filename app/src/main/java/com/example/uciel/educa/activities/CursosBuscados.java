@@ -179,8 +179,6 @@ public class CursosBuscados extends AppCompatActivity {
         Type collectionType = new TypeToken<Collection<Curso>>(){}.getType();
         Collection<Curso> cusos = g.fromJson(response, collectionType);
 
-
-        HashMap<String, String> hm = new HashMap<String,String>();
         for(Curso c: cusos){
             if(c.getNombre().toLowerCase().contains(criterioDeBusqueda.toLowerCase())){
                 cursos.add(c);

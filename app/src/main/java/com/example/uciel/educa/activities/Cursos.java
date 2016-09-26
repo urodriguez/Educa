@@ -233,8 +233,6 @@ public class Cursos extends AppCompatActivity implements SearchView.OnQueryTextL
         Type collectionType = new TypeToken<Collection<Curso>>(){}.getType();
         Collection<Curso> cusos = g.fromJson(response, collectionType);
 
-
-        HashMap<String, String> hm = new HashMap<String,String>();
         for(Curso c: cusos){
             cursos.add(c);
             android.util.Log.d("CATEGORIASCURSO", "NOMBRE :" + c.getNombre() + "Docente: " + c.getNombreDocente());
