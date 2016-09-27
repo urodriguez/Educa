@@ -249,8 +249,6 @@ public class Home extends AppCompatActivity implements android.widget.SearchView
 
         //queue.add(stringRequest);
         RQSingleton.getInstance(this).addToRequestQueue(stringRequest);
-
-
     }
 
     private void initializeAdapter(){

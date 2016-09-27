@@ -3,6 +3,8 @@ package com.example.uciel.educa.activities;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.Typeface;
+import android.graphics.drawable.Drawable;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
@@ -15,6 +17,7 @@ import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.util.*;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -23,22 +26,35 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RatingBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
+import com.android.volley.toolbox.StringRequest;
 import com.example.uciel.educa.R;
 import com.example.uciel.educa.adapters.ViewPagerAdapter;
 import com.example.uciel.educa.domain.Critica;
+import com.example.uciel.educa.domain.Curso;
 import com.example.uciel.educa.domain.Sesion;
 import com.example.uciel.educa.domain.Unidad;
 import com.example.uciel.educa.network.RQSingleton;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class DescripcionCurso extends AppCompatActivity {
+
+    private String userName = "";
+    private Curso  curso;
 
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
@@ -55,7 +71,6 @@ public class DescripcionCurso extends AppCompatActivity {
 
     private LinearLayout llComentarios, llUnidades, llSesiones;
 
-    private String userName = "";
     private List<Button> botonesInscripcion;
 
     private Bundle extras;
@@ -67,6 +82,8 @@ public class DescripcionCurso extends AppCompatActivity {
 
         extras = getIntent().getExtras();
 
+        initializeData();
+
         setToolbar(); // Setear Toolbar como action bar
 
         setTabs();
@@ -77,6 +94,50 @@ public class DescripcionCurso extends AppCompatActivity {
         if (navigationView != null) {
             setupDrawerContent(navigationView);
         }
+    }
+
+    private void initializeData(){
+        // Instantiate the RequestQueue.
+        String url = "";
+        if(extras.getBoolean("ES_DE_ULT_CURSOS") == true){
+            url = "http://educa-mnforlenza.rhcloud.com/api/curso/ultimos-cursos";
+        } else {
+            url = "http://educa-mnforlenza.rhcloud.com/api/curso/listar";
+        }
+
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        android.util.Log.i("INFO", "Response is: "+ response.substring(0,10));
+                        parseHomeResponse(response);
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        android.util.Log.d("DEBUG", "That didn't work!");
+                    }
+                }
+        );
+        RQSingleton.getInstance(this).addToRequestQueue(stringRequest);
+    }
+
+    private void parseHomeResponse(String response){
+        Gson g = new Gson();
+
+        Type collectionType = new TypeToken<Collection<Curso>>(){}.getType();
+        Collection<Curso> cursos = g.fromJson(response, collectionType);
+
+        for(Curso c: cursos){
+            if(c.getId() == extras.getInt("ID")){
+                curso = c;
+                android.util.Log.d("TAG", "NOMBRE :" + curso.getNombre());
+                android.util.Log.d("TAG", "ID: " + String.valueOf(curso.getId()));
+            }
+
+        }
+
     }
 
     private void setTabs() {
@@ -153,14 +214,14 @@ public class DescripcionCurso extends AppCompatActivity {
         ImageLoader mImageLoader;
         // Get the NetworkImageView that will display the image.
         mImageLoader = RQSingleton.getInstance(getApplicationContext()).getImageLoader();
-        fotoCursoNiv.setImageUrl(extras.getString("LINKIMAGE"), mImageLoader);
+        fotoCursoNiv.setImageUrl(extras.getString("IMAGE_ROOT_URL") + curso.getLinkImagen(), mImageLoader);
 
         cargarTextosDescriptivos();
 
         ratingBar = (RatingBar)viewPager.findViewById(R.id.ratingBar);
-        ratingBar.setRating(extras.getFloat("VALORACION"));
+        ratingBar.setRating(curso.getValoracionesPromedio());
 
-        cargarComentarios();
+        cargarCriticas();
     }
 
     private void cargarTextosDescriptivos() {
@@ -169,48 +230,39 @@ public class DescripcionCurso extends AppCompatActivity {
         tvProfesor = (TextView) viewPager.findViewById(R.id.textView4);
         tvDescripcion = (TextView) viewPager.findViewById(R.id.textView5);
 
-        tvNombre.setText("Nombre: " + extras.getString("NOMBRE"));
-        tvEstado.setText("Estado: " + extras.getString("ESTADO"));
-        tvProfesor.setText("Profesor: " + extras.getString("PROFESOR"));
-        tvDescripcion.setText("Descripción: " + extras.getString("DESCRIPCION"));
+        tvNombre.setText("Nombre: " + curso.getNombre());
+        tvEstado.setText("Estado: " + curso.getEstado());
+        tvProfesor.setText("Profesor: " + curso.getNombreCompletoDocente());
+        tvDescripcion.setText("Descripción: " + curso.getDescripcion());
     }
 
 
-    private void cargarComentarios() {
+    private void cargarCriticas() {
         llComentarios = (LinearLayout) viewPager.findViewById(R.id.llComentarios);
 
-        if(extras.getInt("CANT_CRITICAS") == 0){
+        if(curso.getCantDeCriticas() == 0){
             CharSequence text = "Este curso aún no ha recibido críticas";
             int duration = Toast.LENGTH_SHORT;
             Toast toast = Toast.makeText(getApplicationContext(), text, duration);
             toast.show();
         }
 
-        List<Critica> criticas = new ArrayList<>();
-        for (int i = 0; i < extras.getInt("CANT_CRITICAS"); i++){
-            criticas.add(new Critica(
-                    extras.getString("CRITICA" + String.valueOf(i) + "FECHA"),
-                    extras.getFloat("CRITICA" + String.valueOf(i) + "CALIFICACION"),
-                    extras.getString("CRITICA" + String.valueOf(i) + "COMENTARIO")
-            ));
-        }
-
         llComentarios.addView(crearDivisor(LinearLayout.LayoutParams.MATCH_PARENT, 0, 10, 10, 10, 10, Color.WHITE));
 
-        for(int i = 0; i < criticas.size(); i++){
+        for(int i = 0; i < curso.getCantDeCriticas(); i++){
             LinearLayout llRB = new LinearLayout(this);
             llRB.setLayoutParams(new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT, 24));
 
             RatingBar rBar = new RatingBar(this, null, android.R.attr.ratingBarStyleSmall);
             rBar.setNumStars(5);
-            rBar.setRating(criticas.get(i).getCalificacion());
+            rBar.setRating(curso.getCalificacionCriticaNum(i));
             llRB.addView(rBar);
 
             llComentarios.addView(llRB);
 
             TextView txt = new TextView(this);
-            txt.setText("Fecha: " + criticas.get(i).getCadenaFecha() + "\n" +
-                        "Comentario: " + criticas.get(i).getComentario() + "\n");
+            txt.setText("Fecha: " + curso.getFechaCriticaNum(i) + "\n" +
+                        "Comentario: " + curso.getComentarioCriticaNum(i) + "\n");
             llComentarios.addView(txt);
 
             // Agrego un divisor
@@ -222,23 +274,32 @@ public class DescripcionCurso extends AppCompatActivity {
         llUnidades = (LinearLayout) viewPager.findViewById(R.id.llUnidades);
         llUnidades.removeAllViews();
 
-        List<Unidad> unidades = new ArrayList<>();
-        for (int i = 0; i < extras.getInt("CANT_UNIDADES"); i++){
-            unidades.add(new Unidad(
-                    extras.getString("UNIDAD" + String.valueOf(i) + "TITULO"),
-                    extras.getString("UNIDAD" + String.valueOf(i) + "DESCRIPCION"),
-                    extras.getInt("UNIDAD" + String.valueOf(i) + "DURACIONESTIMADA")
-            ));
-        }
-
-        for(int i = 0; i < unidades.size(); i++){
+        for(int i = 0; i < curso.getCantDeUnidades(); i++){
             TextView txt = new TextView(this);
             txt.setTextSize(18);
-            txt.setText("Unidad nº: " + String.valueOf(i + 1) + "\n" +
-                        "Titulo: " + unidades.get(i).getTitulo() + "\n" +
-                        "Descripción: " + unidades.get(i).getDescripcion() + "\n" +
-                        "Duración estimada: " + unidades.get(i).getDuracionEstimada() + "hs" + "\n");
-            llUnidades.addView(txt);
+            txt.setTypeface(null, Typeface.BOLD);
+            txt.setText("Unidad " + String.valueOf(i + 1)+ " - " + curso.getTituloUnidadNum(i));
+
+            Button bc = new Button(this);
+            bc.setText(String.valueOf(curso.getDuracionEstUnidadNum(i)) + " horas");
+            bc.setTextSize(14);
+            bc.setBackgroundResource(R.drawable.round_button);
+
+            RelativeLayout rl = new RelativeLayout(this);
+            rl.addView(txt);
+            rl.addView(bc);
+
+            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(64, 64);
+            params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+            params.addRule(RelativeLayout.RIGHT_OF, txt.getId());
+            bc.setLayoutParams(params); //causes layout update
+
+            llUnidades.addView(rl);
+
+            TextView txtD = new TextView(this);
+            txtD.setTextSize(18);
+            txtD.setText(curso.getDescripcionUnidadNum(i));
+            llUnidades.addView(txtD);
 
             // Agrego un divisor
             llUnidades.addView(crearDivisor(LinearLayout.LayoutParams.MATCH_PARENT, 1, 10, 15, 10, 15, Color.LTGRAY));
@@ -249,18 +310,9 @@ public class DescripcionCurso extends AppCompatActivity {
         llSesiones = (LinearLayout) viewPager.findViewById(R.id.sesiones_linear);
         llSesiones.removeAllViews();
 
-        List<Sesion> sesiones = new ArrayList<>();
-        for (int i = 0; i < extras.getInt("CANT_SESIONES"); i++){
-            sesiones.add(new Sesion(
-                    extras.getString("SESION" + String.valueOf(i) + "FECHADESDE"),
-                    extras.getString("SESION" + String.valueOf(i) + "FECHAHASTA"),
-                    extras.getString("SESION" + String.valueOf(i) + "FECHADESDEINCRIP")
-            ));
-        }
+        cargarBotonesDeIncripcion(curso.getSesiones().size());
 
-        cargarBotonesDeIncripcion(sesiones.size());
-
-        for(int i = 0; i < sesiones.size(); i++){
+        for(int i = 0; i < curso.getCantDeSesiones(); i++){
             LinearLayout llH = new LinearLayout(this);
             llH.setOrientation(LinearLayout.HORIZONTAL);
 
@@ -272,10 +324,10 @@ public class DescripcionCurso extends AppCompatActivity {
 
             TextView txt = new TextView(this);
             txt.setTextSize(18);
-            txt.setText("Sesión nº: " + String.valueOf(i + 1) + "\n" +
-                        "Comienzo: " + sesiones.get(i).getCadenaFechaDesde() + "\n" +
-                        "Fin: " + sesiones.get(i).getCadenaFechaHasta() + "\n" +
-                        "Inscripciones: " + sesiones.get(i).getCadenaFechaDesdeInscripcion() + "\n");
+            txt.setText("Sesión " + String.valueOf(i + 1) + "\n" +
+                        "Comienzo: " + curso.getFDSesionNUM(i) + "\n" +
+                        "Fin: " + curso.getFHSesionNUM(i) + "\n" +
+                        "Inscripciones: " + curso.getFDISesionNUM(i) + "\n");
             llH.addView(txt);
 
             // Agrego un divisor
@@ -299,7 +351,7 @@ public class DescripcionCurso extends AppCompatActivity {
         for(int i = 0; i < cantDeSesiones; i++){
             Button button = new Button(this);
             button.setText("INSCRIBIRSE");
-            button.setBackgroundColor(Color.GREEN);
+            button.setBackgroundColor(Color.parseColor("#FF5722"));
             botonesInscripcion.add(button);
         }
 
@@ -326,7 +378,7 @@ public class DescripcionCurso extends AppCompatActivity {
                             if (j != finalI){
                                 botonesInscripcion.get(j).setText("INSCRIBIRSE");
                                 botonesInscripcion.get(j).setEnabled(true);
-                                botonesInscripcion.get(j).setBackgroundColor(Color.GREEN);
+                                botonesInscripcion.get(j).setBackgroundColor(Color.parseColor("#FF5722"));
                             }
                         }
                     }

@@ -148,4 +148,52 @@ public class Curso {
     public List<Critica> getCriticas() {
         return criticas;
     }
+
+    public int getCantDeCriticas(){
+        return criticas.size();
+    }
+
+    public float getCalificacionCriticaNum(int i) {
+        return criticas.get(i).getCalificacion();
+    }
+
+    public String getFechaCriticaNum(int i) {
+        return criticas.get(i).getFecha();
+    }
+
+    public String getComentarioCriticaNum(int i) {
+        return criticas.get(i).getComentario();
+    }
+
+    public int getCantDeUnidades() {
+        return unidades.size();
+    }
+
+    public String getTituloUnidadNum(int i) {
+        return unidades.get(i).getTitulo();
+    }
+
+    public int getDuracionEstUnidadNum(int i) {
+        return unidades.get(i).getDuracionEstimada();
+    }
+
+    public String getDescripcionUnidadNum(int i) {
+        return unidades.get(i).getDescripcion();
+    }
+
+    public int getCantDeSesiones() {
+        return sesiones.size();
+    }
+
+    public String getFDSesionNUM(int i) {
+        return sesiones.get(i).getFechaDesde();
+    }
+
+    public String getFHSesionNUM(int i) {
+        return sesiones.get(i).getFechaHasta();
+    }
+
+    public String getFDISesionNUM(int i) {
+        return sesiones.get(i).getFechaDesdeInscripcion();
+    }
 }

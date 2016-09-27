@@ -118,32 +118,21 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.CursoViewHolder> {
 
             private void cargarInformacion(Intent intentDescripcionCurso, Curso curso) {
                 intentDescripcionCurso.putExtra("USER", userName);
-                intentDescripcionCurso.putExtra("LINKIMAGE", IMAGE_ROOT_URL + curso.getLinkImagen());
-                intentDescripcionCurso.putExtra("NOMBRE", curso.getNombre());
-                intentDescripcionCurso.putExtra("ESTADO", curso.getEstado());
-                intentDescripcionCurso.putExtra("PROFESOR", curso.getNombreCompletoDocente());
-                intentDescripcionCurso.putExtra("DESCRIPCION", curso.getDescripcion());
-                intentDescripcionCurso.putExtra("VALORACION", curso.getValoracionesPromedio());
+                intentDescripcionCurso.putExtra("ID", curso.getId());
+
+                if(orientacion.equals("HORIZONTAL")){
+                    intentDescripcionCurso.putExtra("ES_DE_ULT_CURSOS", true);
+                } else { //orientacion vertical => se esta listando por categoria
+                    intentDescripcionCurso.putExtra("ES_DE_ULT_CURSOS", false);
+                }
+
+                intentDescripcionCurso.putExtra("IMAGE_ROOT_URL", IMAGE_ROOT_URL);
 
                 intentDescripcionCurso.putExtra("CANT_SESIONES", curso.getSesiones().size());
                 for (int i = 0; i < curso.getSesiones().size(); i++){
                     intentDescripcionCurso.putExtra("SESION" + String.valueOf(i) + "FECHADESDE", curso.getSesiones().get(i).getFechaDesde());
                     intentDescripcionCurso.putExtra("SESION" + String.valueOf(i) + "FECHAHASTA", curso.getSesiones().get(i).getFechaHasta());
                     intentDescripcionCurso.putExtra("SESION" + String.valueOf(i) + "FECHADESDEINCRIP", curso.getSesiones().get(i).getFechaDesdeInscripcion());
-                }
-
-                intentDescripcionCurso.putExtra("CANT_UNIDADES", curso.getUnidades().size());
-                for (int i = 0; i < curso.getUnidades().size(); i++){
-                    intentDescripcionCurso.putExtra("UNIDAD" + String.valueOf(i) + "TITULO", curso.getUnidades().get(i).getTitulo());
-                    intentDescripcionCurso.putExtra("UNIDAD" + String.valueOf(i) + "DESCRIPCION", curso.getUnidades().get(i).getDescripcion());
-                    intentDescripcionCurso.putExtra("UNIDAD" + String.valueOf(i) + "DURACIONESTIMADA", curso.getUnidades().get(i).getDuracionEstimada());
-                }
-
-                intentDescripcionCurso.putExtra("CANT_CRITICAS", curso.getCriticas().size());
-                for (int i = 0; i < curso.getCriticas().size(); i++){
-                    intentDescripcionCurso.putExtra("CRITICA" + String.valueOf(i) + "FECHA", curso.getCriticas().get(i).getFecha());
-                    intentDescripcionCurso.putExtra("CRITICA" + String.valueOf(i) + "CALIFICACION", curso.getCriticas().get(i).getCalificacion());
-                    intentDescripcionCurso.putExtra("CRITICA" + String.valueOf(i) + "COMENTARIO", curso.getCriticas().get(i).getComentario());
                 }
             }
         });
