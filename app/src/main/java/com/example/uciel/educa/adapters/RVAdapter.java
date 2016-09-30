@@ -127,13 +127,6 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.CursoViewHolder> {
                 }
 
                 intentDescripcionCurso.putExtra("IMAGE_ROOT_URL", IMAGE_ROOT_URL);
-
-                intentDescripcionCurso.putExtra("CANT_SESIONES", curso.getSesiones().size());
-                for (int i = 0; i < curso.getSesiones().size(); i++){
-                    intentDescripcionCurso.putExtra("SESION" + String.valueOf(i) + "FECHADESDE", curso.getSesiones().get(i).getFechaDesde());
-                    intentDescripcionCurso.putExtra("SESION" + String.valueOf(i) + "FECHAHASTA", curso.getSesiones().get(i).getFechaHasta());
-                    intentDescripcionCurso.putExtra("SESION" + String.valueOf(i) + "FECHADESDEINCRIP", curso.getSesiones().get(i).getFechaDesdeInscripcion());
-                }
             }
         });
     }

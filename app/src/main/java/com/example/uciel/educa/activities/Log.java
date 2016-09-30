@@ -4,6 +4,7 @@ import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.view.View;
+import android.widget.TextView;
 
 import com.daimajia.slider.library.Animations.DescriptionAnimation;
 import com.daimajia.slider.library.SliderLayout;
@@ -26,6 +27,7 @@ import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
+import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 
 import org.json.JSONException;
@@ -52,6 +54,8 @@ public class Log extends AppCompatActivity implements GoogleApiClient.OnConnecti
         FacebookSdk.sdkInitialize(getApplicationContext());
         callbackManager = CallbackManager.Factory.create();
         setContentView(R.layout.activity_log);
+
+        setGooglePlusButtonText((SignInButton)findViewById(R.id.sign_in_button), "Inicia sesión con Google");
 
         // Button listeners
         findViewById(R.id.sign_in_button).setOnClickListener(this);
@@ -208,6 +212,19 @@ public class Log extends AppCompatActivity implements GoogleApiClient.OnConnecti
         // An unresolvable error has occurred and Google APIs (including Sign-In) will not
         // be available.
         android.util.Log.d(TAG, "onConnectionFailed:" + connectionResult);
+    }
+
+    protected void setGooglePlusButtonText(SignInButton signInButton, String buttonText) {
+        // Find the TextView that is inside of the SignInButton and set its text
+        for (int i = 0; i < signInButton.getChildCount(); i++) {
+            View v = signInButton.getChildAt(i);
+
+            if (v instanceof TextView) {
+                TextView tv = (TextView) v;
+                tv.setText(buttonText);
+                return;
+            }
+        }
     }
 
 }

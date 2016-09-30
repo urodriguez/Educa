@@ -20,4 +20,5 @@
     <string name="title_section1">DETALLE</string>
     <string name="title_section2">UNIDADES</string>
     <string name="title_section3">SESSIONES</string>
+    <string name="polit_priv">Al continuar, aceptas nuestros <b>Términos de servicio</b> y <b>Política de privacidad</b></string>
 </resources>
