@@ -6,11 +6,23 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.TextView;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkResponse;
+import com.android.volley.Request;
+import com.android.volley.RequestQueue;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.VolleyLog;
+import com.android.volley.toolbox.HttpHeaderParser;
+import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.daimajia.slider.library.Animations.DescriptionAnimation;
 import com.daimajia.slider.library.SliderLayout;
 import com.daimajia.slider.library.SliderTypes.BaseSliderView;
 import com.daimajia.slider.library.SliderTypes.TextSliderView;
 import com.example.uciel.educa.R;
+import com.example.uciel.educa.domain.SingletonUserLogin;
 import com.facebook.AccessToken;
 import com.facebook.CallbackManager;
 import com.facebook.FacebookCallback;
@@ -31,9 +43,12 @@ import com.google.android.gms.common.SignInButton;
 import com.google.android.gms.common.api.GoogleApiClient;
 
 import org.json.JSONException;
+import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.Map;
 
 public class Log extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener,View.OnClickListener{
 
@@ -48,9 +63,14 @@ public class Log extends AppCompatActivity implements GoogleApiClient.OnConnecti
 
     private SliderLayout mDemoSlider;
 
+    private final String URL_LOGIN_FB = "http://educa-mnforlenza.rhcloud.com/api/usuario/login/facebook";
+    private final String URL_LOGIN_GG = "http://educa-mnforlenza.rhcloud.com/api/usuario/login/google";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+
         FacebookSdk.sdkInitialize(getApplicationContext());
         callbackManager = CallbackManager.Factory.create();
         setContentView(R.layout.activity_log);
@@ -82,7 +102,7 @@ public class Log extends AppCompatActivity implements GoogleApiClient.OnConnecti
         }
         loginButton.registerCallback(callbackManager, new FacebookCallback<LoginResult>() {
             @Override
-            public void onSuccess(LoginResult loginResult) {
+            public void onSuccess(final LoginResult loginResult) {
                 new GraphRequest(
                         AccessToken.getCurrentAccessToken(),
                         loginResult.getAccessToken().getUserId(),
@@ -91,9 +111,10 @@ public class Log extends AppCompatActivity implements GoogleApiClient.OnConnecti
                         new GraphRequest.Callback() {
                             public void onCompleted(GraphResponse response) {
                                 try {
-                                    Intent homeIntent = new Intent(Log.this,Home.class);
-                                    homeIntent.putExtra("USER", response.getJSONObject().getString("name"));
-                                    startActivity(homeIntent);
+                                    registrarUsuario(
+                                            loginResult.getAccessToken().getUserId(),
+                                            response.getJSONObject().getString("name"),
+                                            "FB");
                                 } catch (JSONException e) {
                                     e.printStackTrace();
                                 }
@@ -178,17 +199,19 @@ public class Log extends AppCompatActivity implements GoogleApiClient.OnConnecti
         if (result.isSuccess()) {
             // Signed in successfully, show authenticated UI.
             GoogleSignInAccount acct = result.getSignInAccount();
+
             android.util.Log.d(TAG, "account Name: " + acct.getDisplayName());
             android.util.Log.d(TAG, "account Email: " + acct.getEmail());
 
-            Intent homeIntent = new Intent(Log.this,Home.class);
-            homeIntent.putExtra("USER", acct.getDisplayName());
-            startActivity(homeIntent);
+            //registrarUsuario(acct.getId(), acct.getDisplayName(), "GG" );
+            registrarUsuario("10", acct.getDisplayName(), "GG" );
+
         } else {
             android.util.Log.d(TAG, "ERROR AL INICIAR SESION");
         }
     }
     // [END handleSignInResult]
+
 
     // [START signIn]
     private void signIn() {
@@ -225,6 +248,65 @@ public class Log extends AppCompatActivity implements GoogleApiClient.OnConnecti
                 return;
             }
         }
+    }
+
+    private void registrarUsuario(final String idUsuario, final String nombreUsuario, String tipoLogin) {
+        String url = "";
+        switch (tipoLogin){
+            case "FB":
+                url = URL_LOGIN_FB;
+                break;
+            case "GG":
+                url = URL_LOGIN_GG;
+                break;
+        }
+
+        android.util.Log.d("MSG", "URL= " + url);
+
+        RequestQueue queue = Volley.newRequestQueue(getApplicationContext());
+
+        //JSONObject to send
+        JSONObject dataToSend = new JSONObject();
+        try {
+            dataToSend.put("token", idUsuario);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.POST, url, dataToSend,
+                new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        // response
+                        android.util.Log.d("MSG", "SUCCESS Response");
+                        android.util.Log.d("MSG", response.toString());
+
+                        String idUserEduca = "";//Es el ID que se usa para identificarlo en Educa (difiere del de FC o GG)
+                        try {
+                            idUserEduca = response.getString("id");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        SingletonUserLogin userLoginData = SingletonUserLogin.getInstance();
+                        //userLoginData.setUserLoginData(nombreUsuario, idUserEduca);
+                        userLoginData.setUserLoginData(nombreUsuario, "10");
+
+                        Intent homeIntent = new Intent(Log.this,Home.class);
+                        startActivity(homeIntent);
+                    }
+                }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                android.util.Log.d("MSG", "ERROR Response");
+            }
+        }
+        );
+
+        // Add the request to the RequestQueue.
+        queue.add(jsonObjReq);
+
     }
 
 }
