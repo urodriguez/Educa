@@ -24,6 +24,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.example.uciel.educa.R;
 import com.example.uciel.educa.adapters.RVAdapter;
 import com.example.uciel.educa.domain.Curso;
+import com.example.uciel.educa.domain.SingletonUserLogin;
 import com.example.uciel.educa.network.RQSingleton;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -35,14 +36,15 @@ import java.util.HashMap;
 import java.util.List;
 
 public class Cursos extends AppCompatActivity implements SearchView.OnQueryTextListener {
-    SearchView searchView;
+    private SearchView searchView;
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
 
     private List<Curso> cursos;
     private RecyclerView rv;
     private TextView tvCategoriaActual;
-    private String userName = "";
+
+    private SingletonUserLogin userLoginData;
 
     private Bundle extras;
 
@@ -53,9 +55,10 @@ public class Cursos extends AppCompatActivity implements SearchView.OnQueryTextL
 
         extras = getIntent().getExtras();
 
+        userLoginData = SingletonUserLogin.getInstance();
+
         setToolbar(); // Setear Toolbar como action bar
 
-        userName = extras.getString("USER");
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         if (navigationView != null) {
@@ -110,7 +113,7 @@ public class Cursos extends AppCompatActivity implements SearchView.OnQueryTextL
 
     private void setupDrawerContent(NavigationView navigationView) {
         TextView userName = (TextView)navigationView.getHeaderView(0).findViewById(R.id.username);
-        userName.setText(this.userName);
+        userName.setText(userLoginData.getUserName());
 
         navigationView.setNavigationItemSelectedListener(
                 new NavigationView.OnNavigationItemSelectedListener() {
@@ -127,17 +130,14 @@ public class Cursos extends AppCompatActivity implements SearchView.OnQueryTextL
                         switch (title) {
                             case "Home":
                                 Intent home = new Intent(Cursos.this,Home.class);
-                                home.putExtra("USER", Cursos.this.userName);
                                 startActivity(home);
                                 break;
                             case "Mis Cursos":
                                 Intent misCursos = new Intent(Cursos.this,MisCursos.class);
-                                misCursos.putExtra("USER", Cursos.this.userName);
                                 startActivity(misCursos);
                                 break;
                             case "Mis Diplomas":
                                 Intent misDiplomas = new Intent(Cursos.this,MisDiplomas.class);
-                                misDiplomas.putExtra("USER", Cursos.this.userName);
                                 startActivity(misDiplomas);
                                 break;
                         }
@@ -184,7 +184,7 @@ public class Cursos extends AppCompatActivity implements SearchView.OnQueryTextL
 
 
     private void initializeAdapter(){
-        RVAdapter adapter = new RVAdapter(cursos, "VERTICAL", this.userName, this);
+        RVAdapter adapter = new RVAdapter(cursos, "VERTICAL", userLoginData, this);
         rv.setAdapter(adapter);
     }
 
@@ -198,7 +198,7 @@ public class Cursos extends AppCompatActivity implements SearchView.OnQueryTextL
             public boolean onClose() {
                 //Al cerrar el search reestablezco los cursos por si el alumno se
                 //arrepiente y decide cancelar la busqueda
-                RVAdapter adapter = new RVAdapter(cursos, "VERTICAL", userName, Cursos.this);
+                RVAdapter adapter = new RVAdapter(cursos, "VERTICAL", userLoginData, Cursos.this);
                 rv.setAdapter(adapter);
                 return false;
             }
@@ -222,7 +222,7 @@ public class Cursos extends AppCompatActivity implements SearchView.OnQueryTextL
             }
         }
 
-        RVAdapter adapter = new RVAdapter(cursosFiltrados, "VERTICAL", this.userName, this);
+        RVAdapter adapter = new RVAdapter(cursosFiltrados, "VERTICAL", userLoginData, this);
         rv.setAdapter(adapter);
         return false;
     }

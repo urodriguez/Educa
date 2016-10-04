@@ -18,11 +18,14 @@ import android.widget.TextView;
 import com.example.uciel.educa.R;
 import com.example.uciel.educa.adapters.RVAdapter;
 import com.example.uciel.educa.domain.Curso;
+import com.example.uciel.educa.domain.SingletonUserLogin;
 
 import java.util.ArrayList;
 import java.util.List;
 
 public class MisDiplomas extends AppCompatActivity implements SearchView.OnQueryTextListener {
+    private Bundle extras;
+
     private SearchView searchView;
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
@@ -30,16 +33,19 @@ public class MisDiplomas extends AppCompatActivity implements SearchView.OnQuery
     private List<Curso> cursos;
     private RecyclerView rv;
 
-    private String userName = "";
+    private SingletonUserLogin userLoginData;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mis_diplomas);
 
+        extras = getIntent().getExtras();
+
+        userLoginData = SingletonUserLogin.getInstance();
+
         setToolbar(); // Setear Toolbar como action bar
 
-        userName = getIntent().getExtras().getString("USER");
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         if (navigationView != null) {
@@ -88,7 +94,7 @@ public class MisDiplomas extends AppCompatActivity implements SearchView.OnQuery
 
     private void setupDrawerContent(NavigationView navigationView) {
         TextView userName = (TextView)navigationView.getHeaderView(0).findViewById(R.id.username);
-        userName.setText(this.userName);
+        userName.setText(userLoginData.getUserName());
 
         navigationView.getMenu().getItem(2).setChecked(true);//mis diplomas = item 2
         navigationView.setNavigationItemSelectedListener(
@@ -106,12 +112,10 @@ public class MisDiplomas extends AppCompatActivity implements SearchView.OnQuery
                         switch (title) {
                             case "Home":
                                 Intent home = new Intent(MisDiplomas.this,Home.class);
-                                home.putExtra("USER", MisDiplomas.this.userName);
                                 startActivity(home);
                                 break;
                             case "Mis Cursos":
                                 Intent misCursos = new Intent(MisDiplomas.this,MisCursos.class);
-                                misCursos.putExtra("USER", MisDiplomas.this.userName);
                                 startActivity(misCursos);
                                 break;
                             case "Mis Diplomas":
@@ -125,7 +129,7 @@ public class MisDiplomas extends AppCompatActivity implements SearchView.OnQuery
     }
 
     private void initializeAdapter(){
-        RVAdapter adapter = new RVAdapter(cursos, "VERTICAL", userName, this);
+        RVAdapter adapter = new RVAdapter(cursos, "VERTICAL", userLoginData, this);
         rv.setAdapter(adapter);
     }
 
@@ -138,7 +142,7 @@ public class MisDiplomas extends AppCompatActivity implements SearchView.OnQuery
             public boolean onClose() {
                 //Al cerrar el search reestablezco los cursos por si el alumno se
                 //arrepiente y decide cancelar la busqueda
-                RVAdapter adapter = new RVAdapter(cursos, "VERTICAL", userName, MisDiplomas.this);
+                RVAdapter adapter = new RVAdapter(cursos, "VERTICAL", userLoginData, MisDiplomas.this);
                 rv.setAdapter(adapter);
                 return false;
             }
@@ -162,7 +166,7 @@ public class MisDiplomas extends AppCompatActivity implements SearchView.OnQuery
             }
         }
 
-        RVAdapter adapter = new RVAdapter(cursosFiltrados, "VERTICAL", this.userName, this);
+        RVAdapter adapter = new RVAdapter(cursosFiltrados, "VERTICAL", userLoginData, this);
         rv.setAdapter(adapter);
         return false;
     }

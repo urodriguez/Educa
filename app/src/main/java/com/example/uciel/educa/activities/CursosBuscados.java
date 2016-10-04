@@ -21,6 +21,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.example.uciel.educa.R;
 import com.example.uciel.educa.adapters.RVAdapter;
 import com.example.uciel.educa.domain.Curso;
+import com.example.uciel.educa.domain.SingletonUserLogin;
 import com.example.uciel.educa.network.RQSingleton;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -33,13 +34,15 @@ import java.util.List;
 
 public class CursosBuscados extends AppCompatActivity {
 
+    private Bundle extras;
+
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
 
     private List<Curso> cursos;
     private RecyclerView rv;
 
-    private String userName = "";
+    private SingletonUserLogin userLoginData;
 
     private String criterioDeBusqueda = "";
 
@@ -48,9 +51,12 @@ public class CursosBuscados extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_cursos_buscados);
 
+        extras = getIntent().getExtras();
+
+        userLoginData = SingletonUserLogin.getInstance();
+
         setToolbar(); // Setear Toolbar como action bar
 
-        userName = getIntent().getExtras().getString("USER");
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         if (navigationView != null) {
@@ -64,7 +70,7 @@ public class CursosBuscados extends AppCompatActivity {
         rv.setLayoutManager(llm);
         rv.setHasFixedSize(true);
 
-        criterioDeBusqueda = getIntent().getExtras().getString("BUSQUEDA");
+        criterioDeBusqueda = extras.getString("BUSQUEDA");
 
         initializeData();
         initializeAdapter();
@@ -103,7 +109,7 @@ public class CursosBuscados extends AppCompatActivity {
 
     private void setupDrawerContent(NavigationView navigationView) {
         TextView userName = (TextView)navigationView.getHeaderView(0).findViewById(R.id.username);
-        userName.setText(this.userName);
+        userName.setText(userLoginData.getUserName());
 
         navigationView.setNavigationItemSelectedListener(
                 new NavigationView.OnNavigationItemSelectedListener() {
@@ -120,17 +126,14 @@ public class CursosBuscados extends AppCompatActivity {
                         switch (title) {
                             case "Home":
                                 Intent home = new Intent(CursosBuscados.this,Home.class);
-                                home.putExtra("USER", CursosBuscados.this.userName);
                                 startActivity(home);
                                 break;
                             case "Mis Cursos":
                                 Intent misCursos = new Intent(CursosBuscados.this,MisCursos.class);
-                                misCursos.putExtra("USER", CursosBuscados.this.userName);
                                 startActivity(misCursos);
                                 break;
                             case "Mis Diplomas":
                                 Intent misDiplomas = new Intent(CursosBuscados.this,MisDiplomas.class);
-                                misDiplomas.putExtra("USER", CursosBuscados.this.userName);
                                 startActivity(misDiplomas);
                                 break;
                         }
@@ -169,7 +172,7 @@ public class CursosBuscados extends AppCompatActivity {
 
 
     private void initializeAdapter(){
-        RVAdapter adapter = new RVAdapter(cursos, "VERTICAL", this.userName, this);
+        RVAdapter adapter = new RVAdapter(cursos, "VERTICAL", userLoginData, this);
         rv.setAdapter(adapter);
     }
 

@@ -15,6 +15,7 @@ import com.android.volley.toolbox.NetworkImageView;
 import com.example.uciel.educa.activities.DescripcionCurso;
 import com.example.uciel.educa.R;
 import com.example.uciel.educa.domain.Curso;
+import com.example.uciel.educa.domain.SingletonUserLogin;
 import com.example.uciel.educa.network.RQSingleton;
 
 import java.text.SimpleDateFormat;
@@ -23,13 +24,6 @@ import java.util.Date;
 import java.util.List;
 
 public class RVAdapter extends RecyclerView.Adapter<RVAdapter.CursoViewHolder> {
-
-    private final String userName;
-    private String orientacion;
-    private Context context;
-
-    private static final String IMAGE_ROOT_URL =
-                    "http://educa-mnforlenza.rhcloud.com/api/";
 
     public static class CursoViewHolder extends RecyclerView.ViewHolder {
 
@@ -51,12 +45,21 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.CursoViewHolder> {
         }
     }
 
-    List<Curso> cursos;
+    private List<Curso> cursos;
+    private final String userName;
+    private final String userID;
+    private String orientacion;
+    private Context context;
 
-    public RVAdapter(List<Curso> cursos, String orientacion, String userName, Context context){
+    private static final String IMAGE_ROOT_URL =
+            "http://educa-mnforlenza.rhcloud.com/api/";
+
+
+    public RVAdapter(List<Curso> cursos, String orientacion, SingletonUserLogin userLoginData, Context context){
         this.cursos = cursos;
         this.orientacion = orientacion;
-        this.userName = userName;
+        this.userName = userLoginData.getUserName();
+        this.userID = userLoginData.getUserID();
         this.context = context;
     }
 
@@ -117,7 +120,6 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.CursoViewHolder> {
             }
 
             private void cargarInformacion(Intent intentDescripcionCurso, Curso curso) {
-                intentDescripcionCurso.putExtra("USER", userName);
                 intentDescripcionCurso.putExtra("ID", curso.getId());
 
                 if(orientacion.equals("HORIZONTAL")){
@@ -126,7 +128,6 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.CursoViewHolder> {
                     intentDescripcionCurso.putExtra("ES_DE_ULT_CURSOS", false);
                 }
 
-                intentDescripcionCurso.putExtra("IMAGE_ROOT_URL", IMAGE_ROOT_URL);
             }
         });
     }

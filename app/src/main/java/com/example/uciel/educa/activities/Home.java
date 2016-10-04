@@ -24,14 +24,18 @@ import com.android.volley.toolbox.StringRequest;
 import com.example.uciel.educa.R;
 import com.example.uciel.educa.adapters.RVAdapter;
 import com.example.uciel.educa.domain.Curso;
+import com.example.uciel.educa.domain.SingletonUserLogin;
 import com.example.uciel.educa.network.RQSingleton;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashMap;
 import java.util.List;
 
 public class Home extends AppCompatActivity implements android.widget.SearchView.OnQueryTextListener{
@@ -43,9 +47,13 @@ public class Home extends AppCompatActivity implements android.widget.SearchView
     private List<Curso> cursos;
     private RecyclerView rv;
 
-    private String userName = "";
+    private Bundle extras;
+
+    private SingletonUserLogin userLoginData;
 
     LinearLayout llCategorias;
+
+    private final String URL_ULT_CURSOS = "http://educa-mnforlenza.rhcloud.com/api/curso/ultimos-cursos";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -54,7 +62,11 @@ public class Home extends AppCompatActivity implements android.widget.SearchView
 
         setToolbar(); // Setear Toolbar como action bar
 
-        userName = getIntent().getExtras().getString("USER");
+        extras = getIntent().getExtras();
+
+        userLoginData = SingletonUserLogin.getInstance();
+        android.util.Log.d("MSG", userLoginData.getUserName() + "-" + userLoginData.getUserID());
+
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         if (navigationView != null) {
@@ -109,7 +121,7 @@ public class Home extends AppCompatActivity implements android.widget.SearchView
 
     private void setupDrawerContent(NavigationView navigationView) {
         final TextView userName = (TextView)navigationView.getHeaderView(0).findViewById(R.id.username);
-        userName.setText(this.userName);
+        userName.setText(userLoginData.getUserName());
 
         navigationView.getMenu().getItem(0).setChecked(true);//home = item 0
         navigationView.setNavigationItemSelectedListener(
@@ -130,12 +142,10 @@ public class Home extends AppCompatActivity implements android.widget.SearchView
                                 break;
                             case "Mis Cursos":
                                 Intent misCursos = new Intent(Home.this,MisCursos.class);
-                                misCursos.putExtra("USER", Home.this.userName);
                                 startActivity(misCursos);
                                 break;
                             case "Mis Diplomas":
                                 Intent misDiplomas = new Intent(Home.this,MisDiplomas.class);
-                                misDiplomas.putExtra("USER", Home.this.userName);
                                 startActivity(misDiplomas);
                                 break;
                         }
@@ -157,7 +167,6 @@ public class Home extends AppCompatActivity implements android.widget.SearchView
                 public void onClick(View v) {
                     Intent cursosIntent = new Intent(Home.this,Cursos.class);
                     cursosIntent.putExtra("CATEGORIA", "Programación");
-                    cursosIntent.putExtra("USER",userName);
                     cursosIntent.putExtra("ID","1");
                     startActivity(cursosIntent);
                 }
@@ -167,7 +176,6 @@ public class Home extends AppCompatActivity implements android.widget.SearchView
                 public void onClick(View v) {
                     Intent cursosIntent = new Intent(Home.this,Cursos.class);
                     cursosIntent.putExtra("CATEGORIA", "Gastronomía");
-                    cursosIntent.putExtra("USER",userName);
                     cursosIntent.putExtra("ID","2");
                     startActivity(cursosIntent);
                 }
@@ -177,7 +185,6 @@ public class Home extends AppCompatActivity implements android.widget.SearchView
                 public void onClick(View v) {
                     Intent cursosIntent = new Intent(Home.this,Cursos.class);
                     cursosIntent.putExtra("CATEGORIA", "Idiomas");
-                    cursosIntent.putExtra("USER",userName);
                     cursosIntent.putExtra("ID","6");
                     startActivity(cursosIntent);
                 }
@@ -187,7 +194,6 @@ public class Home extends AppCompatActivity implements android.widget.SearchView
                 public void onClick(View v) {
                     Intent cursosIntent = new Intent(Home.this,Cursos.class);
                     cursosIntent.putExtra("CATEGORIA", "Gestión");
-                    cursosIntent.putExtra("USER",userName);
                     cursosIntent.putExtra("ID","4");
                     startActivity(cursosIntent);
                 }
@@ -197,7 +203,6 @@ public class Home extends AppCompatActivity implements android.widget.SearchView
                 public void onClick(View v) {
                     Intent cursosIntent = new Intent(Home.this,Cursos.class);
                     cursosIntent.putExtra("CATEGORIA", "Exactas");
-                    cursosIntent.putExtra("USER",userName);
                     cursosIntent.putExtra("ID","5");
                     startActivity(cursosIntent);
                 }
@@ -207,11 +212,8 @@ public class Home extends AppCompatActivity implements android.widget.SearchView
 
     private void initializeData(){
         cursos = new ArrayList<>();
-        // Instantiate the RequestQueue.
-        //RequestQueue queue = Volley.newRequestQueue(this);
-        String url ="http://educa-mnforlenza.rhcloud.com/api/curso/ultimos-cursos";
 
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, URL_ULT_CURSOS,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
@@ -227,32 +229,11 @@ public class Home extends AppCompatActivity implements android.widget.SearchView
             }
         }
         );
-
-
-        /*JsonObjectRequest jsObjRequest = new JsonObjectRequest
-        (Request.Method.GET, url, null, new Response.Listener<JSONObject>() {
-
-            @Override
-            public void onResponse(JSONObject response) {
-                String res = response.toString();
-                android.util.Log.i("INFO", "Res is: "+ res.substring(0,10));
-                parseHomeResponse(res);
-                initializeAdapter();
-            }
-        }, new Response.ErrorListener() {
-
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                android.util.Log.e("Volley", "Res is: "+ error.getMessage());
-            }
-        });*/
-
-        //queue.add(stringRequest);
         RQSingleton.getInstance(this).addToRequestQueue(stringRequest);
     }
 
     private void initializeAdapter(){
-        RVAdapter adapter = new RVAdapter(cursos, "HORIZONTAL",userName, this);
+        RVAdapter adapter = new RVAdapter(cursos, "HORIZONTAL", userLoginData, this);
         rv.setAdapter(adapter);
     }
 
@@ -266,7 +247,6 @@ public class Home extends AppCompatActivity implements android.widget.SearchView
         // User pressed the search button
         Intent cursosBuscadoIntent = new Intent(Home.this,CursosBuscados.class);
         cursosBuscadoIntent.putExtra("BUSQUEDA", query);
-        cursosBuscadoIntent.putExtra("USER", this.userName);
         startActivity(cursosBuscadoIntent);
         return false;
     }
@@ -278,6 +258,20 @@ public class Home extends AppCompatActivity implements android.widget.SearchView
     }
 
     public void parseHomeResponse(String response){
+
+        /*try {
+            JSONArray jsonArray = new JSONArray(response);
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject explrObject = jsonArray.getJSONObject(i);
+                android.util.Log.d("MSG", explrObject.getString("id"));
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }*/
+
+
+
         Gson g = new Gson();
 
         Type collectionType = new TypeToken<Collection<Curso>>(){}.getType();
@@ -287,9 +281,6 @@ public class Home extends AppCompatActivity implements android.widget.SearchView
             cursos.add(c);
             android.util.Log.d("CURSO", "NOMBRE :" + c.getNombre());
 
-            /*android.util.Log.d("CURSO", "CRITICA :" + c.getCriticas().get(1).getFecha());
-            android.util.Log.d("CURSO", "CRITICA :" + c.getCriticas().get(0).getCalificacion());
-            android.util.Log.d("CURSO", "CRITICA :" + c.getCriticas().get(1).getComentario());*/
         }
 
     }
