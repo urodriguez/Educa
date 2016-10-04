@@ -31,29 +31,39 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
+import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.ImageLoader;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.NetworkImageView;
 import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.example.uciel.educa.R;
 import com.example.uciel.educa.adapters.ViewPagerAdapter;
 import com.example.uciel.educa.domain.Critica;
 import com.example.uciel.educa.domain.Curso;
 import com.example.uciel.educa.domain.Sesion;
+import com.example.uciel.educa.domain.SingletonUserLogin;
 import com.example.uciel.educa.domain.Unidad;
 import com.example.uciel.educa.network.RQSingleton;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class DescripcionCurso extends AppCompatActivity {
 
-    private String userName = "";
+    private SingletonUserLogin userLoginData;
     private Curso  curso;
 
     private DrawerLayout drawerLayout;
@@ -75,6 +85,16 @@ public class DescripcionCurso extends AppCompatActivity {
 
     private Bundle extras;
 
+    private Map<Integer, Integer> mis_IDCURSO_IDSESSION = new HashMap<>();
+
+    private final String IMAGE_ROOT_URL = "http://educa-mnforlenza.rhcloud.com/api/";
+    private final String URL_ULT_CURSOS = "http://educa-mnforlenza.rhcloud.com/api/curso/ultimos-cursos";
+    private final String URL_CURSOS_ACTUALES = "http://educa-mnforlenza.rhcloud.com/api/curso/listar";
+    private final String URL_SUSCRIBIR = "http://educa-mnforlenza.rhcloud.com/api/usuario/suscribir/";
+    private final String URL_DESUSCRIBIR = "http://educa-mnforlenza.rhcloud.com/api/usuario/desuscribir/";
+    private final String URL_MIS_CURSOS = "http://educa-mnforlenza.rhcloud.com/api/usuario/mis-cursos/";
+    private final String URL_MIS_SESIONES = "http://educa-mnforlenza.rhcloud.com/api/usuario/mis-sesiones/";
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -88,7 +108,8 @@ public class DescripcionCurso extends AppCompatActivity {
 
         setTabs();
 
-        userName = extras.getString("USER");
+        userLoginData = SingletonUserLogin.getInstance();
+
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         if (navigationView != null) {
@@ -100,9 +121,9 @@ public class DescripcionCurso extends AppCompatActivity {
         // Instantiate the RequestQueue.
         String url = "";
         if(extras.getBoolean("ES_DE_ULT_CURSOS") == true){
-            url = "http://educa-mnforlenza.rhcloud.com/api/curso/ultimos-cursos";
+            url = URL_ULT_CURSOS;
         } else {
-            url = "http://educa-mnforlenza.rhcloud.com/api/curso/listar";
+            url = URL_CURSOS_ACTUALES;
         }
 
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
@@ -203,6 +224,7 @@ public class DescripcionCurso extends AppCompatActivity {
             public void run() {
                 viewPager.setCurrentItem(0);
                 cargarDetalle();
+                cargarSesionesInscriptas(URL_MIS_SESIONES + userLoginData.getUserID());
             }
         };
         handler.postDelayed(r, 500);
@@ -214,7 +236,7 @@ public class DescripcionCurso extends AppCompatActivity {
         ImageLoader mImageLoader;
         // Get the NetworkImageView that will display the image.
         mImageLoader = RQSingleton.getInstance(getApplicationContext()).getImageLoader();
-        fotoCursoNiv.setImageUrl(extras.getString("IMAGE_ROOT_URL") + curso.getLinkImagen(), mImageLoader);
+        fotoCursoNiv.setImageUrl(IMAGE_ROOT_URL + curso.getLinkImagen(), mImageLoader);
 
         cargarTextosDescriptivos();
 
@@ -308,9 +330,9 @@ public class DescripcionCurso extends AppCompatActivity {
 
     private void cargarSesiones() {
         llSesiones = (LinearLayout) viewPager.findViewById(R.id.sesiones_linear);
-        llSesiones.removeAllViews();
+        //llSesiones.removeAllViews();
 
-        cargarBotonesDeIncripcion(curso.getSesiones().size());
+        cargarBotonesDeInscripcion(curso.getSesiones().size());
 
         for(int i = 0; i < curso.getCantDeSesiones(); i++){
             LinearLayout llH = new LinearLayout(this);
@@ -330,7 +352,7 @@ public class DescripcionCurso extends AppCompatActivity {
                         "Inscripciones: " + curso.getFDISesionNUM(i) + "\n");
             llH.addView(txt);
 
-            // Agrego un divisor
+            // Agrego un divisor vertical
             llH.addView(crearDivisor(0, LinearLayout.LayoutParams.WRAP_CONTENT, 24, 8, 24, 8, Color.WHITE));
 
             llH.addView(botonesInscripcion.get(i));
@@ -340,19 +362,37 @@ public class DescripcionCurso extends AppCompatActivity {
 
             llSesiones.addView(llH);
 
-            // Agrego un divisor
+            // Agrego un divisor horizontal
             llSesiones.addView(crearDivisor(LinearLayout.LayoutParams.MATCH_PARENT, 1, 10, 15, 10, 15, Color.LTGRAY));
         }
     }
 
-    private void cargarBotonesDeIncripcion(final int cantDeSesiones){
+    private void cargarBotonesDeInscripcion(final int cantDeSesiones){
         botonesInscripcion = new ArrayList<>();
 
-        for(int i = 0; i < cantDeSesiones; i++){
-            Button button = new Button(this);
-            button.setText("INSCRIBIRSE");
-            button.setBackgroundColor(Color.parseColor("#FF5722"));
-            botonesInscripcion.add(button);
+        //getIDs(URL_MIS_SESIONES + userLoginData.getUserID());
+        android.util.Log.i("MSG", "MAP= "+ mis_IDCURSO_IDSESSION.toString());
+
+        if(mis_IDCURSO_IDSESSION.containsKey(curso.getId())){//Entra a un curso ya inscripto
+            for(int i = 0; i < cantDeSesiones; i++){
+                Button button = new Button(this);
+                if ((i+1) == mis_IDCURSO_IDSESSION.get(curso.getId())){
+                    button.setText("DESUSCRIBIRSE");
+                    button.setBackgroundColor(Color.parseColor("#FF5722"));
+                } else {
+                    button.setText("NO DISPONIBLE");
+                    button.setEnabled(false);
+                    button.setBackgroundColor(Color.LTGRAY);
+                }
+                botonesInscripcion.add(button);
+            }
+        } else {//Entra a un curso NO inscripto
+            for(int i = 0; i < cantDeSesiones; i++){
+                Button button = new Button(this);
+                button.setText("INSCRIBIRSE");
+                button.setBackgroundColor(Color.parseColor("#FF5722"));
+                botonesInscripcion.add(button);
+            }
         }
 
         for(int i = 0; i < cantDeSesiones; i++){
@@ -361,6 +401,7 @@ public class DescripcionCurso extends AppCompatActivity {
                 public void onClick(View v) {
                     if(botonesInscripcion.get(finalI).getText().equals("INSCRIBIRSE")){
                         botonesInscripcion.get(finalI).setText("DESUSCRIBIRSE");
+                        inscribirseAsesion(finalI+1);
 
                         //Deshabilito los demas botones
                         for (int j = 0; j < cantDeSesiones; j++){
@@ -372,6 +413,7 @@ public class DescripcionCurso extends AppCompatActivity {
                         }
                     } else {
                         botonesInscripcion.get(finalI).setText("INSCRIBIRSE");
+                        desinscribirseAsesion(finalI+1);
 
                         //Reestablezco los demas botones
                         for (int j = 0; j < cantDeSesiones; j++){
@@ -385,6 +427,97 @@ public class DescripcionCurso extends AppCompatActivity {
                 }
             });
         }
+    }
+
+    private void inscribirseAsesion(int idSesion) {
+        mis_IDCURSO_IDSESSION.put(curso.getId(), idSesion);
+
+        String url = URL_SUSCRIBIR + userLoginData.getUserID() + "/" + curso.getId() + "/" + idSesion;
+
+        android.util.Log.d("MSG", "URL_I= " + url);
+
+        RequestQueue queue = Volley.newRequestQueue(getApplicationContext());
+        JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.POST, url, null,
+                new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        // response
+                        android.util.Log.d("MSG", "SUCCESS Response");
+                        android.util.Log.d("MSG", response.toString());
+                    }
+                }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                android.util.Log.d("MSG", "ERROR Response");
+            }
+        }
+        );
+        // Add the request to the RequestQueue.
+        queue.add(jsonObjReq);
+    }
+
+    private void desinscribirseAsesion(int idSesion) {
+        mis_IDCURSO_IDSESSION.remove(curso.getId());
+
+        String url = URL_DESUSCRIBIR + userLoginData.getUserID() + "/" + curso.getId() + "/" + idSesion;
+
+        android.util.Log.d("MSG", "URL_D= " + url);
+
+        RequestQueue queue = Volley.newRequestQueue(getApplicationContext());
+        JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.POST, url, null,
+                new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        // response
+                        android.util.Log.d("MSG", "SUCCESS Response");
+                        android.util.Log.d("MSG", response.toString());
+                    }
+                }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                android.util.Log.d("MSG", "ERROR Response");
+            }
+        }
+        );
+        // Add the request to the RequestQueue.
+        queue.add(jsonObjReq);
+    }
+
+    private void cargarSesionesInscriptas(String URL){
+        android.util.Log.i("MSG", "URL= "+ URL);
+
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, URL,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        android.util.Log.i("MSG", "Response is: "+ response);
+                        try {
+                            JSONArray jsonArray = new JSONArray(response);
+                            for (int i = 0; i < jsonArray.length(); i++) {
+                                JSONObject explrObject = jsonArray.getJSONObject(i);
+                                int idCurso = explrObject.getInt("idCurso");
+                                int idSesion = explrObject.getInt("numero");
+                                android.util.Log.i("MSG", "data: "+ idCurso + "-" + idSesion );
+                                mis_IDCURSO_IDSESSION.put(idCurso, idSesion);
+                            }
+
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        android.util.Log.d("DEBUG", "That didn't work!");
+                    }
+                }
+        );
+        RQSingleton.getInstance(this).addToRequestQueue(stringRequest);
     }
 
 
@@ -432,7 +565,7 @@ public class DescripcionCurso extends AppCompatActivity {
 
     private void setupDrawerContent(NavigationView navigationView) {
         TextView userName = (TextView)navigationView.getHeaderView(0).findViewById(R.id.username);
-        userName.setText(this.userName);
+        userName.setText(userLoginData.getUserName());
 
         navigationView.setNavigationItemSelectedListener(
                 new NavigationView.OnNavigationItemSelectedListener() {
@@ -449,17 +582,14 @@ public class DescripcionCurso extends AppCompatActivity {
                         switch (title) {
                             case "Home":
                                 Intent home = new Intent(DescripcionCurso.this,Home.class);
-                                home.putExtra("USER", DescripcionCurso.this.userName);
                                 startActivity(home);
                                 break;
                             case "Mis Cursos":
                                 Intent misCursos = new Intent(DescripcionCurso.this,MisCursos.class);
-                                misCursos.putExtra("USER", DescripcionCurso.this.userName);
                                 startActivity(misCursos);
                                 break;
                             case "Mis Diplomas":
                                 Intent misDiplomas = new Intent(DescripcionCurso.this,MisDiplomas.class);
-                                misDiplomas.putExtra("USER", DescripcionCurso.this.userName);
                                 startActivity(misDiplomas);
                                 break;
                         }
