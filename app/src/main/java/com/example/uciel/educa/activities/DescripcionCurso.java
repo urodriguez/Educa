@@ -92,7 +92,6 @@ public class DescripcionCurso extends AppCompatActivity {
     private final String URL_CURSOS_ACTUALES = "http://educa-mnforlenza.rhcloud.com/api/curso/listar";
     private final String URL_SUSCRIBIR = "http://educa-mnforlenza.rhcloud.com/api/usuario/suscribir/";
     private final String URL_DESUSCRIBIR = "http://educa-mnforlenza.rhcloud.com/api/usuario/desuscribir/";
-    private final String URL_MIS_CURSOS = "http://educa-mnforlenza.rhcloud.com/api/usuario/mis-cursos/";
     private final String URL_MIS_SESIONES = "http://educa-mnforlenza.rhcloud.com/api/usuario/mis-sesiones/";
 
     @Override

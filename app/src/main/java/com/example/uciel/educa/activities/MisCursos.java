@@ -1,5 +1,6 @@
 package com.example.uciel.educa.activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.support.design.widget.NavigationView;
 import android.support.v4.view.GravityCompat;
@@ -14,15 +15,29 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.SearchView;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
 import com.example.uciel.educa.R;
 import com.example.uciel.educa.adapters.RVAdapter;
+import com.example.uciel.educa.adapters.RVAdapterMisCursos;
 import com.example.uciel.educa.domain.Curso;
+import com.example.uciel.educa.domain.SingletonUserLogin;
+import com.example.uciel.educa.network.RQSingleton;
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class MisCursos extends AppCompatActivity implements SearchView.OnQueryTextListener {
+    private Bundle extras;
+
     private SearchView searchView;
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
@@ -30,16 +45,21 @@ public class MisCursos extends AppCompatActivity implements SearchView.OnQueryTe
     private List<Curso> cursos;
     private RecyclerView rv;
 
-    private String userName = "";
+    private SingletonUserLogin userLoginData;
+
+    private final String URL_MIS_CURSOS = "http://educa-mnforlenza.rhcloud.com/api/usuario/mis-cursos/";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mis_cursos);
 
+        extras = getIntent().getExtras();
+
+        userLoginData = SingletonUserLogin.getInstance();
+
         setToolbar(); // Setear Toolbar como action bar
 
-        userName = getIntent().getExtras().getString("USER");
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         navigationView = (NavigationView) findViewById(R.id.nav_view);
         if (navigationView != null) {
@@ -54,6 +74,9 @@ public class MisCursos extends AppCompatActivity implements SearchView.OnQueryTe
         llm.setOrientation(LinearLayoutManager.VERTICAL);
         rv.setLayoutManager(llm);
         rv.setHasFixedSize(true);
+
+        initializeData();
+        initializeAdapter();
     }
 
     private void setToolbar() {
@@ -88,7 +111,7 @@ public class MisCursos extends AppCompatActivity implements SearchView.OnQueryTe
 
     private void setupDrawerContent(NavigationView navigationView) {
         TextView userName = (TextView)navigationView.getHeaderView(0).findViewById(R.id.username);
-        userName.setText(this.userName);
+        userName.setText(userLoginData.getUserName());
 
         navigationView.getMenu().getItem(1).setChecked(true);//mis cursos = item 1
         navigationView.setNavigationItemSelectedListener(
@@ -106,7 +129,6 @@ public class MisCursos extends AppCompatActivity implements SearchView.OnQueryTe
                         switch (title) {
                             case "Home":
                                 Intent home = new Intent(MisCursos.this,Home.class);
-                                home.putExtra("USER", MisCursos.this.userName);
                                 startActivity(home);
                                 break;
                             case "Mis Cursos":
@@ -114,7 +136,6 @@ public class MisCursos extends AppCompatActivity implements SearchView.OnQueryTe
                                 break;
                             case "Mis Diplomas":
                                 Intent misDiplomas = new Intent(MisCursos.this, MisDiplomas.class);
-                                misDiplomas.putExtra("USER", MisCursos.this.userName);
                                 startActivity(misDiplomas);
                                 break;
                         }
@@ -124,8 +145,52 @@ public class MisCursos extends AppCompatActivity implements SearchView.OnQueryTe
         );
     }
 
+    private void initializeData(){
+        cursos = new ArrayList<>();
+        String url = URL_MIS_CURSOS + userLoginData.getUserID();
+
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        if(response.equals("[]")){
+                            Context context = getApplicationContext();
+                            CharSequence text = "Aun no te has inscripto a algun curso";
+                            int duration = Toast.LENGTH_LONG;
+                            Toast toast = Toast.makeText(context, text, duration);
+                            toast.show();
+                        } else {
+                            parseHomeResponse(response);
+                            initializeAdapter();
+                        }
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        android.util.Log.d("DEBUG", "That didn't work!");
+                    }
+                }
+        );
+        //queue.add(stringRequest);
+        RQSingleton.getInstance(this).addToRequestQueue(stringRequest);
+    }
+
+    public void parseHomeResponse(String response){
+        Gson g = new Gson();
+
+        Type collectionType = new TypeToken<Collection<Curso>>(){}.getType();
+        Collection<Curso> cusos = g.fromJson(response, collectionType);
+
+        for(Curso c: cusos){
+            cursos.add(c);
+            android.util.Log.d("CATEGORIASCURSO", "NOMBRE :" + c.getNombre() + "Docente: " + c.getNombreDocente());
+        }
+
+    }
+
     private void initializeAdapter(){
-        RVAdapter adapter = new RVAdapter(cursos, "VERTICAL", userName, this);
+        RVAdapterMisCursos adapter = new RVAdapterMisCursos(cursos, userLoginData, this);
         rv.setAdapter(adapter);
     }
 
@@ -138,7 +203,7 @@ public class MisCursos extends AppCompatActivity implements SearchView.OnQueryTe
             public boolean onClose() {
                 //Al cerrar el search reestablezco los cursos por si el alumno se
                 //arrepiente y decide cancelar la busqueda
-                RVAdapter adapter = new RVAdapter(cursos, "VERTICAL", userName, MisCursos.this);
+                RVAdapter adapter = new RVAdapter(cursos, "VERTICAL", userLoginData, MisCursos.this);
                 rv.setAdapter(adapter);
                 return false;
             }
@@ -162,7 +227,7 @@ public class MisCursos extends AppCompatActivity implements SearchView.OnQueryTe
             }
         }
 
-        RVAdapter adapter = new RVAdapter(cursosFiltrados, "VERTICAL", this.userName, this);
+        RVAdapter adapter = new RVAdapter(cursosFiltrados, "VERTICAL", userLoginData, this);
         rv.setAdapter(adapter);
         return false;
     }

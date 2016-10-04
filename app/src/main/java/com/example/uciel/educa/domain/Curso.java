@@ -123,7 +123,7 @@ public class Curso {
         String currentDateTimeString = df.format(Calendar.getInstance().getTime());
 
         if (currentDateTimeString.compareTo(cadenaFechaComienzo)<0){
-            return ("comienza el "  + cadenaFechaComienzo);
+            return ("Comienza el "  + cadenaFechaComienzo);
         } else {
             return "Dictandose";
         }

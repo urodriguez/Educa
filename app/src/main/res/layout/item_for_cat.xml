@@ -39,16 +39,17 @@
             android:id="@+id/curso_profesor"
             android:layout_toRightOf="@+id/curso_photo_niv"
             android:layout_below="@+id/curso_name"
+            android:textSize="18sp"
             />
 
         <TextView
-            android:layout_centerInParent="true"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/fecha_comienzo"
             android:layout_below="@+id/curso_profesor"
             android:layout_toRightOf="@+id/curso_photo_niv"
-            android:textSize="12sp"
+            android:layout_marginLeft="30dp"
+            android:layout_marginTop="10dp"
             />
 
         <RatingBar
@@ -57,6 +58,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="30dp"
+            android:layout_marginTop="10dp"
             android:layout_toRightOf="@+id/curso_photo_niv"
             android:layout_below="@+id/fecha_comienzo"
             android:numStars="5"
