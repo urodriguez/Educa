@@ -172,7 +172,6 @@ public class MisCursos extends AppCompatActivity implements SearchView.OnQueryTe
                     }
                 }
         );
-        //queue.add(stringRequest);
         RQSingleton.getInstance(this).addToRequestQueue(stringRequest);
     }
 

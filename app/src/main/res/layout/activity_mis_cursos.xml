@@ -65,8 +65,9 @@ android:fitsSystemWindows="true">
             android:layout_below="@id/toolbar"
             android:text="@string/mis_cursos"
             android:textStyle="bold"
-            android:textSize="15dp"
-            android:padding="4dp"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="8dp"
+            android:textSize="24sp"
             />
 
         <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"

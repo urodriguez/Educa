@@ -3,7 +3,10 @@ package com.example.uciel.educa.activities;
 import android.content.Intent;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.DisplayMetrics;
 import android.view.View;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.android.volley.AuthFailureError;
@@ -150,6 +153,15 @@ public class Log extends AppCompatActivity implements GoogleApiClient.OnConnecti
 
     private void cargarSliderLayout() {
         mDemoSlider = (SliderLayout)findViewById(R.id.slider);
+
+        DisplayMetrics displaymetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
+        int height = (4*displaymetrics.heightPixels/6);
+
+        android.util.Log.d("MSG", "H= " + height);
+
+        LinearLayout.LayoutParams params = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT, height);
+        mDemoSlider.setLayoutParams(params); //causes layout update
 
         HashMap<String,Integer> file_maps = new HashMap<String, Integer>();
         file_maps.put("Descubre el conocimiento",R.drawable.conocimiento);
