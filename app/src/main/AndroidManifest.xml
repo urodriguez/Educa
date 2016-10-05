@@ -25,24 +25,19 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-
         <activity
             android:name="com.facebook.FacebookActivity"
             android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
             android:label="@string/app_name"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
-
         <activity android:name=".activities.Cursos" />
-
         <activity android:name=".activities.DescripcionCurso" />
-
-        <activity android:name=".activities.Home"/>
-
+        <activity android:name=".activities.Home" />
         <activity android:name=".activities.CursosBuscados" />
-
         <activity android:name=".activities.MisCursos" />
-
-        <activity android:name=".activities.MisDiplomas"/>
+        <activity android:name=".activities.MisDiplomas" />
+        <activity android:name=".activities.UnidadesCurso" />
+        <activity android:name=".activities.ContenidoCurso"></activity>
     </application>
 
 </manifest>

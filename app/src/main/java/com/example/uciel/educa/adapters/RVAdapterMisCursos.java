@@ -14,6 +14,7 @@ import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
 import com.example.uciel.educa.R;
 import com.example.uciel.educa.activities.DescripcionCurso;
+import com.example.uciel.educa.activities.UnidadesCurso;
 import com.example.uciel.educa.domain.Curso;
 import com.example.uciel.educa.domain.SingletonUserLogin;
 import com.example.uciel.educa.network.RQSingleton;
@@ -93,33 +94,21 @@ public class RVAdapterMisCursos extends RecyclerView.Adapter<RVAdapterMisCursos.
             @Override
             public void onClick(View v) {
                 //implementing onClick
-                Intent intentDescripcionCurso = new Intent();
-                intentDescripcionCurso.setClass(v.getContext(), DescripcionCurso.class);
-                this.cargarInformacion(intentDescripcionCurso,cursos.get(i));
+                Intent intentContenidoCurso = new Intent();
+                intentContenidoCurso.setClass(v.getContext(), UnidadesCurso.class);
 
-                v.getContext().startActivity(intentDescripcionCurso);
+                this.cargarInformacion(intentContenidoCurso,cursos.get(i));
+
+                v.getContext().startActivity(intentContenidoCurso);
                 System.out.println("Clicked " + String.valueOf(i));
             }
 
             private void cargarInformacion(Intent intentDescripcionCurso, Curso curso) {
+                android.util.Log.d("MSG", "ID_A= " +  curso.getId());
                 intentDescripcionCurso.putExtra("ID", curso.getId());
             }
         });
     }
-
-    private String getEstadoCurso(int i) {
-        String estado = "";
-
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTimeInMillis(cursos.get(i).getFechaEstimadaProximaSesion());
-        Date fechaComienzo = calendar.getTime();
-        SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
-        String cadenaFechaComienzo = df.format(fechaComienzo);
-
-
-        return estado;
-    }
-
 
     @Override
     public int getItemCount() {
