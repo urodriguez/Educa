@@ -118,7 +118,7 @@ public class DescripcionCurso extends AppCompatActivity {
 
     private void initializeData(){
         // Instantiate the RequestQueue.
-        String url = "";
+        String url;
         if(extras.getBoolean("ES_DE_ULT_CURSOS") == true){
             url = URL_ULT_CURSOS;
         } else {
