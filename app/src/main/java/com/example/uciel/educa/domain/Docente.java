@@ -4,6 +4,11 @@ public class Docente {
     private int id;
     private Usuario usuario;
 
+    public Docente() {
+        this.id = 1;
+        this.usuario = new Usuario();
+    }
+
     public int getId() {
         return id;
     }

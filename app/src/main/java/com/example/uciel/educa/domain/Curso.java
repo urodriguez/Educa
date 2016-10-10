@@ -24,6 +24,14 @@ public class Curso {
     private List<Unidad> unidades;
     private List<Critica> criticas;
 
+    public Curso() {
+        this.id = 1;
+        this.name = "Nombre Curso";
+        this.categoria = new Categoria(2,"Programacion","ninguno");
+        this.descripcion = "Descripcion del curso";
+        this.docente = new Docente();
+    }
+
     public Curso(String name, String profesor, int photoId) {
         this.name = name;
         this.profesor = profesor;

@@ -5,6 +5,12 @@ public class Categoria {
     private String descripcion;
     private String imagen;
 
+    public Categoria(int id, String descripcion, String imagen) {
+        this.id = id;
+        this.descripcion = descripcion;
+        this.imagen = imagen;
+    }
+
     public String getImagen() {
         return imagen;
     }

@@ -2,6 +2,7 @@ package com.example.uciel.educa.activities;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.Typeface;
 import android.os.Handler;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
@@ -15,9 +16,13 @@ import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.view.ViewGroup;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RatingBar;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.android.volley.Request;
@@ -255,7 +260,59 @@ public class ContenidoCurso extends AppCompatActivity {
     }
 
     private void cargarMaterial() {
+        llMaterial = (LinearLayout) viewPager.findViewById(R.id.llMaterial);
+        llMaterial.removeAllViews();
 
+        ImageView myImage = new ImageView(this);
+        myImage.setImageResource(R.drawable.video_thumbnail);
+
+        // cargamos video
+        TextView txt = new TextView(this);
+        txt.setTextSize(18);
+        txt.setTypeface(null, Typeface.BOLD);
+        txt.setText("Introduccion a programación (video)");
+
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
+                RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
+        params.addRule(RelativeLayout.BELOW, myImage.getId());
+        txt.setLayoutParams(params);
+        RelativeLayout.LayoutParams paramsImg = new RelativeLayout.LayoutParams(
+                RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
+        myImage.setLayoutParams(paramsImg);
+
+        RelativeLayout rlVideo = new RelativeLayout(this);
+        rlVideo.addView(myImage);
+
+        RelativeLayout rlText = new RelativeLayout(this);
+        rlText.addView(txt);
+
+        rlVideo.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent videoIntent = new Intent(ContenidoCurso.this,VideoActivity.class);
+                videoIntent.putExtra("ID_CONTENIDO", "1");
+
+                startActivity(videoIntent);
+            }
+        });
+
+
+        llMaterial.addView(rlVideo);
+        llMaterial.addView(rlText);
+
+        // Agrego un divisor
+        llMaterial.addView(crearDivisor(LinearLayout.LayoutParams.MATCH_PARENT, 1, 10, 15, 10, 15, Color.LTGRAY));
+
+    }
+
+    private ImageView crearDivisor(int ancho, int alto, int margenI, int margenTop, int margenD, int margenBottom, int c) {
+        ImageView divisor = new ImageView(this);
+        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ancho, alto);
+        lp.setMargins(margenI, margenTop, margenD, margenBottom);
+        divisor.setLayoutParams(lp);
+        divisor.setBackgroundColor(c);
+
+        return divisor;
     }
 
     private void cargarPracticas() {

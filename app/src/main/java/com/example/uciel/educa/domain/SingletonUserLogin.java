@@ -4,7 +4,8 @@ public class SingletonUserLogin {
     private static SingletonUserLogin instance = null;
     private String userName, userID;
     protected SingletonUserLogin() {
-        // Exists only to defeat instantiation.
+        this.userName = "Harcodeado";
+        this.userID = "10";
     }
     public static SingletonUserLogin getInstance() {
         if(instance == null) {

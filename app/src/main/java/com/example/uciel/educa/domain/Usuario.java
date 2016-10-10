@@ -7,6 +7,13 @@ public class Usuario {
     private String email;
     private String foto;
 
+    public Usuario() {
+        this.id = 1;
+        this.nombre = "Nombre";
+        this.nombre = "Apellido";
+        this.email = "nombre@mail.com";
+    }
+
     public int getId() {
         return id;
     }

@@ -149,6 +149,9 @@ public class MisCursos extends AppCompatActivity implements SearchView.OnQueryTe
         cursos = new ArrayList<>();
         String url = URL_MIS_CURSOS + userLoginData.getUserID();
 
+        //Curso aCurso = new Curso();
+        //cursos.add(aCurso);
+
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
                     @Override
