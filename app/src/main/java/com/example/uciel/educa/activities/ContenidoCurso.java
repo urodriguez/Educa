@@ -157,7 +157,6 @@ public class ContenidoCurso extends AppCompatActivity {
         tabs.setSelectedTabIndicatorColor(ContextCompat.getColor(this, R.color.black_overlay));
 
         viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabs));
-
         tabs.setOnTabSelectedListener(
                 new TabLayout.OnTabSelectedListener() {
                     @Override
@@ -191,11 +190,14 @@ public class ContenidoCurso extends AppCompatActivity {
                 }
         );
 
+
+
         final Handler handler = new Handler();
 
         final Runnable r = new Runnable() {
             public void run() {
                 viewPager.setCurrentItem(0);
+                cargarMaterial();
             }
         };
         handler.postDelayed(r, 500);
@@ -263,14 +265,22 @@ public class ContenidoCurso extends AppCompatActivity {
         llMaterial = (LinearLayout) viewPager.findViewById(R.id.llMaterial);
         llMaterial.removeAllViews();
 
+        addVideoItem();
+        addMaterialItem();
+
+    }
+
+    private void addVideoItem() {
         ImageView myImage = new ImageView(this);
         myImage.setImageResource(R.drawable.video_thumbnail);
+
 
         // cargamos video
         TextView txt = new TextView(this);
         txt.setTextSize(18);
         txt.setTypeface(null, Typeface.BOLD);
-        txt.setText("Introduccion a programación (video)");
+        String nombreUnidad = extras.getString("UNIDAD");
+        txt.setText(nombreUnidad + "(video)");
 
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
                 RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
@@ -290,8 +300,9 @@ public class ContenidoCurso extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent videoIntent = new Intent(ContenidoCurso.this,VideoActivity.class);
-                videoIntent.putExtra("ID_CONTENIDO", "1");
-
+                videoIntent.putExtra("ID_CURSO", extras.getInt("ID_CURSO"));
+                videoIntent.putExtra("UNIDAD", extras.getString("UNIDAD"));
+                videoIntent.putExtra("ID_UNIDAD", 1); // CAMBIAR ESTO
                 startActivity(videoIntent);
             }
         });
@@ -302,7 +313,50 @@ public class ContenidoCurso extends AppCompatActivity {
 
         // Agrego un divisor
         llMaterial.addView(crearDivisor(LinearLayout.LayoutParams.MATCH_PARENT, 1, 10, 15, 10, 15, Color.LTGRAY));
+    }
 
+    private void addMaterialItem() {
+        ImageView myImage = new ImageView(this);
+        myImage.setImageResource(R.drawable.block_de_apunte);
+
+        // cargamos video
+        TextView txt = new TextView(this);
+        txt.setTextSize(18);
+        txt.setTypeface(null, Typeface.BOLD);
+
+        String nombreUnidad = extras.getString("UNIDAD");
+        txt.setText(nombreUnidad + "(Material)");
+
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(
+                RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
+        params.addRule(RelativeLayout.BELOW, myImage.getId());
+        txt.setLayoutParams(params);
+        RelativeLayout.LayoutParams paramsImg = new RelativeLayout.LayoutParams(
+                RelativeLayout.LayoutParams.MATCH_PARENT, RelativeLayout.LayoutParams.MATCH_PARENT);
+        myImage.setLayoutParams(paramsImg);
+
+        RelativeLayout rlMaterial = new RelativeLayout(this);
+        rlMaterial.addView(myImage);
+
+        RelativeLayout rlText = new RelativeLayout(this);
+        rlText.addView(txt);
+
+        rlMaterial.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent materialIntent = new Intent(ContenidoCurso.this,MaterialActivity.class);
+                materialIntent.putExtra("ID_CURSO", extras.getInt("ID_CURSO"));
+                materialIntent.putExtra("UNIDAD", extras.getInt("UNIDAD"));
+                startActivity(materialIntent);
+            }
+        });
+
+
+        llMaterial.addView(rlMaterial);
+        llMaterial.addView(rlText);
+
+        // Agrego un divisor
+        llMaterial.addView(crearDivisor(LinearLayout.LayoutParams.MATCH_PARENT, 1, 10, 15, 10, 15, Color.LTGRAY));
     }
 
     private ImageView crearDivisor(int ancho, int alto, int margenI, int margenTop, int margenD, int margenBottom, int c) {

@@ -22,10 +22,15 @@ public class VideoActivity extends AppCompatActivity {
     private int position = 0;
     private MediaController mediaControls;
 
+    private Bundle extras;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_video);
+
+        extras = getIntent().getExtras();
+
         //set the media controller buttons
         if (mediaControls == null) {
             mediaControls = new MediaController(VideoActivity.this);
@@ -33,11 +38,14 @@ public class VideoActivity extends AppCompatActivity {
 
         //initialize the VideoView
         myVideoView = (VideoView) findViewById(R.id.video_view);
+        inicializarVideo();
+    }
 
+    private void inicializarVideo() {
         // create a progress bar while the video file is loading
         progressDialog = new ProgressDialog(VideoActivity.this);
         // set a title for the progress bar
-        progressDialog.setTitle("Titulo del video");
+        progressDialog.setTitle(extras.getString("UNIDAD"));
         // set a message for the progress bar
         progressDialog.setMessage("Loading...");
         //set the progress bar not cancelable on users' touch
@@ -50,8 +58,13 @@ public class VideoActivity extends AppCompatActivity {
             myVideoView.setMediaController(mediaControls);
 
             //set the uri of the video to be played
-            myVideoView.setVideoURI(Uri.parse("http://www.html5videoplayer.net/videos/toystory.mp4"));
-            //myVideoView.setVideoURI(Uri.parse("http://educa-mnforlenza.rhcloud.com/api/unidad/1/1/video"));
+            myVideoView.setVideoURI(Uri.parse("http://res.cloudinary.com/nhuallpa/video/upload/v1476072479/video_h7ihf2.mp4"));
+
+            int idCurso = extras.getInt("ID_CURSO");
+            int idUnidad = extras.getInt("ID_UNIDAD");
+            String urlVideo = "http://educa-mnforlenza.rhcloud.com/api/unidad/"+idUnidad+"/"+idCurso+"/video";
+            Log.i("VideoActivity", "Cargando video " + urlVideo);
+            //myVideoView.setVideoURI(Uri.parse(urlVideo));
             InputStream subtitule = getResources().getAssets().open("toystory.vtt");
             //myVideoView.addSubtitleSource(subtitule, MediaFormat.createSubtitleFormat("text/vtt", Locale.ENGLISH.getLanguage()));
 
@@ -78,9 +91,6 @@ public class VideoActivity extends AppCompatActivity {
                 }
             }
         });
-
-
-
     }
 
     @Override
