@@ -346,7 +346,7 @@ public class ContenidoCurso extends AppCompatActivity {
             public void onClick(View v) {
                 Intent materialIntent = new Intent(ContenidoCurso.this,MaterialActivity.class);
                 materialIntent.putExtra("ID_CURSO", extras.getInt("ID_CURSO"));
-                materialIntent.putExtra("UNIDAD", extras.getInt("UNIDAD"));
+                materialIntent.putExtra("ID_UNIDAD", extras.getInt("ID_UNIDAD"));
                 startActivity(materialIntent);
             }
         });

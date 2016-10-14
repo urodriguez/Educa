@@ -1,11 +1,14 @@
 package com.example.uciel.educa.activities;
 
+import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.os.Bundle;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
-import android.util.*;
+import android.view.View;
+import android.webkit.WebChromeClient;
+import android.webkit.WebSettings;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
 
@@ -14,7 +17,7 @@ import com.example.uciel.educa.R;
 public class MaterialActivity extends AppCompatActivity {
 
     private WebView myWebView;
-    private String url;
+    private String urlMaterial;
     private Bundle extras;
     private Toolbar toolbar;
 
@@ -23,19 +26,28 @@ public class MaterialActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_material);
 
-        myWebView = (WebView) this.findViewById(R.id.webView);
-        myWebView.getSettings().setJavaScriptEnabled(true);
-
         extras = getIntent().getExtras();
-        setToolbar();
-
         int idCurso = extras.getInt("ID_CURSO");
         int idUnidad = extras.getInt("ID_UNIDAD");
 
-        String urlMaterial = "http://educa-mnforlenza.rhcloud.com/api/unidad/"+idUnidad+"/"+idCurso+"/material";
-        android.util.Log.i("MaterialActivity", "Cargando material " + urlMaterial);
+        setToolbar();
 
-        myWebView.loadUrl("https://www.google.com/");
+        myWebView = (WebView) this.findViewById(R.id.webView);
+
+        myWebView.getSettings().setLoadsImagesAutomatically(true);
+        myWebView.getSettings().setJavaScriptEnabled(true);
+        myWebView.setScrollBarStyle(View.SCROLLBARS_INSIDE_OVERLAY);
+        myWebView.getSettings().setBuiltInZoomControls(true);
+
+        /*
+        myWebView.clearCache(true);
+        myWebView.getSettings().setDomStorageEnabled(true);
+        myWebView.setWebChromeClient(new WebChromeClient());*/
+
+        urlMaterial = "http://educa-mnforlenza.rhcloud.com/api/unidad/"+idUnidad+"/"+idCurso+"/material";
+        android.util.Log.d("MSG", "URL= " + urlMaterial);
+
+        myWebView.loadUrl(urlMaterial);
 
         myWebView.setWebViewClient(new WebViewClient(){
 
@@ -43,6 +55,11 @@ public class MaterialActivity extends AppCompatActivity {
             public boolean shouldOverrideUrlLoading(WebView view, String url){
                 view.loadUrl(url);
                 return true;
+            }
+
+            @Override
+            public void onPageStarted(WebView view, String url, Bitmap favicon) {
+                super.onPageStarted(view, url, favicon);
             }
         });
     }

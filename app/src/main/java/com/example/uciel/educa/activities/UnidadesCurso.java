@@ -199,7 +199,8 @@ public class UnidadesCurso extends AppCompatActivity {
             RelativeLayout.LayoutParams paramsdos = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, 124);
             cv.setLayoutParams(paramsdos); //causes layout update
 
-            tv.setId(i);
+            final int textViewUnidadID = i;
+            tv.setId(textViewUnidadID);
             tv.setText("  " + curso.getTituloUnidadNum(i));
             tv.setTypeface(null, Typeface.BOLD);
             tv.setTextSize(18);
@@ -213,15 +214,15 @@ public class UnidadesCurso extends AppCompatActivity {
 
             cv.addView(rl);
 
-            final int finalI = i;
             cv.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
                     Intent cursosIntent = new Intent(UnidadesCurso.this,ContenidoCurso.class);
                     cursosIntent.putExtra("ID_CURSO", curso.getId());
 
-                    TextView textView = (TextView) findViewById(finalI);
+                    TextView textView = (TextView) findViewById(textViewUnidadID);
                     cursosIntent.putExtra("UNIDAD",textView.getText());
+                    cursosIntent.putExtra("ID_UNIDAD", textViewUnidadID + 1);
 
                     startActivity(cursosIntent);
 
