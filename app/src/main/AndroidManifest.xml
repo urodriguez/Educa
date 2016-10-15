@@ -19,11 +19,11 @@
             android:value="@string/facebook_app_id" />
 
         <activity android:name=".activities.Log">
-            <intent-filter>
+            <!--intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
                 <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter>
+            </intent-filter-->
         </activity>
         <activity
             android:name="com.facebook.FacebookActivity"
@@ -33,10 +33,10 @@
         <activity android:name=".activities.Cursos" />
         <activity android:name=".activities.DescripcionCurso" />
         <activity android:name=".activities.Home">
-           <!--intent-filter>
+           <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
                 <category android:name="android.intent.category.LAUNCHER" />
-            </intent-filter-->
+            </intent-filter>
         </activity>
         <activity android:name=".activities.CursosBuscados" />
         <activity android:name=".activities.MisCursos" />

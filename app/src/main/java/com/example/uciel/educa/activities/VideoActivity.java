@@ -1,11 +1,14 @@
 package com.example.uciel.educa.activities;
 
 import android.app.ProgressDialog;
+import android.graphics.Color;
 import android.media.MediaFormat;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.support.v7.widget.Toolbar;
 import android.util.Log;
 import android.widget.MediaController;
 import android.widget.VideoView;
@@ -21,6 +24,7 @@ public class VideoActivity extends AppCompatActivity {
     private ProgressDialog progressDialog;
     private int position = 0;
     private MediaController mediaControls;
+    private Toolbar toolbar;
 
     private Bundle extras;
 
@@ -36,6 +40,7 @@ public class VideoActivity extends AppCompatActivity {
             mediaControls = new MediaController(VideoActivity.this);
         }
 
+        this.setToolbar();
         //initialize the VideoView
         myVideoView = (VideoView) findViewById(R.id.video_view);
         inicializarVideo();
@@ -65,9 +70,9 @@ public class VideoActivity extends AppCompatActivity {
             String urlVideo = "http://educa-mnforlenza.rhcloud.com/api/unidad/"+idUnidad+"/"+idCurso+"/video";
             Log.i("VideoActivity", "Cargando video " + urlVideo);
             myVideoView.setVideoURI(Uri.parse(urlVideo));
-            //myVideoView.setVideoURI(Uri.parse(urlVideo));
-            InputStream subtitule = getResources().getAssets().open("toystory.vtt");
-            //myVideoView.addSubtitleSource(subtitule, MediaFormat.createSubtitleFormat("text/vtt", Locale.ENGLISH.getLanguage()));
+
+            InputStream subtitule = getResources().getAssets().open("discurso.vtt");
+            myVideoView.addSubtitleSource(subtitule, MediaFormat.createSubtitleFormat("text/vtt", Locale.ENGLISH.getLanguage()));
 
 
         } catch (Exception e) {
@@ -108,5 +113,21 @@ public class VideoActivity extends AppCompatActivity {
         //we use onRestoreInstanceState in order to play the video playback from the stored position
         position = savedInstanceState.getInt("Position");
         myVideoView.seekTo(position);
+
+    }
+
+    private void setToolbar() {
+        toolbar = (Toolbar) findViewById(R.id.toolbarVideo);
+        toolbar.setTitle(extras.getString("UNIDAD"));
+        toolbar.setTitleTextColor(Color.WHITE);
+
+        setSupportActionBar(toolbar);
+        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
+        final ActionBar ab = getSupportActionBar();
+        if (ab != null) {
+            // Poner ícono del drawer toggle
+            ab.setHomeAsUpIndicator(R.drawable.ic_ab_back_holo_dark_am);
+            ab.setDisplayHomeAsUpEnabled(true);
+        }
     }
 }
