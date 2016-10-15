@@ -35,7 +35,7 @@ public class MaterialActivity extends AppCompatActivity {
         String urlMaterial = "http://educa-mnforlenza.rhcloud.com/api/unidad/"+idUnidad+"/"+idCurso+"/material";
         android.util.Log.i("MaterialActivity", "Cargando material " + urlMaterial);
 
-        myWebView.loadUrl("https://www.google.com/");
+        myWebView.loadUrl(urlMaterial);
 
         myWebView.setWebViewClient(new WebViewClient(){
 

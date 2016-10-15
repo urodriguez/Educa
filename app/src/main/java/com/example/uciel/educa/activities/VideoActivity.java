@@ -58,12 +58,13 @@ public class VideoActivity extends AppCompatActivity {
             myVideoView.setMediaController(mediaControls);
 
             //set the uri of the video to be played
-            myVideoView.setVideoURI(Uri.parse("http://res.cloudinary.com/nhuallpa/video/upload/v1476072479/video_h7ihf2.mp4"));
+            //myVideoView.setVideoURI(Uri.parse("http://res.cloudinary.com/nhuallpa/video/upload/v1476072479/video_h7ihf2.mp4"));
 
             int idCurso = extras.getInt("ID_CURSO");
             int idUnidad = extras.getInt("ID_UNIDAD");
             String urlVideo = "http://educa-mnforlenza.rhcloud.com/api/unidad/"+idUnidad+"/"+idCurso+"/video";
             Log.i("VideoActivity", "Cargando video " + urlVideo);
+            myVideoView.setVideoURI(Uri.parse(urlVideo));
             //myVideoView.setVideoURI(Uri.parse(urlVideo));
             InputStream subtitule = getResources().getAssets().open("toystory.vtt");
             //myVideoView.addSubtitleSource(subtitule, MediaFormat.createSubtitleFormat("text/vtt", Locale.ENGLISH.getLanguage()));
