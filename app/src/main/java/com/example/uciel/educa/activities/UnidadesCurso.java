@@ -220,8 +220,9 @@ public class UnidadesCurso extends AppCompatActivity {
                     Intent cursosIntent = new Intent(UnidadesCurso.this,ContenidoCurso.class);
                     cursosIntent.putExtra("ID_CURSO", curso.getId());
 
+                    android.util.Log.i("INFO", "ID UNIDAD: " + textViewUnidadID + 1);
                     TextView textView = (TextView) findViewById(textViewUnidadID);
-                    cursosIntent.putExtra("UNIDAD",textView.getText());
+                    cursosIntent.putExtra("UNIDAD", textView.getText());
                     cursosIntent.putExtra("ID_UNIDAD", textViewUnidadID + 1);
 
                     startActivity(cursosIntent);

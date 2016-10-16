@@ -1,10 +1,13 @@
 package com.example.uciel.educa.activities;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.graphics.Color;
 import android.media.MediaFormat;
 import android.media.MediaPlayer;
 import android.net.Uri;
+import android.provider.MediaStore;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -54,9 +57,20 @@ public class VideoActivity extends AppCompatActivity {
         // set a message for the progress bar
         progressDialog.setMessage("Loading...");
         //set the progress bar not cancelable on users' touch
-        progressDialog.setCancelable(false);
+        progressDialog.setCancelable(true);
+        progressDialog.setOnCancelListener(new DialogInterface.OnCancelListener()
+        {
+            @Override
+            public void onCancel(DialogInterface dialog)
+            {
+                ProgressDialog progress = (ProgressDialog)dialog;
+                finish();
+            }
+        });
         // show the progress bar
         progressDialog.show();
+
+
 
         try {
             //set the media controller in the VideoView
@@ -130,4 +144,6 @@ public class VideoActivity extends AppCompatActivity {
             ab.setDisplayHomeAsUpEnabled(true);
         }
     }
+
+
 }

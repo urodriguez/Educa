@@ -302,7 +302,8 @@ public class ContenidoCurso extends AppCompatActivity {
                 Intent videoIntent = new Intent(ContenidoCurso.this,VideoActivity.class);
                 videoIntent.putExtra("ID_CURSO", extras.getInt("ID_CURSO"));
                 videoIntent.putExtra("UNIDAD", extras.getString("UNIDAD"));
-                videoIntent.putExtra("ID_UNIDAD", 1); // CAMBIAR ESTO
+                videoIntent.putExtra("ID_UNIDAD", extras.getInt("ID_UNIDAD"));
+                android.util.Log.i("INFO", "ID UNIDAD RECIBIDA: " + extras.getInt("ID_UNIDAD"));
                 startActivity(videoIntent);
             }
         });
@@ -346,7 +347,9 @@ public class ContenidoCurso extends AppCompatActivity {
             public void onClick(View v) {
                 Intent materialIntent = new Intent(ContenidoCurso.this,MaterialActivity.class);
                 materialIntent.putExtra("ID_CURSO", extras.getInt("ID_CURSO"));
+                materialIntent.putExtra("UNIDAD", extras.getString("UNIDAD"));
                 materialIntent.putExtra("ID_UNIDAD", extras.getInt("ID_UNIDAD"));
+                android.util.Log.i("INFO", "ID UNIDAD RECIBIDA: " + extras.getInt("ID_UNIDAD"));
                 startActivity(materialIntent);
             }
         });
@@ -374,6 +377,61 @@ public class ContenidoCurso extends AppCompatActivity {
     }
 
     private void cargarExamenes() {
+
+        llExamen = (LinearLayout) viewPager.findViewById(R.id.llExamen);
+        llExamen.removeAllViews();
+
+        TextView txt = new TextView(this);
+        txt.setTextSize(18);
+        txt.setTypeface(null, Typeface.BOLD);
+        String nombreUnidad = extras.getString("UNIDAD");
+        int numeroUnidad = extras.getInt("ID_UNIDAD");
+        txt.setText("Examen unidad " + numeroUnidad);
+
+        TextView txtDescripcion = new TextView(this);
+        txtDescripcion.setTextSize(14);
+        txtDescripcion.setText(R.string.regla1_examen);
+
+        TextView txtDuracion = new TextView(this);
+        txtDuracion.setTextSize(14);
+        txtDuracion.setText(R.string.duracion_examen);
+
+        TextView txtEstado = new TextView(this);
+        txtEstado.setTextSize(16);
+        txtEstado.setText(R.string.estado_pendiente_examen);
+
+        Button btnComenzar = new Button(this);
+        btnComenzar.setText(R.string.boton_comenzar_examen);
+
+        RelativeLayout rlText1 = new RelativeLayout(this);
+        rlText1.addView(txt);
+        RelativeLayout rlText2 = new RelativeLayout(this);
+        rlText2.addView(txtDescripcion);
+        RelativeLayout rlText3 = new RelativeLayout(this);
+        rlText3.addView(txtDuracion);
+        RelativeLayout rlText4 = new RelativeLayout(this);
+        rlText4.addView(txtEstado);
+        RelativeLayout rlText5 = new RelativeLayout(this);
+        rlText5.addView(btnComenzar);
+
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, 124);
+        params.addRule(RelativeLayout.ALIGN_BOTTOM);
+        rlText5.setLayoutParams(params);
+
+        btnComenzar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent videoIntent = new Intent(ContenidoCurso.this,MaterialActivity.class);
+                startActivity(videoIntent);
+            }
+        });
+
+
+        llExamen.addView(rlText1);
+        llExamen.addView(rlText2);
+        llExamen.addView(rlText3);
+        llExamen.addView(rlText4);
+        llExamen.addView(rlText5);
 
     }
 }
