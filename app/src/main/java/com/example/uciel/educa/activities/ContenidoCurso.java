@@ -401,6 +401,9 @@ public class ContenidoCurso extends AppCompatActivity {
         txtEstado.setText(R.string.estado_pendiente_examen);
 
         Button btnComenzar = new Button(this);
+        LinearLayout.LayoutParams paramsButton = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
+                LinearLayout.LayoutParams.WRAP_CONTENT);
+        btnComenzar.setLayoutParams(paramsButton);
         btnComenzar.setText(R.string.boton_comenzar_examen);
 
         RelativeLayout rlText1 = new RelativeLayout(this);
@@ -415,7 +418,7 @@ public class ContenidoCurso extends AppCompatActivity {
         rlText5.addView(btnComenzar);
 
         RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, 124);
-        params.addRule(RelativeLayout.ALIGN_BOTTOM);
+        params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
         rlText5.setLayoutParams(params);
 
         btnComenzar.setOnClickListener(new View.OnClickListener() {
