@@ -4,9 +4,8 @@ public class SingletonUserLogin {
     private static SingletonUserLogin instance = null;
     private String userName, userID;
     protected SingletonUserLogin() {
-        this.userName = "Harcodeado";
-        this.userID = "10";
     }
+
     public static SingletonUserLogin getInstance() {
         if(instance == null) {
             instance = new SingletonUserLogin();

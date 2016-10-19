@@ -156,7 +156,7 @@ public class Log extends AppCompatActivity implements GoogleApiClient.OnConnecti
 
         DisplayMetrics displaymetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
-        int height = (4*displaymetrics.heightPixels/6);
+        int height = (2*displaymetrics.heightPixels/3);
 
         android.util.Log.d("MSG", "H= " + height);
 
@@ -215,8 +215,8 @@ public class Log extends AppCompatActivity implements GoogleApiClient.OnConnecti
             android.util.Log.d(TAG, "account Name: " + acct.getDisplayName());
             android.util.Log.d(TAG, "account Email: " + acct.getEmail());
 
-            //registrarUsuario(acct.getId(), acct.getDisplayName(), "GG" );
-            registrarUsuario("10", acct.getDisplayName(), "GG" );
+            registrarUsuario(acct.getId(), acct.getDisplayName(), "GG" );
+            //registrarUsuario("10", acct.getDisplayName(), "GG" );
 
         } else {
             android.util.Log.d(TAG, "ERROR AL INICIAR SESION");
@@ -285,6 +285,8 @@ public class Log extends AppCompatActivity implements GoogleApiClient.OnConnecti
             e.printStackTrace();
         }
 
+        android.util.Log.d("MSG", dataToSend.toString());
+
         JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.POST, url, dataToSend,
                 new Response.Listener<JSONObject>() {
 
@@ -301,8 +303,8 @@ public class Log extends AppCompatActivity implements GoogleApiClient.OnConnecti
                             e.printStackTrace();
                         }
                         SingletonUserLogin userLoginData = SingletonUserLogin.getInstance();
-                        //userLoginData.setUserLoginData(nombreUsuario, idUserEduca);
-                        userLoginData.setUserLoginData(nombreUsuario, "10");
+                        userLoginData.setUserLoginData(nombreUsuario, idUserEduca);
+                        //userLoginData.setUserLoginData(nombreUsuario, "10");
 
                         Intent homeIntent = new Intent(Log.this,Home.class);
                         startActivity(homeIntent);
