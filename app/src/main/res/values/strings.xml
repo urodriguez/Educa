@@ -23,11 +23,7 @@
     <string name="polit_priv">Al continuar, aceptas nuestros <b>Términos de servicio</b> y <b>Política de privacidad</b></string>
     <string name="mis_cursos">Mis cursos</string>
     <string name="regla1_examen">Solo tiene una oportunidad para rendir este examen</string>
-    <string name="duracion_examen">Duración estimada: </string>
-
-    <string name="estado_pendiente_examen">PENDIENTE</string>
-    <string name="estado_aprobado_examen">APROBADO</string>
-    <string name="estado_desaprobado_examen">DESAPROBADO</string>
 
     <string name="boton_comenzar_examen">Comenzar</string>
+    <string name="boton_comenzar_corregir">Corregir</string>
 </resources>
