@@ -1,6 +1,5 @@
 package com.example.uciel.educa.activities;
 
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Typeface;
 import android.support.design.widget.NavigationView;
@@ -11,22 +10,18 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.widget.FrameLayout;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.example.uciel.educa.R;
-import com.example.uciel.educa.adapters.RVAdapter;
 import com.example.uciel.educa.domain.Curso;
 import com.example.uciel.educa.domain.SingletonUserLogin;
 import com.example.uciel.educa.network.RQSingleton;
@@ -34,7 +29,6 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
 import java.lang.reflect.Type;
-import java.util.ArrayList;
 import java.util.Collection;
 
 public class UnidadesCurso extends AppCompatActivity {
@@ -217,7 +211,7 @@ public class UnidadesCurso extends AppCompatActivity {
             cv.setOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    Intent cursosIntent = new Intent(UnidadesCurso.this,ContenidoCurso.class);
+                    Intent cursosIntent = new Intent(UnidadesCurso.this,ContenidoUnidad.class);
                     cursosIntent.putExtra("ID_CURSO", curso.getId());
 
                     android.util.Log.i("INFO", "ID UNIDAD: " + textViewUnidadID + 1);
@@ -235,6 +229,12 @@ public class UnidadesCurso extends AppCompatActivity {
             });
 
             llUnidades.addView(cv);
+
+            TextView txtEspacio = new TextView(this);
+            txtEspacio.setText(" ");
+            txtEspacio.setTextSize(3);
+
+            llUnidades.addView(txtEspacio);
         }
 
 

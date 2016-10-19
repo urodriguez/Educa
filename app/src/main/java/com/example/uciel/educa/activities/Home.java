@@ -65,7 +65,7 @@ public class Home extends AppCompatActivity implements android.widget.SearchView
         extras = getIntent().getExtras();
 
         userLoginData = SingletonUserLogin.getInstance();
-        android.util.Log.d("MSG", userLoginData.getUserName() + "-" + userLoginData.getUserID());
+        android.util.Log.d("MSG", userLoginData.getUserName() + " - " + userLoginData.getUserID());
 
         drawerLayout = (DrawerLayout) findViewById(R.id.drawer_layout);
         navigationView = (NavigationView) findViewById(R.id.nav_view);

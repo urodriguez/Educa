@@ -18,6 +18,7 @@ import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.*;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -105,7 +106,7 @@ public class DescripcionCurso extends AppCompatActivity {
 
         setToolbar(); // Setear Toolbar como action bar
 
-        setTabs();
+        //setTabs();
 
         userLoginData = SingletonUserLogin.getInstance();
 
@@ -157,6 +158,8 @@ public class DescripcionCurso extends AppCompatActivity {
             }
 
         }
+
+        setTabs();
 
     }
 
@@ -217,7 +220,7 @@ public class DescripcionCurso extends AppCompatActivity {
                 }
         );
 
-        final Handler handler = new Handler();
+        /*final Handler handler = new Handler();
 
         final Runnable r = new Runnable() {
             public void run() {
@@ -226,15 +229,26 @@ public class DescripcionCurso extends AppCompatActivity {
                 cargarSesionesInscriptas(URL_MIS_SESIONES + userLoginData.getUserID());
             }
         };
-        handler.postDelayed(r, 500);
+        handler.postDelayed(r, 500);*/
+
+        viewPager.setCurrentItem(0);
+        cargarDetalle();
+        cargarSesionesInscriptas(URL_MIS_SESIONES + userLoginData.getUserID());
 
     }
 
     void cargarDetalle(){
+        Log.d("MSG", "CARGANDO DETALLE");
         fotoCursoNiv = (NetworkImageView)viewPager.findViewById(R.id.curso_photo_niv);
+        if(fotoCursoNiv == null){
+            Log.d("MSG", "ERROR NULL1");
+        }
         ImageLoader mImageLoader;
         // Get the NetworkImageView that will display the image.
         mImageLoader = RQSingleton.getInstance(getApplicationContext()).getImageLoader();
+        if(mImageLoader == null){
+            Log.d("MSG", "ERROR NULL2");
+        }
         fotoCursoNiv.setImageUrl(IMAGE_ROOT_URL + curso.getLinkImagen(), mImageLoader);
 
         cargarTextosDescriptivos();
@@ -302,7 +316,7 @@ public class DescripcionCurso extends AppCompatActivity {
             txt.setText("Unidad " + String.valueOf(i + 1)+ " - " + curso.getTituloUnidadNum(i));
 
             Button bc = new Button(this);
-            bc.setText(String.valueOf(curso.getDuracionEstUnidadNum(i)) + " horas");
+            bc.setText(String.valueOf(curso.getDuracionEstUnidadNum(i)) + " hs");
             bc.setTextSize(14);
             bc.setBackgroundResource(R.drawable.round_button);
 
@@ -310,7 +324,7 @@ public class DescripcionCurso extends AppCompatActivity {
             rl.addView(txt);
             rl.addView(bc);
 
-            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(64, 64);
+            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(88, 88);
             params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
             params.addRule(RelativeLayout.RIGHT_OF, txt.getId());
             bc.setLayoutParams(params); //causes layout update
@@ -329,7 +343,7 @@ public class DescripcionCurso extends AppCompatActivity {
 
     private void cargarSesiones() {
         llSesiones = (LinearLayout) viewPager.findViewById(R.id.sesiones_linear);
-        //llSesiones.removeAllViews();
+        llSesiones.removeAllViews();
 
         cargarBotonesDeInscripcion(curso.getSesiones().size());
 
@@ -444,13 +458,20 @@ public class DescripcionCurso extends AppCompatActivity {
                         // response
                         android.util.Log.d("MSG", "SUCCESS Response");
                         android.util.Log.d("MSG", response.toString());
+
+                        CharSequence text = "¡Felicitaciones! Te has inscripto";
+                        Toast toast = Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT);
+                        toast.show();
                     }
                 }, new Response.ErrorListener() {
 
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                android.util.Log.d("MSG", "ERROR Response");
-            }
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        android.util.Log.d("MSG", "ERROR Response");
+                        CharSequence text = "¡Error al procesar la inscripción! Vuelve a intentarlo";
+                        Toast toast = Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT);
+                        toast.show();
+                    }
         }
         );
         // Add the request to the RequestQueue.
@@ -473,13 +494,20 @@ public class DescripcionCurso extends AppCompatActivity {
                         // response
                         android.util.Log.d("MSG", "SUCCESS Response");
                         android.util.Log.d("MSG", response.toString());
+
+                        CharSequence text = "Te has desinscripto con exito";
+                        Toast toast = Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT);
+                        toast.show();
                     }
                 }, new Response.ErrorListener() {
 
-            @Override
-            public void onErrorResponse(VolleyError error) {
-                android.util.Log.d("MSG", "ERROR Response");
-            }
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        android.util.Log.d("MSG", "ERROR Response");
+                        CharSequence text = "¡Error al procesar la desinscripción! Vuelve a intentarlo";
+                        Toast toast = Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT);
+                        toast.show();
+                    }
         }
         );
         // Add the request to the RequestQueue.
