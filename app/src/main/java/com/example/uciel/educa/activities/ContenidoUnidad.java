@@ -17,32 +17,37 @@ import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RatingBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
-import com.android.volley.toolbox.NetworkImageView;
 import com.android.volley.toolbox.StringRequest;
 import com.example.uciel.educa.R;
 import com.example.uciel.educa.adapters.VPAdapterContCurso;
+import com.example.uciel.educa.domain.Choice;
 import com.example.uciel.educa.domain.Curso;
+import com.example.uciel.educa.domain.ItemDeExamen;
+import com.example.uciel.educa.domain.Pregunta;
 import com.example.uciel.educa.domain.SingletonUserLogin;
 import com.example.uciel.educa.network.RQSingleton;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.lang.reflect.Type;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 
-public class ContenidoCurso extends AppCompatActivity {
+public class ContenidoUnidad extends AppCompatActivity {
     private SingletonUserLogin userLoginData;
     private Curso curso;
 
@@ -53,16 +58,19 @@ public class ContenidoCurso extends AppCompatActivity {
     private ViewPager viewPager;
     private VPAdapterContCurso vpaContCurso;
 
-    private LinearLayout llMaterial, llPracticas, llExamen;
+    private LinearLayout llMaterial, llPracticas, llExamenPresentacion, llExamenItems;
 
     private Bundle extras;
 
+    private List<ItemDeExamen> itemsExamen = new ArrayList<>();
+
     private final String URL_CURSOS_DISP = "http://educa-mnforlenza.rhcloud.com/api/curso/listar";
+    private final String URL_PREG_UNIDAD = "http://educa-mnforlenza.rhcloud.com/api/unidad/";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_contenido_curso);
+        setContentView(R.layout.activity_contenido_unidad);
 
         extras = getIntent().getExtras();
 
@@ -90,7 +98,26 @@ public class ContenidoCurso extends AppCompatActivity {
                     @Override
                     public void onResponse(String response) {
                         parseHomeResponse(response);
-                        //mostrarUnidades();
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        android.util.Log.d("MSG", "ERROR RESPONSE");
+                    }
+                }
+        );
+
+        RQSingleton.getInstance(this).addToRequestQueue(stringRequest);
+
+
+        url = URL_PREG_UNIDAD + extras.getInt("ID_UNIDAD") + "/" + extras.getInt("ID_CURSO") + "/examen";
+        android.util.Log.d("MSG", url);
+        stringRequest = new StringRequest(Request.Method.GET, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        parseExamResponse(response);
                     }
                 },
                 new Response.ErrorListener() {
@@ -116,6 +143,33 @@ public class ContenidoCurso extends AppCompatActivity {
                 android.util.Log.d("MSG", "CURSO ENCONTRADO");
                 curso = c;
             }
+        }
+    }
+
+    public void parseExamResponse(String response){
+        android.util.Log.d("MSG", response.toString());
+        try {
+            JSONObject jsonExamen = new JSONObject(response);
+            JSONArray jsonArray = jsonExamen.getJSONArray("preguntas");
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject jsonItemExamen = jsonArray.getJSONObject(i);
+                if(jsonItemExamen.getBoolean("multipleChoice") == true){
+                    Choice itemChoice = new Choice(jsonItemExamen.getJSONObject("id").getInt("idPregunta"),
+                                                   jsonItemExamen.getString("enunciado"),
+                                                   jsonItemExamen.getJSONArray("opciones"),
+                                                   this);
+                    itemsExamen.add(itemChoice);
+                } else{
+                    Pregunta preg = new Pregunta(jsonItemExamen.getJSONObject("id").getInt("idPregunta"),
+                                                 jsonItemExamen.getString("enunciado"),
+                                                 jsonItemExamen.getString("respuesta"),
+                                                 this);
+                    itemsExamen.add(preg);
+                }
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
     }
 
@@ -241,15 +295,15 @@ public class ContenidoCurso extends AppCompatActivity {
 
                         switch (title) {
                             case "Home":
-                                Intent home = new Intent(ContenidoCurso.this,Home.class);
+                                Intent home = new Intent(ContenidoUnidad.this,Home.class);
                                 startActivity(home);
                                 break;
                             case "Mis Cursos":
-                                Intent misCursos = new Intent(ContenidoCurso.this,MisCursos.class);
+                                Intent misCursos = new Intent(ContenidoUnidad.this,MisCursos.class);
                                 startActivity(misCursos);
                                 break;
                             case "Mis Diplomas":
-                                Intent misDiplomas = new Intent(ContenidoCurso.this,MisDiplomas.class);
+                                Intent misDiplomas = new Intent(ContenidoUnidad.this,MisDiplomas.class);
                                 startActivity(misDiplomas);
                                 break;
                         }
@@ -299,7 +353,7 @@ public class ContenidoCurso extends AppCompatActivity {
         rlVideo.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent videoIntent = new Intent(ContenidoCurso.this,VideoActivity.class);
+                Intent videoIntent = new Intent(ContenidoUnidad.this,VideoActivity.class);
                 videoIntent.putExtra("ID_CURSO", extras.getInt("ID_CURSO"));
                 videoIntent.putExtra("UNIDAD", extras.getString("UNIDAD"));
                 videoIntent.putExtra("ID_UNIDAD", extras.getInt("ID_UNIDAD"));
@@ -345,7 +399,7 @@ public class ContenidoCurso extends AppCompatActivity {
         rlMaterial.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                Intent materialIntent = new Intent(ContenidoCurso.this,MaterialActivity.class);
+                Intent materialIntent = new Intent(ContenidoUnidad.this,MaterialActivity.class);
                 materialIntent.putExtra("ID_CURSO", extras.getInt("ID_CURSO"));
                 materialIntent.putExtra("UNIDAD", extras.getString("UNIDAD"));
                 materialIntent.putExtra("ID_UNIDAD", extras.getInt("ID_UNIDAD"));
@@ -362,6 +416,76 @@ public class ContenidoCurso extends AppCompatActivity {
         llMaterial.addView(crearDivisor(LinearLayout.LayoutParams.MATCH_PARENT, 1, 10, 15, 10, 15, Color.LTGRAY));
     }
 
+    private void cargarPracticas() {
+
+    }
+
+    private void cargarExamenes() {
+        llExamenPresentacion = (LinearLayout) viewPager.findViewById(R.id.llExamenPresentacion);
+
+        TextView txtExamen = (TextView) viewPager.findViewById(R.id.textViewExamTitulo);
+        txtExamen.setText("Examen - Unidad " + extras.getInt("ID_UNIDAD"));
+
+
+        TextView txtDuracion = (TextView) viewPager.findViewById(R.id.textViewExamDuracion);
+        txtDuracion.setText("Duración estimida: " + "X" + " min");
+
+        Button btnEstado = (Button) viewPager.findViewById(R.id.buttonEstado);
+        btnEstado.setText("ESTADO");
+
+        Button btnComenzar = (Button) viewPager.findViewById(R.id.buttonComenzar);
+
+        btnComenzar.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                llExamenPresentacion.setVisibility(View.GONE);
+
+
+                llExamenItems = (LinearLayout) viewPager.findViewById(R.id.llExamenItems);
+                llExamenItems.setVisibility(View.VISIBLE);
+
+                for (int i = 0; i < itemsExamen.size(); i++){
+                    TextView txtEnunciado = new TextView(ContenidoUnidad.this);
+                    txtEnunciado.setText(itemsExamen.get(i).getEnunciado());
+                    txtEnunciado.setTextSize(18);
+                    txtEnunciado.setTypeface(null, Typeface.BOLD);
+                    llExamenItems.addView(txtEnunciado);
+
+                    llExamenItems.addView(itemsExamen.get(i).getCompletable());
+
+                    // Agrego un divisor
+                    llExamenItems.addView(crearDivisor(LinearLayout.LayoutParams.MATCH_PARENT, 1, 10, 15, 10, 15, Color.LTGRAY));
+                }
+
+                Button btnCorregir = new Button(ContenidoUnidad.this);
+                btnCorregir.setText(R.string.boton_comenzar_corregir);
+                llExamenItems.addView(btnCorregir);
+
+                btnCorregir.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        boolean estaAprobado = true;
+                        for (int i = 0; i < itemsExamen.size(); i++){
+                            if(itemsExamen.get(i).itemAprobado() == false){
+                                estaAprobado = false;
+                                i = itemsExamen.size() + 1;//Para salir del for
+                            }
+                        }
+                        android.util.Log.d("MSG", "RESULTADO= " + estaAprobado);
+                        llExamenItems.setVisibility(View.GONE);
+                        llExamenItems.removeAllViews();
+                        llExamenPresentacion.setVisibility(View.VISIBLE);
+
+                    }
+                });
+            }
+        });
+
+
+
+
+    }
+
     private ImageView crearDivisor(int ancho, int alto, int margenI, int margenTop, int margenD, int margenBottom, int c) {
         ImageView divisor = new ImageView(this);
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ancho, alto);
@@ -370,71 +494,5 @@ public class ContenidoCurso extends AppCompatActivity {
         divisor.setBackgroundColor(c);
 
         return divisor;
-    }
-
-    private void cargarPracticas() {
-
-    }
-
-    private void cargarExamenes() {
-
-        llExamen = (LinearLayout) viewPager.findViewById(R.id.llExamen);
-        llExamen.removeAllViews();
-
-        TextView txt = new TextView(this);
-        txt.setTextSize(18);
-        txt.setTypeface(null, Typeface.BOLD);
-        String nombreUnidad = extras.getString("UNIDAD");
-        int numeroUnidad = extras.getInt("ID_UNIDAD");
-        txt.setText("Examen unidad " + numeroUnidad);
-
-        TextView txtDescripcion = new TextView(this);
-        txtDescripcion.setTextSize(14);
-        txtDescripcion.setText(R.string.regla1_examen);
-
-        TextView txtDuracion = new TextView(this);
-        txtDuracion.setTextSize(14);
-        txtDuracion.setText(R.string.duracion_examen);
-
-        TextView txtEstado = new TextView(this);
-        txtEstado.setTextSize(16);
-        txtEstado.setText(R.string.estado_pendiente_examen);
-
-        Button btnComenzar = new Button(this);
-        LinearLayout.LayoutParams paramsButton = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT);
-        btnComenzar.setLayoutParams(paramsButton);
-        btnComenzar.setText(R.string.boton_comenzar_examen);
-
-        RelativeLayout rlText1 = new RelativeLayout(this);
-        rlText1.addView(txt);
-        RelativeLayout rlText2 = new RelativeLayout(this);
-        rlText2.addView(txtDescripcion);
-        RelativeLayout rlText3 = new RelativeLayout(this);
-        rlText3.addView(txtDuracion);
-        RelativeLayout rlText4 = new RelativeLayout(this);
-        rlText4.addView(txtEstado);
-        RelativeLayout rlText5 = new RelativeLayout(this);
-        rlText5.addView(btnComenzar);
-
-        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, 124);
-        params.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
-        rlText5.setLayoutParams(params);
-
-        btnComenzar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent videoIntent = new Intent(ContenidoCurso.this,MaterialActivity.class);
-                startActivity(videoIntent);
-            }
-        });
-
-
-        llExamen.addView(rlText1);
-        llExamen.addView(rlText2);
-        llExamen.addView(rlText3);
-        llExamen.addView(rlText4);
-        llExamen.addView(rlText5);
-
     }
 }
