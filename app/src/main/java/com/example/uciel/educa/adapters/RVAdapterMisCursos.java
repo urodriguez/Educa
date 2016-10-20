@@ -13,15 +13,11 @@ import android.widget.TextView;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
 import com.example.uciel.educa.R;
-import com.example.uciel.educa.activities.DescripcionCurso;
-import com.example.uciel.educa.activities.UnidadesCurso;
+import com.example.uciel.educa.activities.ContenidoCurso;
 import com.example.uciel.educa.domain.Curso;
 import com.example.uciel.educa.domain.SingletonUserLogin;
 import com.example.uciel.educa.network.RQSingleton;
 
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
 import java.util.List;
 
 public class RVAdapterMisCursos extends RecyclerView.Adapter<RVAdapterMisCursos.CursoViewHolder> {
@@ -95,7 +91,7 @@ public class RVAdapterMisCursos extends RecyclerView.Adapter<RVAdapterMisCursos.
             public void onClick(View v) {
                 //implementing onClick
                 Intent intentContenidoCurso = new Intent();
-                intentContenidoCurso.setClass(v.getContext(), UnidadesCurso.class);
+                intentContenidoCurso.setClass(v.getContext(), ContenidoCurso.class);
 
                 this.cargarInformacion(intentContenidoCurso,cursos.get(i));
 
@@ -106,6 +102,7 @@ public class RVAdapterMisCursos extends RecyclerView.Adapter<RVAdapterMisCursos.
             private void cargarInformacion(Intent intentDescripcionCurso, Curso curso) {
                 android.util.Log.d("MSG", "ID_A= " +  curso.getId());
                 intentDescripcionCurso.putExtra("ID", curso.getId());
+                intentDescripcionCurso.putExtra("NOMBRE_CURSO", curso.getNombre());
             }
         });
     }
