@@ -3,7 +3,6 @@ package com.example.uciel.educa.activities;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
-import android.os.Handler;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.content.ContextCompat;
@@ -28,7 +27,7 @@ import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.StringRequest;
 import com.example.uciel.educa.R;
-import com.example.uciel.educa.adapters.VPAdapterContCurso;
+import com.example.uciel.educa.adapters.VPAdapterContUnidad;
 import com.example.uciel.educa.domain.Choice;
 import com.example.uciel.educa.domain.Curso;
 import com.example.uciel.educa.domain.ItemDeExamen;
@@ -56,7 +55,7 @@ public class ContenidoUnidad extends AppCompatActivity {
     private Toolbar toolbar;
     private TabLayout tabs;
     private ViewPager viewPager;
-    private VPAdapterContCurso vpaContCurso;
+    private VPAdapterContUnidad vpaContUnidad;
 
     private LinearLayout llMaterial, llPracticas, llExamenPresentacion, llExamenItems;
 
@@ -78,7 +77,7 @@ public class ContenidoUnidad extends AppCompatActivity {
 
         setToolbar(); // Setear Toolbar como action bar
 
-        setTabs();
+        //setTabs();
 
         userLoginData = SingletonUserLogin.getInstance();
 
@@ -107,7 +106,6 @@ public class ContenidoUnidad extends AppCompatActivity {
                     }
                 }
         );
-
         RQSingleton.getInstance(this).addToRequestQueue(stringRequest);
 
 
@@ -127,7 +125,6 @@ public class ContenidoUnidad extends AppCompatActivity {
                     }
                 }
         );
-
         RQSingleton.getInstance(this).addToRequestQueue(stringRequest);
     }
 
@@ -171,6 +168,8 @@ public class ContenidoUnidad extends AppCompatActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
+
+        setTabs();
     }
 
     private void setToolbar() {
@@ -179,7 +178,6 @@ public class ContenidoUnidad extends AppCompatActivity {
         toolbar.setTitleTextColor(Color.WHITE);
 
         setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
         final ActionBar ab = getSupportActionBar();
         if (ab != null) {
             // Poner ícono del drawer toggle
@@ -192,8 +190,8 @@ public class ContenidoUnidad extends AppCompatActivity {
         tabs = (TabLayout) findViewById(R.id.tabs);
 
         viewPager = (ViewPager) findViewById(R.id.viewpager);
-        vpaContCurso = new VPAdapterContCurso(getSupportFragmentManager());
-        viewPager.setAdapter(vpaContCurso);
+        vpaContUnidad = new VPAdapterContUnidad(getSupportFragmentManager());
+        viewPager.setAdapter(vpaContUnidad);
 
         final TabLayout.Tab material = tabs.newTab();
         final TabLayout.Tab practicas = tabs.newTab();
@@ -244,9 +242,12 @@ public class ContenidoUnidad extends AppCompatActivity {
                 }
         );
 
+        viewPager.setCurrentItem(0);
+        cargarMaterial();
 
 
-        final Handler handler = new Handler();
+
+        /*final Handler handler = new Handler();
 
         final Runnable r = new Runnable() {
             public void run() {
@@ -254,7 +255,7 @@ public class ContenidoUnidad extends AppCompatActivity {
                 cargarMaterial();
             }
         };
-        handler.postDelayed(r, 500);
+        handler.postDelayed(r, 500);*/
 
     }
 
@@ -281,6 +282,7 @@ public class ContenidoUnidad extends AppCompatActivity {
         TextView userName = (TextView)navigationView.getHeaderView(0).findViewById(R.id.username);
         userName.setText(userLoginData.getUserName());
 
+        navigationView.getMenu().getItem(1).setChecked(true);//mis cursos = item 1
         navigationView.setNavigationItemSelectedListener(
                 new NavigationView.OnNavigationItemSelectedListener() {
 
