@@ -37,7 +37,7 @@
         <activity android:name=".activities.MisCursos" />
         <activity android:name=".activities.VideoActivity" />
         <activity android:name=".activities.MisDiplomas" />
-        <activity android:name=".activities.UnidadesCurso" />
+        <activity android:name=".activities.ContenidoCurso" />
         <activity android:name=".activities.ContenidoUnidad" />
         <activity android:name=".activities.MaterialActivity" />
     </application>
