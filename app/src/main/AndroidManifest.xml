@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
-    package="com.example.uciel.educa">
+    package="com.example.uciel.educa"
+    >
 
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
@@ -18,7 +19,7 @@
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />
 
-        <activity android:name=".activities.Log">
+        <activity android:name=".activities.Log" android:screenOrientation="portrait">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -29,17 +30,23 @@
             android:name="com.facebook.FacebookActivity"
             android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
             android:label="@string/app_name"
-            android:theme="@android:style/Theme.Translucent.NoTitleBar" />
-        <activity android:name=".activities.Cursos" />
-        <activity android:name=".activities.DescripcionCurso" />
-        <activity android:name=".activities.Home" />
-        <activity android:name=".activities.CursosBuscados" />
-        <activity android:name=".activities.MisCursos" />
-        <activity android:name=".activities.VideoActivity" />
-        <activity android:name=".activities.MisDiplomas" />
-        <activity android:name=".activities.ContenidoCurso" />
-        <activity android:name=".activities.ContenidoUnidad" />
-        <activity android:name=".activities.MaterialActivity" />
+            android:theme="@android:style/Theme.Translucent.NoTitleBar"/>
+        <activity android:name=".activities.Cursos" android:screenOrientation="portrait"/>
+        <activity android:name=".activities.DescripcionCurso" android:screenOrientation="portrait"/>
+        <activity android:name=".activities.Home" android:screenOrientation="portrait">
+            <!--intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter-->
+        </activity>
+        <activity android:name=".activities.CursosBuscados" android:screenOrientation="portrait"/>
+        <activity android:name=".activities.MisCursos" android:screenOrientation="portrait"/>
+        <activity android:name=".activities.VideoActivity" android:screenOrientation="portrait"/>
+        <activity android:name=".activities.MisDiplomas" android:screenOrientation="portrait"/>
+        <activity android:name=".activities.ContenidoCurso" android:screenOrientation="portrait"/>
+        <activity android:name=".activities.ContenidoUnidad" android:screenOrientation="portrait"/>
+        <activity android:name=".activities.MaterialActivity" android:screenOrientation="portrait"/>
     </application>
 
 </manifest>
