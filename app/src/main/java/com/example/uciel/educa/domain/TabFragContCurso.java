@@ -18,12 +18,10 @@ public class TabFragContCurso extends Fragment {
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
         if(tabNumber == 0){
-            View view = inflater.inflate(R.layout.tab_contenido_one_mat, container, false);
+            View view = inflater.inflate(R.layout.tab_cont_curso_one_unids, container, false);
             return view;
-        } else if (tabNumber == 1) {
-            return inflater.inflate(R.layout.tab_contenido_two_pract, container, false);
         } else {
-            return inflater.inflate(R.layout.tab_cont_unidad_three_exam, container, false);
+            return inflater.inflate(R.layout.tab_cont_curso_two_foro, container, false);
         }
     }
 }

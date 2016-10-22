@@ -13,7 +13,7 @@ import android.widget.TextView;
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
 import com.example.uciel.educa.R;
-import com.example.uciel.educa.activities.ContenidoUnidad;
+import com.example.uciel.educa.activities.ContenidoCurso;
 import com.example.uciel.educa.domain.Curso;
 import com.example.uciel.educa.domain.SingletonUserLogin;
 import com.example.uciel.educa.network.RQSingleton;
@@ -91,7 +91,7 @@ public class RVAdapterMisCursos extends RecyclerView.Adapter<RVAdapterMisCursos.
             public void onClick(View v) {
                 //implementing onClick
                 Intent intentContenidoCurso = new Intent();
-                intentContenidoCurso.setClass(v.getContext(), ContenidoUnidad.class);
+                intentContenidoCurso.setClass(v.getContext(), ContenidoCurso.class);
 
                 this.cargarInformacion(intentContenidoCurso,cursos.get(i));
 

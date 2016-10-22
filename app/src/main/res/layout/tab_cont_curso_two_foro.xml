@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent" android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:id="@+id/llBaseForo"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+
+        <ScrollView
+            android:id="@+id/scrollForo"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="128dp"
+            >
+            <LinearLayout
+                android:id="@+id/linearScrollForo"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:padding="8dp"
+                android:orientation="vertical"
+                >
+            </LinearLayout>
+        </ScrollView>
+
+        <RelativeLayout
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:gravity = "bottom"
+            android:layout_alignParentBottom="true"
+            android:layout_centerHorizontal="true">
+
+            <View
+                android:id="@+id/separador"
+                android:layout_width="match_parent"
+                android:layout_height="2dp"
+                android:background="@android:color/darker_gray"
+                />
+
+            <android.support.design.widget.FloatingActionButton
+                android:layout_width="56dp"
+                android:layout_height="56dp"
+                android:clickable="true"
+                app:fabSize="mini"
+                app:srcCompat="@android:drawable/ic_menu_send"
+                android:id="@+id/floatingActionButton"
+                android:layout_alignParentEnd="true"
+                android:layout_toEndOf="@+id/editTextForo"/>
+
+            <EditText
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:inputType="text"
+                android:hint="@string/ingresa_aqu_tu_pregunta_respuesta"
+                android:id="@+id/editTextForo"
+                android:layout_alignParentStart="true"
+                />
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+
+
+
+</RelativeLayout>

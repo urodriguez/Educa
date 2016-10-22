@@ -5,7 +5,7 @@ import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 
 import com.example.uciel.educa.domain.TabFragContCurso;
-import com.example.uciel.educa.domain.TabFragment;
+import com.example.uciel.educa.domain.TabFragContUnidad;
 
 public class VPAdapterContCurso extends FragmentStatePagerAdapter {
     public VPAdapterContCurso(FragmentManager fm) {
@@ -23,9 +23,6 @@ public class VPAdapterContCurso extends FragmentStatePagerAdapter {
             case 1:
                 tb.setTabNumber(1);
                 return tb;
-            case 2:
-                tb.setTabNumber(2);
-                return tb;
             default:
                 return null;
         }
@@ -33,7 +30,7 @@ public class VPAdapterContCurso extends FragmentStatePagerAdapter {
 
     @Override
     public int getCount() {
-        return 3;           // As there are only 3 Tabs
+        return 2;           // As there are only 2 Tabs
     }
 
 }
