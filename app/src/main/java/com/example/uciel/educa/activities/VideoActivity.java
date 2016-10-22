@@ -43,7 +43,6 @@ public class VideoActivity extends AppCompatActivity {
             mediaControls = new MediaController(VideoActivity.this);
         }
 
-        this.setToolbar();
         //initialize the VideoView
         myVideoView = (VideoView) findViewById(R.id.video_view);
         inicializarVideo();
@@ -129,21 +128,5 @@ public class VideoActivity extends AppCompatActivity {
         myVideoView.seekTo(position);
 
     }
-
-    private void setToolbar() {
-        toolbar = (Toolbar) findViewById(R.id.toolbarVideo);
-        toolbar.setTitle(extras.getString("UNIDAD"));
-        toolbar.setTitleTextColor(Color.WHITE);
-
-        setSupportActionBar(toolbar);
-        getSupportActionBar().setDisplayHomeAsUpEnabled(true);
-        final ActionBar ab = getSupportActionBar();
-        if (ab != null) {
-            // Poner ícono del drawer toggle
-            ab.setHomeAsUpIndicator(R.drawable.ic_ab_back_holo_dark_am);
-            ab.setDisplayHomeAsUpEnabled(true);
-        }
-    }
-
 
 }

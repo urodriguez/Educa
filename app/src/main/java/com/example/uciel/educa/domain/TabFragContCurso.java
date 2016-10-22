@@ -23,7 +23,7 @@ public class TabFragContCurso extends Fragment {
         } else if (tabNumber == 1) {
             return inflater.inflate(R.layout.tab_contenido_two_pract, container, false);
         } else {
-            return inflater.inflate(R.layout.tab_contenido_three_exam, container, false);
+            return inflater.inflate(R.layout.tab_cont_unidad_three_exam, container, false);
         }
     }
 }
