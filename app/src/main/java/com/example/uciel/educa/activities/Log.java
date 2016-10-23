@@ -8,6 +8,7 @@ import android.view.View;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkResponse;
@@ -316,6 +317,9 @@ public class Log extends AppCompatActivity implements GoogleApiClient.OnConnecti
             @Override
             public void onErrorResponse(VolleyError error) {
                 android.util.Log.d("MSG", "ERROR Response");
+                CharSequence text = "Error al logearse. Reintente nuevamente!";
+                Toast toast = Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT);
+                toast.show();
             }
         }
         );

@@ -1,5 +1,6 @@
 package com.example.uciel.educa.activities;
 
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -22,6 +23,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -67,6 +69,8 @@ public class ContenidoUnidad extends AppCompatActivity {
     private final String URL_CURSOS_DISP = "http://educa-mnforlenza.rhcloud.com/api/curso/listar";
     private final String URL_PREG_UNIDAD = "http://educa-mnforlenza.rhcloud.com/api/unidad/";
 
+    private boolean examFail = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -104,6 +108,9 @@ public class ContenidoUnidad extends AppCompatActivity {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         android.util.Log.d("MSG", "ERROR RESPONSE");
+                        CharSequence text = "Error al cargar curso. Reintente nuevamente!";
+                        Toast toast = Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT);
+                        toast.show();
                     }
                 }
         );
@@ -116,6 +123,7 @@ public class ContenidoUnidad extends AppCompatActivity {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
+                        examFail = false;
                         parseExamResponse(response);
                     }
                 },
@@ -123,6 +131,8 @@ public class ContenidoUnidad extends AppCompatActivity {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         android.util.Log.d("MSG", "ERROR RESPONSE");
+                        examFail = true;
+
                     }
                 }
         );
@@ -441,46 +451,55 @@ public class ContenidoUnidad extends AppCompatActivity {
         btnComenzar.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                llExamenPresentacion.setVisibility(View.GONE);
+                if(examFail == false){
+                    llExamenPresentacion.setVisibility(View.GONE);
 
 
-                llExamenItems = (LinearLayout) viewPager.findViewById(R.id.llExamenItems);
-                llExamenItems.setVisibility(View.VISIBLE);
+                    llExamenItems = (LinearLayout) viewPager.findViewById(R.id.llExamenItems);
+                    llExamenItems.setVisibility(View.VISIBLE);
 
-                for (int i = 0; i < itemsExamen.size(); i++){
-                    TextView txtEnunciado = new TextView(ContenidoUnidad.this);
-                    txtEnunciado.setText(itemsExamen.get(i).getEnunciado());
-                    txtEnunciado.setTextSize(18);
-                    txtEnunciado.setTypeface(null, Typeface.BOLD);
-                    llExamenItems.addView(txtEnunciado);
+                    for (int i = 0; i < itemsExamen.size(); i++){
+                        TextView txtEnunciado = new TextView(ContenidoUnidad.this);
+                        txtEnunciado.setText(itemsExamen.get(i).getEnunciado());
+                        txtEnunciado.setTextSize(18);
+                        txtEnunciado.setTypeface(null, Typeface.BOLD);
+                        llExamenItems.addView(txtEnunciado);
 
-                    llExamenItems.addView(itemsExamen.get(i).getCompletable());
+                        llExamenItems.addView(itemsExamen.get(i).getCompletable());
 
-                    // Agrego un divisor
-                    llExamenItems.addView(crearDivisor(LinearLayout.LayoutParams.MATCH_PARENT, 1, 10, 15, 10, 15, Color.LTGRAY));
+                        // Agrego un divisor
+                        llExamenItems.addView(crearDivisor(LinearLayout.LayoutParams.MATCH_PARENT, 1, 10, 15, 10, 15, Color.LTGRAY));
+                    }
+
+                    Button btnCorregir = new Button(ContenidoUnidad.this);
+                    btnCorregir.setText(R.string.boton_comenzar_corregir);
+                    llExamenItems.addView(btnCorregir);
+
+                    btnCorregir.setOnClickListener(new View.OnClickListener() {
+                        @Override
+                        public void onClick(View v) {
+                            boolean estaAprobado = true;
+                            for (int i = 0; i < itemsExamen.size(); i++){
+                                if(itemsExamen.get(i).itemAprobado() == false){
+                                    estaAprobado = false;
+                                    i = itemsExamen.size() + 1;//Para salir del for
+                                }
+                            }
+                            android.util.Log.d("MSG", "RESULTADO= " + estaAprobado);
+                            llExamenItems.setVisibility(View.GONE);
+                            llExamenItems.removeAllViews();
+                            llExamenPresentacion.setVisibility(View.VISIBLE);
+
+                        }
+                    });
+
+                } else{
+                    CharSequence text = "Error al cargar examen. Reintente nuevamente!";
+                    Toast toast = Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT);
+                    toast.show();
+
                 }
 
-                Button btnCorregir = new Button(ContenidoUnidad.this);
-                btnCorregir.setText(R.string.boton_comenzar_corregir);
-                llExamenItems.addView(btnCorregir);
-
-                btnCorregir.setOnClickListener(new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        boolean estaAprobado = true;
-                        for (int i = 0; i < itemsExamen.size(); i++){
-                            if(itemsExamen.get(i).itemAprobado() == false){
-                                estaAprobado = false;
-                                i = itemsExamen.size() + 1;//Para salir del for
-                            }
-                        }
-                        android.util.Log.d("MSG", "RESULTADO= " + estaAprobado);
-                        llExamenItems.setVisibility(View.GONE);
-                        llExamenItems.removeAllViews();
-                        llExamenPresentacion.setVisibility(View.VISIBLE);
-
-                    }
-                });
             }
         });
 
