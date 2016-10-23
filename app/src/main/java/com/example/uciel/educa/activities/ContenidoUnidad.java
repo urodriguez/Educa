@@ -3,6 +3,7 @@ package com.example.uciel.educa.activities;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
+import android.os.Handler;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.content.ContextCompat;
@@ -77,7 +78,7 @@ public class ContenidoUnidad extends AppCompatActivity {
 
         setToolbar(); // Setear Toolbar como action bar
 
-        //setTabs();
+        setTabs();
 
         userLoginData = SingletonUserLogin.getInstance();
 
@@ -169,7 +170,7 @@ public class ContenidoUnidad extends AppCompatActivity {
             e.printStackTrace();
         }
 
-        setTabs();
+        //setTabs(); No deberia estar aca
     }
 
     private void setToolbar() {
@@ -243,11 +244,11 @@ public class ContenidoUnidad extends AppCompatActivity {
         );
 
         viewPager.setCurrentItem(0);
-        cargarMaterial();
+        //cargarMaterial();
 
 
 
-        /*final Handler handler = new Handler();
+        final Handler handler = new Handler();
 
         final Runnable r = new Runnable() {
             public void run() {
@@ -255,7 +256,7 @@ public class ContenidoUnidad extends AppCompatActivity {
                 cargarMaterial();
             }
         };
-        handler.postDelayed(r, 500);*/
+        handler.postDelayed(r, 500);
 
     }
 

@@ -34,6 +34,7 @@ import com.facebook.FacebookSdk;
 import com.facebook.GraphRequest;
 import com.facebook.GraphResponse;
 import com.facebook.HttpMethod;
+import com.facebook.appevents.AppEventsLogger;
 import com.facebook.login.LoginManager;
 import com.facebook.login.LoginResult;
 import com.facebook.login.widget.LoginButton;
@@ -75,6 +76,7 @@ public class Log extends AppCompatActivity implements GoogleApiClient.OnConnecti
 
 
         FacebookSdk.sdkInitialize(getApplicationContext());
+        AppEventsLogger.activateApp(this);
         callbackManager = CallbackManager.Factory.create();
         setContentView(R.layout.activity_log);
 

@@ -63,6 +63,7 @@ public class ContenidoCurso extends AppCompatActivity {
     private LinearLayout llUnidades, llMensajesForo;
 
 
+    //private final String URL_CURSOS_DISP = "parseUnidadesResponse";
     private final String URL_CURSOS_DISP = "http://educa-mnforlenza.rhcloud.com/api/curso/listar";
 
     @Override
