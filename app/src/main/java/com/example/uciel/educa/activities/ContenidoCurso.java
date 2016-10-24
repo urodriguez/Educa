@@ -1,5 +1,6 @@
 package com.example.uciel.educa.activities;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.Typeface;
@@ -10,12 +11,16 @@ import android.support.v4.content.ContextCompat;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
+import android.support.v4.widget.NestedScrollView;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
+import android.view.Gravity;
+import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -25,6 +30,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.Request;
 import com.android.volley.Response;
@@ -37,6 +43,8 @@ import com.example.uciel.educa.domain.SingletonUserLogin;
 import com.example.uciel.educa.network.RQSingleton;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
+
+import org.w3c.dom.Text;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -58,12 +66,12 @@ public class ContenidoCurso extends AppCompatActivity {
     private VPAdapterContCurso vpaContCurso;
 
     private Curso curso;
-    private ArrayList<String> mensajesForo = new ArrayList<>();
+    private ArrayList<String> temasForo = new ArrayList<>();
 
     private LinearLayout llUnidades, llMensajesForo;
 
+    private AlertDialog.Builder alertDialogBuilder;
 
-    //private final String URL_CURSOS_DISP = "parseUnidadesResponse";
     private final String URL_CURSOS_DISP = "http://educa-mnforlenza.rhcloud.com/api/curso/listar";
 
     @Override
@@ -346,7 +354,7 @@ public class ContenidoCurso extends AppCompatActivity {
         }
     }
 
-    private void cargarForo() {
+/*    private void cargarForo() {
         mensajesForo.add("hola");
         mensajesForo.add("hola, que buen curso!");
 
@@ -360,8 +368,8 @@ public class ContenidoCurso extends AppCompatActivity {
         android.util.Log.d("MSG", "HS= " + height);
 
         ScrollView scroll_view = (ScrollView) viewPager.findViewById(R.id.scrollForo);
-        /*scroll_view.setLayoutParams(new RelativeLayout.LayoutParams(
-                RelativeLayout.LayoutParams.MATCH_PARENT, height));*/
+        *//*scroll_view.setLayoutParams(new RelativeLayout.LayoutParams(
+                RelativeLayout.LayoutParams.MATCH_PARENT, height));*//*
         RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) scroll_view.getLayoutParams();
         //layoutParams.topMargin = 208;
         layoutParams.height = height;
@@ -390,19 +398,130 @@ public class ContenidoCurso extends AppCompatActivity {
                 llMensajesForo.addView(crearDivisor(LinearLayout.LayoutParams.MATCH_PARENT, 1, 10, 15, 10, 15, Color.LTGRAY));
             }
         });
+    }*/
+
+    private void cargarForo() {
+        llMensajesForo = (LinearLayout) viewPager.findViewById(R.id.linearScrollTemaForo);
+        llMensajesForo.removeAllViews();
+
+        //android.util.Log.d("MSG", "CANT UNID= " + curso.getCantDeUnidades());
+
+        for (int i = 0; i < 10; i++){
+            cargarTemas("t"+i, "d"+i);
+        }
+
+        FloatingActionButton fab = (FloatingActionButton) viewPager.findViewById(R.id.floatingActionButton);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(final View v) {
+                alertDialogBuilder = new AlertDialog.Builder(ContenidoCurso.this);
+                alertDialogBuilder.setTitle("Tema nuevo");
+
+                /*EditText etTitulo = new EditText(ContenidoCurso.this);
+                etTitulo.setHint("Ingrese titulo");
+                alertDialogBuilder.setView(etTitulo);
+
+                EditText etDescripcion = new EditText(ContenidoCurso.this);
+                etDescripcion.setHint("Ingrese descripción");
+                alertDialogBuilder.setView(etDescripcion);*/
+
+                LayoutInflater inflater = getLayoutInflater();
 
 
+                final View dialogView = inflater.inflate(R.layout.dialog_tema_foro, null);
+                // Inflate and set the layout for the dialog
+                // Pass null as the parent view because its going in the dialog layout
+                alertDialogBuilder.setView(dialogView);
 
+                // set dialog message
+                alertDialogBuilder.setCancelable(false).setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int id) {
+                        EditText tvT = (EditText) dialogView.findViewById(R.id.titulo);
+                        EditText tvD = (EditText) dialogView.findViewById(R.id.descripcion);
+                        if(tvT.getText().toString().length() < 45 && tvD.getText().toString().length() < 200){
+                            cargarTemas(tvT.getText().toString(), tvD.getText().toString());
+                        } else {
+                            CharSequence text = "¡Limite de caracteres excedido!";
+                            Toast toast = Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT);
+                            toast.show();
+                        }
+
+                    }
+                });
+
+                // create alert dialog
+                AlertDialog alertDialog = alertDialogBuilder.create();
+                // show it
+                alertDialog.show();
+            }
+        });
 
     }
 
-    private ImageView crearDivisor(int ancho, int alto, int margenI, int margenTop, int margenD, int margenBottom, int c) {
-        ImageView divisor = new ImageView(this);
-        LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(ancho, alto);
-        lp.setMargins(margenI, margenTop, margenD, margenBottom);
-        divisor.setLayoutParams(lp);
-        divisor.setBackgroundColor(c);
+    private void cargarTemas(String titulo, String descripcion){
+        CardView cv = new CardView(this);
+        RelativeLayout rl = new RelativeLayout(this);
+        //ll.setOrientation(LinearLayout.VERTICAL);
 
-        return divisor;
+
+        RelativeLayout.LayoutParams paramsdos = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, 100);
+        cv.setLayoutParams(paramsdos); //causes layout update
+
+        TextView tv = new TextView(this);
+        tv.setText(titulo);
+        tv.setTypeface(null, Typeface.BOLD);
+        tv.setTextSize(24);
+        rl.addView(tv);
+
+        TextView tvd = new TextView(this);
+        tvd.setText(descripcion);
+        tvd.setTypeface(null, Typeface.ITALIC);
+        tvd.setTextSize(18);
+        rl.addView(tvd);
+
+
+        RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)tv.getLayoutParams();
+        params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
+
+        tv.setLayoutParams(params); //causes layout update
+
+        RelativeLayout.LayoutParams paramsD = (RelativeLayout.LayoutParams)tvd.getLayoutParams();
+        paramsD.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+
+        tvd.setLayoutParams(paramsD); //causes layout update
+
+
+        cv.addView(rl);
+
+
+        cv.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Intent temaForoIntent = new Intent(ContenidoCurso.this,TemaForoActivity.class);
+
+                    /*temaForoIntent.putExtra("ID_CURSO", curso.getId());
+
+                    android.util.Log.i("INFO", "ID UNIDAD: " + textViewUnidadID + 1);
+                    TextView textView = (TextView) findViewById(textViewUnidadID);
+                    cursosIntent.putExtra("UNIDAD", textView.getText());
+                    cursosIntent.putExtra("ID_UNIDAD", textViewUnidadID + 1);*/
+
+                startActivity(temaForoIntent);
+
+                    /*TextView textView = (TextView) findViewById(finalI);
+                    CharSequence text = textView.getText();
+                    Toast toast = Toast.makeText(getApplicationContext(), text, Toast.LENGTH_LONG);
+                    toast.show();*/
+            }
+        });
+
+        llMensajesForo.addView(cv);
+
+        TextView txtEspacio = new TextView(this);
+        txtEspacio.setText(" ");
+        txtEspacio.setTextSize(3);
+
+        llMensajesForo.addView(txtEspacio);
+
     }
 }
