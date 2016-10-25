@@ -18,7 +18,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
-import android.util.DisplayMetrics;
+import android.util.*;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.Menu;
@@ -71,6 +71,8 @@ public class ContenidoCurso extends AppCompatActivity {
     private LinearLayout llUnidades, llMensajesForo;
 
     private AlertDialog.Builder alertDialogBuilder;
+
+    private int cantDeTemas = 0;
 
     private final String URL_CURSOS_DISP = "http://educa-mnforlenza.rhcloud.com/api/curso/listar";
 
@@ -309,7 +311,7 @@ public class ContenidoCurso extends AppCompatActivity {
             RelativeLayout.LayoutParams paramsdos = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, 124);
             cv.setLayoutParams(paramsdos); //causes layout update
 
-            final int textViewUnidadID = i;
+            final int textViewUnidadID = (i+1)*100;
             tv.setId(textViewUnidadID);
             tv.setText("  " + curso.getTituloUnidadNum(i));
             tv.setTypeface(null, Typeface.BOLD);
@@ -330,7 +332,6 @@ public class ContenidoCurso extends AppCompatActivity {
                     Intent cursosIntent = new Intent(ContenidoCurso.this,ContenidoUnidad.class);
                     cursosIntent.putExtra("ID_CURSO", curso.getId());
 
-                    android.util.Log.i("INFO", "ID UNIDAD: " + textViewUnidadID + 1);
                     TextView textView = (TextView) findViewById(textViewUnidadID);
                     cursosIntent.putExtra("UNIDAD", textView.getText());
                     cursosIntent.putExtra("ID_UNIDAD", textViewUnidadID + 1);
@@ -354,52 +355,6 @@ public class ContenidoCurso extends AppCompatActivity {
         }
     }
 
-/*    private void cargarForo() {
-        mensajesForo.add("hola");
-        mensajesForo.add("hola, que buen curso!");
-
-        llMensajesForo = (LinearLayout) viewPager.findViewById(R.id.linearScrollForo);
-        llMensajesForo.removeAllViews();
-
-        DisplayMetrics displaymetrics = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
-        int height = displaymetrics.heightPixels - 208 - 100 - 80;
-
-        android.util.Log.d("MSG", "HS= " + height);
-
-        ScrollView scroll_view = (ScrollView) viewPager.findViewById(R.id.scrollForo);
-        *//*scroll_view.setLayoutParams(new RelativeLayout.LayoutParams(
-                RelativeLayout.LayoutParams.MATCH_PARENT, height));*//*
-        RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) scroll_view.getLayoutParams();
-        //layoutParams.topMargin = 208;
-        layoutParams.height = height;
-        scroll_view.setLayoutParams(layoutParams);
-
-        for(int i = 0; i < mensajesForo.size(); i++){
-            TextView tvMensajeForo = new TextView(this);
-            tvMensajeForo.setText(mensajesForo.get(i));
-            llMensajesForo.addView(tvMensajeForo);
-
-            // Agrego un divisor
-            llMensajesForo.addView(crearDivisor(LinearLayout.LayoutParams.MATCH_PARENT, 1, 10, 15, 10, 15, Color.LTGRAY));
-        }
-
-        FloatingActionButton fab = (FloatingActionButton) viewPager.findViewById(R.id.floatingActionButton);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                EditText etMensajeIngresado = (EditText) viewPager.findViewById(R.id.editTextForo);
-
-                TextView tvMensajeForo = new TextView(ContenidoCurso.this);
-                tvMensajeForo.setText(etMensajeIngresado.getText().toString());
-                llMensajesForo.addView(tvMensajeForo);
-
-                // Agrego un divisor
-                llMensajesForo.addView(crearDivisor(LinearLayout.LayoutParams.MATCH_PARENT, 1, 10, 15, 10, 15, Color.LTGRAY));
-            }
-        });
-    }*/
-
     private void cargarForo() {
         llMensajesForo = (LinearLayout) viewPager.findViewById(R.id.linearScrollTemaForo);
         llMensajesForo.removeAllViews();
@@ -417,16 +372,7 @@ public class ContenidoCurso extends AppCompatActivity {
                 alertDialogBuilder = new AlertDialog.Builder(ContenidoCurso.this);
                 alertDialogBuilder.setTitle("Tema nuevo");
 
-                /*EditText etTitulo = new EditText(ContenidoCurso.this);
-                etTitulo.setHint("Ingrese titulo");
-                alertDialogBuilder.setView(etTitulo);
-
-                EditText etDescripcion = new EditText(ContenidoCurso.this);
-                etDescripcion.setHint("Ingrese descripción");
-                alertDialogBuilder.setView(etDescripcion);*/
-
                 LayoutInflater inflater = getLayoutInflater();
-
 
                 final View dialogView = inflater.inflate(R.layout.dialog_tema_foro, null);
                 // Inflate and set the layout for the dialog
@@ -468,6 +414,8 @@ public class ContenidoCurso extends AppCompatActivity {
         cv.setLayoutParams(paramsdos); //causes layout update
 
         TextView tv = new TextView(this);
+        final int textViewUnidadID = cantDeTemas++;
+        tv.setId(textViewUnidadID);
         tv.setText(titulo);
         tv.setTypeface(null, Typeface.BOLD);
         tv.setTextSize(24);
@@ -490,21 +438,15 @@ public class ContenidoCurso extends AppCompatActivity {
 
         tvd.setLayoutParams(paramsD); //causes layout update
 
-
         cv.addView(rl);
-
 
         cv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
                 Intent temaForoIntent = new Intent(ContenidoCurso.this,TemaForoActivity.class);
-
-                    /*temaForoIntent.putExtra("ID_CURSO", curso.getId());
-
-                    android.util.Log.i("INFO", "ID UNIDAD: " + textViewUnidadID + 1);
-                    TextView textView = (TextView) findViewById(textViewUnidadID);
-                    cursosIntent.putExtra("UNIDAD", textView.getText());
-                    cursosIntent.putExtra("ID_UNIDAD", textViewUnidadID + 1);*/
+                temaForoIntent.putExtra("ID_TEMA", textViewUnidadID);
+                TextView textView = (TextView) findViewById(textViewUnidadID);
+                temaForoIntent.putExtra("TITULO_TEMA", textView.getText());
 
                 startActivity(temaForoIntent);
 
