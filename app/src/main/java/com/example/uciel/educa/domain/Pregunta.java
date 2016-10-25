@@ -34,6 +34,6 @@ public class Pregunta extends ItemDeExamen{
     @Override
     public boolean itemAprobado() {
         android.util.Log.d("MSG", "OP INGRESADA= " + rtaIngresada.getText());
-        return rtaIngresada.getText().toString().equals(rtaCorrecta);
+        return rtaIngresada.getText().toString().toLowerCase().equals(rtaCorrecta.toLowerCase());
     }
 }

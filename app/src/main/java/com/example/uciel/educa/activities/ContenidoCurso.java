@@ -311,7 +311,7 @@ public class ContenidoCurso extends AppCompatActivity {
             RelativeLayout.LayoutParams paramsdos = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, 124);
             cv.setLayoutParams(paramsdos); //causes layout update
 
-            final int textViewUnidadID = (i+1)*100;
+            final int textViewUnidadID = i+100;
             tv.setId(textViewUnidadID);
             tv.setText("  " + curso.getTituloUnidadNum(i));
             tv.setTypeface(null, Typeface.BOLD);
@@ -334,7 +334,7 @@ public class ContenidoCurso extends AppCompatActivity {
 
                     TextView textView = (TextView) findViewById(textViewUnidadID);
                     cursosIntent.putExtra("UNIDAD", textView.getText());
-                    cursosIntent.putExtra("ID_UNIDAD", textViewUnidadID + 1);
+                    cursosIntent.putExtra("ID_UNIDAD", (textViewUnidadID - 100) + 1);//Transforma a ID de unidad
 
                     startActivity(cursosIntent);
 

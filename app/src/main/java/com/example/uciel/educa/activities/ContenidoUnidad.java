@@ -3,7 +3,9 @@ package com.example.uciel.educa.activities;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.Typeface;
+import android.graphics.drawable.GradientDrawable;
 import android.os.Handler;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
@@ -70,6 +72,7 @@ public class ContenidoUnidad extends AppCompatActivity {
     private final String URL_PREG_UNIDAD = "http://educa-mnforlenza.rhcloud.com/api/unidad/";
 
     private boolean examFail = false;
+    private int cantDePregAprobadas = -1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -179,8 +182,6 @@ public class ContenidoUnidad extends AppCompatActivity {
         } catch (JSONException e) {
             e.printStackTrace();
         }
-
-        //setTabs(); No deberia estar aca
     }
 
     private void setToolbar() {
@@ -439,12 +440,10 @@ public class ContenidoUnidad extends AppCompatActivity {
         TextView txtExamen = (TextView) viewPager.findViewById(R.id.textViewExamTitulo);
         txtExamen.setText("Examen - Unidad " + extras.getInt("ID_UNIDAD"));
 
-
         TextView txtDuracion = (TextView) viewPager.findViewById(R.id.textViewExamDuracion);
         txtDuracion.setText("Duración estimida: " + "X" + " min");
 
-        Button btnEstado = (Button) viewPager.findViewById(R.id.buttonEstado);
-        btnEstado.setText("ESTADO");
+        cargarEstadoExamen();
 
         Button btnComenzar = (Button) viewPager.findViewById(R.id.buttonComenzar);
 
@@ -453,7 +452,6 @@ public class ContenidoUnidad extends AppCompatActivity {
             public void onClick(View v) {
                 if(examFail == false){
                     llExamenPresentacion.setVisibility(View.GONE);
-
 
                     llExamenItems = (LinearLayout) viewPager.findViewById(R.id.llExamenItems);
                     llExamenItems.setVisibility(View.VISIBLE);
@@ -478,16 +476,21 @@ public class ContenidoUnidad extends AppCompatActivity {
                     btnCorregir.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
+                            cantDePregAprobadas = 0;
                             boolean estaAprobado = true;
                             for (int i = 0; i < itemsExamen.size(); i++){
                                 if(itemsExamen.get(i).itemAprobado() == false){
                                     estaAprobado = false;
-                                    i = itemsExamen.size() + 1;//Para salir del for
+                                } else {
+                                    cantDePregAprobadas++;
                                 }
                             }
                             android.util.Log.d("MSG", "RESULTADO= " + estaAprobado);
+                            android.util.Log.d("MSG", "#APROB= " + cantDePregAprobadas);
                             llExamenItems.setVisibility(View.GONE);
                             llExamenItems.removeAllViews();
+
+                            cargarEstadoExamen();
                             llExamenPresentacion.setVisibility(View.VISIBLE);
 
                         }
@@ -505,6 +508,23 @@ public class ContenidoUnidad extends AppCompatActivity {
 
 
 
+
+    }
+
+    private void cargarEstadoExamen(){
+        Button btnEstado = (Button) viewPager.findViewById(R.id.buttonEstado);
+        if(cantDePregAprobadas == -1){
+            btnEstado.setText("PENDIENTE");
+            btnEstado.getBackground().setColorFilter(Color.LTGRAY, PorterDuff.Mode.SRC_ATOP);
+        } else if (cantDePregAprobadas == itemsExamen.size()){
+            btnEstado.setText("APROBADO" + "\n" +
+                              "Acertadas/total = " + cantDePregAprobadas + "/" + itemsExamen.size() + "\n");
+            btnEstado.getBackground().setColorFilter(Color.GREEN, PorterDuff.Mode.SRC_ATOP);
+        } else {
+            btnEstado.setText("DESAPROBADO" + "\n" +
+                              "Acertadas/Total = " + cantDePregAprobadas + "/" + itemsExamen.size() + "\n");
+            btnEstado.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.SRC_ATOP);
+        }
 
     }
 
