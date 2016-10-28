@@ -15,6 +15,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.android.volley.Request;
@@ -24,6 +25,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.example.uciel.educa.R;
 import com.example.uciel.educa.adapters.RVAdapter;
 import com.example.uciel.educa.domain.Curso;
+import com.example.uciel.educa.domain.ProgressBarHandler;
 import com.example.uciel.educa.domain.SingletonUserLogin;
 import com.example.uciel.educa.network.RQSingleton;
 import com.google.gson.Gson;
@@ -47,11 +49,13 @@ public class Home extends AppCompatActivity implements android.widget.SearchView
     private List<Curso> cursos;
     private RecyclerView rv;
 
+    private ProgressBarHandler progressBH;
+
     private Bundle extras;
 
     private SingletonUserLogin userLoginData;
 
-    LinearLayout llCategorias;
+    private LinearLayout llCategorias;
 
     private final String URL_ULT_CURSOS = "http://educa-mnforlenza.rhcloud.com/api/curso/ultimos-cursos";
 
@@ -82,11 +86,14 @@ public class Home extends AppCompatActivity implements android.widget.SearchView
         rv.setLayoutManager(llm);
         rv.setHasFixedSize(true);
 
+        progressBH = new ProgressBarHandler(this, (RelativeLayout) findViewById(R.id.rlHome));
+        progressBH.show();
+
         initializeData();
-        initializeAdapter();
 
         llCategorias = (LinearLayout) findViewById(R.id.LLcategorias);
-        mostrarCategorias();
+        llCategorias.setVisibility(View.GONE);
+        funcionalizarCategorias();
     }
 
     private void setToolbar() {
@@ -155,7 +162,7 @@ public class Home extends AppCompatActivity implements android.widget.SearchView
         );
     }
 
-    private void mostrarCategorias() {
+    private void funcionalizarCategorias() {
         ImageView imgP = (ImageView) findViewById(R.id.programacion);
         ImageView imgG = (ImageView) findViewById(R.id.gastronomia);
         ImageView imgI = (ImageView) findViewById(R.id.idiomas);
@@ -232,31 +239,6 @@ public class Home extends AppCompatActivity implements android.widget.SearchView
         RQSingleton.getInstance(this).addToRequestQueue(stringRequest);
     }
 
-    private void initializeAdapter(){
-        RVAdapter adapter = new RVAdapter(cursos, "HORIZONTAL", userLoginData, this);
-        rv.setAdapter(adapter);
-    }
-
-    private void cargarFiltroYBusqueda(){
-        searchView = (android.widget.SearchView) findViewById(R.id.searchView);
-        searchView.setOnQueryTextListener(this);
-    }
-
-    @Override
-    public boolean onQueryTextSubmit(String query) {
-        // User pressed the search button
-        Intent cursosBuscadoIntent = new Intent(Home.this,CursosBuscados.class);
-        cursosBuscadoIntent.putExtra("BUSQUEDA", query);
-        startActivity(cursosBuscadoIntent);
-        return false;
-    }
-
-    @Override
-    public boolean onQueryTextChange(String newText) {
-        // User changed the text
-        return false;
-    }
-
     public void parseHomeResponse(String response){
 
         /*try {
@@ -284,4 +266,35 @@ public class Home extends AppCompatActivity implements android.widget.SearchView
         }
 
     }
+
+    private void initializeAdapter(){
+        RVAdapter adapter = new RVAdapter(cursos, "HORIZONTAL", userLoginData, this);
+        rv.setAdapter(adapter);
+
+        progressBH.hide();
+        llCategorias.setVisibility(View.VISIBLE);
+
+    }
+
+    private void cargarFiltroYBusqueda(){
+        searchView = (android.widget.SearchView) findViewById(R.id.searchView);
+        searchView.setOnQueryTextListener(this);
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        // User pressed the search button
+        Intent cursosBuscadoIntent = new Intent(Home.this,CursosBuscados.class);
+        cursosBuscadoIntent.putExtra("BUSQUEDA", query);
+        startActivity(cursosBuscadoIntent);
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        // User changed the text
+        return false;
+    }
+
+
 }

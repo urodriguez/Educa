@@ -518,7 +518,7 @@ public class ContenidoUnidad extends AppCompatActivity {
             btnEstado.getBackground().setColorFilter(Color.LTGRAY, PorterDuff.Mode.SRC_ATOP);
         } else if (cantDePregAprobadas == itemsExamen.size()){
             btnEstado.setText("APROBADO" + "\n" +
-                              "Acertadas/total = " + cantDePregAprobadas + "/" + itemsExamen.size() + "\n");
+                              "Acertadas/Total = " + cantDePregAprobadas + "/" + itemsExamen.size() + "\n");
             btnEstado.getBackground().setColorFilter(Color.GREEN, PorterDuff.Mode.SRC_ATOP);
         } else {
             btnEstado.setText("DESAPROBADO" + "\n" +

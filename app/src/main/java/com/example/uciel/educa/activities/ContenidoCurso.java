@@ -3,7 +3,9 @@ package com.example.uciel.educa.activities;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.graphics.Typeface;
+import android.os.Handler;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
@@ -27,6 +29,7 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -39,6 +42,7 @@ import com.android.volley.toolbox.StringRequest;
 import com.example.uciel.educa.R;
 import com.example.uciel.educa.adapters.VPAdapterContCurso;
 import com.example.uciel.educa.domain.Curso;
+import com.example.uciel.educa.domain.ProgressBarHandler;
 import com.example.uciel.educa.domain.SingletonUserLogin;
 import com.example.uciel.educa.network.RQSingleton;
 import com.google.gson.Gson;
@@ -68,6 +72,8 @@ public class ContenidoCurso extends AppCompatActivity {
     private Curso curso;
     private ArrayList<String> temasForo = new ArrayList<>();
 
+    private ProgressBarHandler progressBH;
+
     private LinearLayout llUnidades, llMensajesForo;
 
     private AlertDialog.Builder alertDialogBuilder;
@@ -75,6 +81,7 @@ public class ContenidoCurso extends AppCompatActivity {
     private int cantDeTemas = 0;
 
     private final String URL_CURSOS_DISP = "http://educa-mnforlenza.rhcloud.com/api/curso/listar";
+    private final String URL_TEMAS = "http://educa-mnforlenza.rhcloud.com/api/tema/listar/";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -169,9 +176,13 @@ public class ContenidoCurso extends AppCompatActivity {
     }
 
     private void initializeData(){
-        // Instantiate the RequestQueue.
-        String url = URL_CURSOS_DISP;
+        progressBH = new ProgressBarHandler(this, (RelativeLayout) findViewById(R.id.rlContUnidad));
+        progressBH.show();
 
+        // Instantiate the RequestQueue.
+        String url;
+
+        url = URL_CURSOS_DISP;
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
                     @Override
@@ -183,13 +194,16 @@ public class ContenidoCurso extends AppCompatActivity {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         android.util.Log.d("MSG", "ERROR RESPONSE");
+                        CharSequence text = "Error al cargar unidades. Reintente nuevamente!";
+                        Toast toast = Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT);
+                        toast.show();
                     }
                 }
         );
         RQSingleton.getInstance(this).addToRequestQueue(stringRequest);
 
         //todo
-        //url = URL_FORO + curso.getId();
+        //url = URL_TEMAS + "/" + idForo;
         stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
                     @Override
@@ -201,13 +215,13 @@ public class ContenidoCurso extends AppCompatActivity {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         android.util.Log.d("MSG", "ERROR RESPONSE");
+                        CharSequence text = "Error al cargar foro. Reintente nuevamente!";
+                        Toast toast = Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT);
+                        toast.show();
                     }
                 }
         );
         RQSingleton.getInstance(this).addToRequestQueue(stringRequest);
-
-
-
     }
 
     public void parseUnidadesResponse(String response){
@@ -228,6 +242,7 @@ public class ContenidoCurso extends AppCompatActivity {
     public void parseForoResponse(String response){
         android.util.Log.d("MSG", response.toString());
         //TODO cargar los mensajes del foro
+        progressBH.hide();
         setTabs();
     }
 
