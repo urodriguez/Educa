@@ -63,7 +63,7 @@
             android:name=".activities.MaterialActivity"
            />
         <activity
-            android:name=".activities.TemaForoActivity"
+            android:name=".activities.ComentariosForoActivity"
             android:label="@string/title_activity_tema_foro"
             android:theme="@style/AppTheme" />
     </application>

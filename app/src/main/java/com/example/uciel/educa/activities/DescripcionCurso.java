@@ -271,7 +271,6 @@ public class DescripcionCurso extends AppCompatActivity {
         tvDescripcion.setText("Descripción: " + curso.getDescripcion());
     }
 
-
     private void cargarCriticas() {
         llComentarios = (LinearLayout) viewPager.findViewById(R.id.llComentarios);
 
@@ -444,6 +443,7 @@ public class DescripcionCurso extends AppCompatActivity {
 
     private void inscribirseAsesion(int idSesion) {
         mis_IDCURSO_IDSESSION.put(curso.getId(), idSesion);
+        userLoginData.registrarSesionInscriptaAcurso(idSesion, curso.getId());
 
         String url = URL_SUSCRIBIR + userLoginData.getUserID() + "/" + curso.getId() + "/" + idSesion;
 
@@ -480,6 +480,7 @@ public class DescripcionCurso extends AppCompatActivity {
 
     private void desinscribirseAsesion(int idSesion) {
         mis_IDCURSO_IDSESSION.remove(curso.getId());
+        userLoginData.borrarCurso(curso.getId());
 
         String url = URL_DESUSCRIBIR + userLoginData.getUserID() + "/" + curso.getId() + "/" + idSesion;
 
@@ -546,7 +547,6 @@ public class DescripcionCurso extends AppCompatActivity {
         );
         RQSingleton.getInstance(this).addToRequestQueue(stringRequest);
     }
-
 
     private ImageView crearDivisor(int ancho, int alto, int margenI, int margenTop, int margenD, int margenBottom, int c) {
         ImageView divisor = new ImageView(this);

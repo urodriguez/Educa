@@ -5,13 +5,13 @@ import android.graphics.Color;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
-import android.support.design.widget.Snackbar;
 import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
+import android.util.Pair;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -23,25 +23,37 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
 import com.example.uciel.educa.R;
+import com.example.uciel.educa.domain.ProgressBarHandler;
 import com.example.uciel.educa.domain.SingletonUserLogin;
+import com.example.uciel.educa.network.RQSingleton;
 
-import java.lang.reflect.Array;
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.util.ArrayList;
 
-public class TemaForoActivity extends AppCompatActivity {
+public class ComentariosForoActivity extends AppCompatActivity {
     private Bundle extras;
     private SingletonUserLogin userLoginData;
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
-    private ArrayList<String> mensajesForo = new ArrayList<>();
+    private ProgressBarHandler progressBH;
+    private ArrayList<String> comentariosForo = new ArrayList<>();
     private LinearLayout llMensajesForo;
     private ScrollView scroll_view;
+
+    private final String URL_COMENTARIOS = "http://educa-mnforlenza.rhcloud.com/api/comentario/listar/";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_tema_foro);
+        setContentView(R.layout.activity_comentarios_foro);
 
         extras = getIntent().getExtras();
 
@@ -55,7 +67,10 @@ public class TemaForoActivity extends AppCompatActivity {
             setupDrawerContent(navigationView);
         }
 
-        cargarTemas();
+        progressBH = new ProgressBarHandler(this, (RelativeLayout) findViewById(R.id.rlComentarios));
+        progressBH.show();
+
+        initializeData();
     }
 
     private void setToolbar() {
@@ -109,15 +124,15 @@ public class TemaForoActivity extends AppCompatActivity {
 
                         switch (title) {
                             case "Home":
-                                Intent home = new Intent(TemaForoActivity.this,Home.class);
+                                Intent home = new Intent(ComentariosForoActivity.this,Home.class);
                                 startActivity(home);
                                 break;
                             case "Mis Cursos":
-                                Intent foro = new Intent(TemaForoActivity.this,MisCursos.class);
+                                Intent foro = new Intent(ComentariosForoActivity.this,MisCursos.class);
                                 startActivity(foro);
                                 break;
                             case "Mis Diplomas":
-                                Intent misDiplomas = new Intent(TemaForoActivity.this, MisDiplomas.class);
+                                Intent misDiplomas = new Intent(ComentariosForoActivity.this, MisDiplomas.class);
                                 startActivity(misDiplomas);
                                 break;
                         }
@@ -127,13 +142,48 @@ public class TemaForoActivity extends AppCompatActivity {
         );
     }
 
+    private void initializeData(){
+        // Instantiate the RequestQueue.
+        String url = URL_COMENTARIOS + extras.getInt("ID_TEMA");
+        android.util.Log.d("MSG", "URL_COM= " + url);
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        parseComentariosResponse(response);
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        android.util.Log.d("MSG", "ERROR RESPONSE");
+                        CharSequence text = "Error al cargar comentarios. ¡Reintente nuevamente!";
+                        Toast toast = Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT);
+                        toast.show();
+                    }
+                }
+        );
+        RQSingleton.getInstance(this).addToRequestQueue(stringRequest);
+    }
+
+    public void parseComentariosResponse(String response){
+        JSONArray jsonarray;
+        try {
+            jsonarray = new JSONArray(response);
+            for (int i = 0; i < jsonarray.length() ; i++) {
+                JSONObject jsonobject = jsonarray.getJSONObject(i);
+                String nYa = jsonobject.getJSONObject("usuario").getString("nombre") + " " + jsonobject.getJSONObject("usuario").getString("apellido");
+                comentariosForo.add(nYa + " dijo: \n" + jsonobject.getString("descripcion"));
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        };
+
+        progressBH.hide();
+        cargarTemas();
+    }
+
     private void cargarTemas() {
-        for(int i = 0; i < 25; i++){
-            mensajesForo.add("mensaje "+i);
-        }
-
-
-
         llMensajesForo = (LinearLayout) findViewById(R.id.linearScrollForo);
         llMensajesForo.removeAllViews();
 
@@ -153,9 +203,9 @@ public class TemaForoActivity extends AppCompatActivity {
 
 
 
-        for(int i = 0; i < mensajesForo.size(); i++){
+        for(int i = 0; i < comentariosForo.size(); i++){
             TextView tvMensajeForo = new TextView(this);
-            tvMensajeForo.setText(mensajesForo.get(i));
+            tvMensajeForo.setText(comentariosForo.get(i));
             llMensajesForo.addView(tvMensajeForo);
 
             // Agrego un divisor
@@ -175,7 +225,7 @@ public class TemaForoActivity extends AppCompatActivity {
             public void onClick(View v) {
                 EditText etMensajeIngresado = (EditText) findViewById(R.id.editTextForo);
                 if(etMensajeIngresado.getText().toString().length() < 500){
-                    TextView tvMensajeForo = new TextView(TemaForoActivity.this);
+                    TextView tvMensajeForo = new TextView(ComentariosForoActivity.this);
                     tvMensajeForo.setText(etMensajeIngresado.getText().toString());
                     llMensajesForo.addView(tvMensajeForo);
 

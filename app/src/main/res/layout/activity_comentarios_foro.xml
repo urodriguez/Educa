@@ -5,12 +5,13 @@
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activities.TemaForoActivity"
+    tools:context=".activities.ComentariosForoActivity"
     android:fitsSystemWindows="true">
 
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:id="@+id/rlComentarios"
         >
 
         <android.support.v7.widget.Toolbar
@@ -22,7 +23,7 @@
 
         </android.support.v7.widget.Toolbar>
 
-        <include layout="@layout/content_tema_foro" />
+        <include layout="@layout/content_comentarios_foro" />
 
     </RelativeLayout>
 
