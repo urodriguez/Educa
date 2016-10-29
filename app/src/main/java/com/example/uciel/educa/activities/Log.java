@@ -219,7 +219,6 @@ public class Log extends AppCompatActivity implements GoogleApiClient.OnConnecti
             android.util.Log.d(TAG, "account Email: " + acct.getEmail());
 
             registrarUsuario(acct.getId(), acct.getDisplayName(), "GG" );
-            //registrarUsuario("10", acct.getDisplayName(), "GG" );
 
         } else {
             android.util.Log.d(TAG, "ERROR AL INICIAR SESION");
@@ -265,7 +264,7 @@ public class Log extends AppCompatActivity implements GoogleApiClient.OnConnecti
         }
     }
 
-    private void registrarUsuario(final String idUsuario, final String nombreUsuario, String tipoLogin) {
+    private void registrarUsuario(final String idUsuario, final String nombreYapellido, String tipoLogin) {
         String url = "";
         switch (tipoLogin){
             case "FB":
@@ -284,6 +283,7 @@ public class Log extends AppCompatActivity implements GoogleApiClient.OnConnecti
         JSONObject dataToSend = new JSONObject();
         try {
             dataToSend.put("token", idUsuario);
+            dataToSend.put("nombreYApellido", nombreYapellido);
         } catch (JSONException e) {
             e.printStackTrace();
         }
@@ -306,8 +306,7 @@ public class Log extends AppCompatActivity implements GoogleApiClient.OnConnecti
                             e.printStackTrace();
                         }
                         SingletonUserLogin userLoginData = SingletonUserLogin.getInstance();
-                        userLoginData.setUserLoginData(nombreUsuario, idUserEduca);
-                        //userLoginData.setUserLoginData(nombreUsuario, "10");
+                        userLoginData.setUserLoginData(nombreYapellido, idUserEduca);
 
                         Intent homeIntent = new Intent(Log.this,Home.class);
                         startActivity(homeIntent);
