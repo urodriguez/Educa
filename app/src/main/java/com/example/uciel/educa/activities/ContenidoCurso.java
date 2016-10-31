@@ -29,9 +29,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
+import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.example.uciel.educa.R;
 import com.example.uciel.educa.adapters.VPAdapterContCurso;
 import com.example.uciel.educa.domain.Curso;
@@ -68,6 +71,8 @@ public class ContenidoCurso extends AppCompatActivity {
     private Curso curso;
     private int idSesionActual;
     private ArrayList<Pair<String,String>> temasForo = new ArrayList<>();
+    private int idForoActual;
+    private boolean foroModerado;
 
     private ProgressBarHandler progressBH;
 
@@ -80,6 +85,7 @@ public class ContenidoCurso extends AppCompatActivity {
     private final String URL_CURSOS_DISP = "http://educa-mnforlenza.rhcloud.com/api/curso/listar";
     private final String URL_MIS_SESIONES = "http://educa-mnforlenza.rhcloud.com/api/usuario/mis-sesiones/";
     private final String URL_FORO = "http://educa-mnforlenza.rhcloud.com/api/foro/";
+    private final String URL_CREAR_TEMA = "http://educa-mnforlenza.rhcloud.com/api/tema/crear";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -276,6 +282,8 @@ public class ContenidoCurso extends AppCompatActivity {
         JSONArray jsonarray;
         try {
             JSONObject jResponse = new JSONObject(response);
+            idForoActual = jResponse.getInt("id");
+            foroModerado = jResponse.getBoolean("moderado");
             jsonarray = new JSONArray(jResponse.getString("temas"));
             for (int i = jsonarray.length() - 1; i >= 0 ; i--) {
                 JSONObject jsonobject = jsonarray.getJSONObject(i);
@@ -442,11 +450,19 @@ public class ContenidoCurso extends AppCompatActivity {
 
                 // set dialog message
                 alertDialogBuilder.setCancelable(false).setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                    private String mensaje;
                     public void onClick(DialogInterface dialog, int id) {
                         EditText tvT = (EditText) dialogView.findViewById(R.id.titulo);
                         EditText tvD = (EditText) dialogView.findViewById(R.id.descripcion);
                         if(tvT.getText().toString().length() < 45 && tvD.getText().toString().length() < 200){
-                            cargarTemas(tvT.getText().toString(), tvD.getText().toString());
+                            registrarTema(tvT.getText().toString(), tvD.getText().toString());
+                            if(!foroModerado){
+                                //si NO es moderado ademas de hacer un post, tambien lo muestra
+                                cargarTemas(tvT.getText().toString(), tvD.getText().toString());
+                            } else
+                                mensaje = "¡El tema aparecerá luego de ser aprobado!";
+                                Toast toast = Toast.makeText(getApplicationContext(), mensaje, Toast.LENGTH_SHORT);
+                                toast.show();
                         } else {
                             CharSequence text = "¡Limite de caracteres excedido!";
                             Toast toast = Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT);
@@ -463,6 +479,47 @@ public class ContenidoCurso extends AppCompatActivity {
             }
         });
 
+    }
+
+    private void registrarTema(String titulo, String descripcion) {
+        RequestQueue queue = Volley.newRequestQueue(getApplicationContext());
+
+        //JSONObject to send
+        JSONObject dataToSend = new JSONObject();
+        try {
+            dataToSend.put("idUsuario", userLoginData.getUserID());
+            dataToSend.put("idForo", idForoActual);
+            dataToSend.put("titulo", titulo);
+            dataToSend.put("descripcion", descripcion);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        android.util.Log.d("MSG", dataToSend.toString());
+
+        JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.POST, URL_CREAR_TEMA, dataToSend,
+                new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        // response
+                        android.util.Log.d("MSG", "SUCCESS Response");
+                        android.util.Log.d("MSG", response.toString());
+                    }
+                }, new Response.ErrorListener() {
+
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        android.util.Log.d("MSG", "ERROR Response");
+                        CharSequence text = "Error al crear tema ¡Reintente nuevamente!";
+                        Toast toast = Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT);
+                        toast.show();
+                    }
+                }
+        );
+
+        // Add the request to the RequestQueue.
+        queue.add(jsonObjReq);
     }
 
     private void cargarTemas(String titulo, String descripcion){
@@ -505,6 +562,7 @@ public class ContenidoCurso extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent temaForoIntent = new Intent(ContenidoCurso.this,ComentariosForoActivity.class);
+                temaForoIntent.putExtra("FORO_MODERADO", foroModerado);
                 temaForoIntent.putExtra("ID_TEMA", textViewUnidadID);
                 TextView textView = (TextView) findViewById(textViewUnidadID);
                 temaForoIntent.putExtra("TITULO_TEMA", textView.getText());

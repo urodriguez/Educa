@@ -24,9 +24,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
+import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.example.uciel.educa.R;
 import com.example.uciel.educa.domain.ProgressBarHandler;
 import com.example.uciel.educa.domain.SingletonUserLogin;
@@ -44,11 +47,14 @@ public class ComentariosForoActivity extends AppCompatActivity {
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
     private ProgressBarHandler progressBH;
+    private boolean foroModerado;
     private ArrayList<String> comentariosForo = new ArrayList<>();
     private LinearLayout llMensajesForo;
     private ScrollView scroll_view;
 
+
     private final String URL_COMENTARIOS = "http://educa-mnforlenza.rhcloud.com/api/comentario/listar/";
+    private final String URL_CREAR_COMENTARIO = "http://educa-mnforlenza.rhcloud.com/api/comentario/crear";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +75,8 @@ public class ComentariosForoActivity extends AppCompatActivity {
 
         progressBH = new ProgressBarHandler(this, (RelativeLayout) findViewById(R.id.rlComentarios));
         progressBH.show();
+
+        foroModerado = extras.getBoolean("FORO_MODERADO");
 
         initializeData();
     }
@@ -225,19 +233,27 @@ public class ComentariosForoActivity extends AppCompatActivity {
             public void onClick(View v) {
                 EditText etMensajeIngresado = (EditText) findViewById(R.id.editTextForo);
                 if(etMensajeIngresado.getText().toString().length() < 500){
-                    TextView tvMensajeForo = new TextView(ComentariosForoActivity.this);
-                    tvMensajeForo.setText(etMensajeIngresado.getText().toString());
-                    llMensajesForo.addView(tvMensajeForo);
+                    registrarComentario(etMensajeIngresado.getText().toString());
+                    if(!foroModerado){
+                        //si NO es moderado ademas de hacer un post, tambien lo muestra
+                        TextView tvMensajeForo = new TextView(ComentariosForoActivity.this);
+                        tvMensajeForo.setText(etMensajeIngresado.getText().toString());
+                        llMensajesForo.addView(tvMensajeForo);
 
-                    // Agrego un divisor
-                    llMensajesForo.addView(crearDivisor(LinearLayout.LayoutParams.MATCH_PARENT, 1, 10, 15, 10, 15, Color.LTGRAY));
+                        // Agrego un divisor
+                        llMensajesForo.addView(crearDivisor(LinearLayout.LayoutParams.MATCH_PARENT, 1, 10, 15, 10, 15, Color.LTGRAY));
 
-                    scroll_view.post(new Runnable() {
-                        @Override
-                        public void run() {
-                            scroll_view.fullScroll(ScrollView.FOCUS_DOWN);
-                        }
-                    });
+                        scroll_view.post(new Runnable() {
+                            @Override
+                            public void run() {
+                                scroll_view.fullScroll(ScrollView.FOCUS_DOWN);
+                            }
+                        });
+                    } else{
+                        String mensaje = "¡El comentario aparecerá luego de ser aprobado!";
+                        Toast toast = Toast.makeText(getApplicationContext(), mensaje, Toast.LENGTH_SHORT);
+                        toast.show();
+                    }
                 } else {
                     String mensaje = "¡Excediste en número máximo permitido de caracteres!";
                     Toast toast = Toast.makeText(getApplicationContext(), mensaje, Toast.LENGTH_SHORT);
@@ -245,6 +261,48 @@ public class ComentariosForoActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    private void registrarComentario(String comentario){
+        RequestQueue queue = Volley.newRequestQueue(getApplicationContext());
+
+        //JSONObject to send
+        JSONObject dataToSend = new JSONObject();
+        try {
+            dataToSend.put("fechaCreacion", 1);
+            dataToSend.put("idUsuario", userLoginData.getUserID());
+            dataToSend.put("idTema", extras.getInt("ID_TEMA"));
+            dataToSend.put("descripcion", comentario);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        android.util.Log.d("MSG", dataToSend.toString());
+
+        JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.POST, URL_CREAR_COMENTARIO, dataToSend,
+                new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        // response
+                        android.util.Log.d("MSG", "SUCCESS Response");
+                        android.util.Log.d("MSG", response.toString());
+                    }
+                }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                android.util.Log.d("MSG", "ERROR Response");
+                CharSequence text = "Error al crear comentario ¡Reintente nuevamente!";
+                Toast toast = Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT);
+                toast.show();
+            }
+        }
+        );
+
+        // Add the request to the RequestQueue.
+        queue.add(jsonObjReq);
+
     }
 
     private ImageView crearDivisor(int ancho, int alto, int margenI, int margenTop, int margenD, int margenBottom, int c) {

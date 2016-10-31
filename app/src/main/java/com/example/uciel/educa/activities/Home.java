@@ -224,7 +224,6 @@ public class Home extends AppCompatActivity implements android.widget.SearchView
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        android.util.Log.i("INFO", "Response is: "+ response.substring(0,10));
                         parseHomeResponse(response);
                         initializeAdapter();
                     }
