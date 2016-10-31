@@ -2,6 +2,8 @@ package com.example.uciel.educa.activities;
 
 import android.content.Intent;
 import android.graphics.Color;
+import android.graphics.Paint;
+import android.graphics.Typeface;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
 import android.support.design.widget.NavigationView;
@@ -48,7 +50,7 @@ public class ComentariosForoActivity extends AppCompatActivity {
     private NavigationView navigationView;
     private ProgressBarHandler progressBH;
     private boolean foroModerado;
-    private ArrayList<String> comentariosForo = new ArrayList<>();
+    private ArrayList<Pair<String,String>> comentariosForo = new ArrayList<>();
     private LinearLayout llMensajesForo;
     private ScrollView scroll_view;
 
@@ -174,30 +176,30 @@ public class ComentariosForoActivity extends AppCompatActivity {
         RQSingleton.getInstance(this).addToRequestQueue(stringRequest);
     }
 
-    public void parseComentariosResponse(String response){
+    private void parseComentariosResponse(String response){
         JSONArray jsonarray;
         try {
             jsonarray = new JSONArray(response);
             for (int i = 0; i < jsonarray.length() ; i++) {
                 JSONObject jsonobject = jsonarray.getJSONObject(i);
-                String nYa = jsonobject.getJSONObject("usuario").getString("nombre") + " " + jsonobject.getJSONObject("usuario").getString("apellido");
-                comentariosForo.add(nYa + " dijo: \n" + jsonobject.getString("descripcion"));
+                String nYa = jsonobject.getJSONObject("usuario").getString("nombre");
+                comentariosForo.add(new Pair<>(nYa, jsonobject.getString("descripcion")));
             }
         } catch (JSONException e) {
             e.printStackTrace();
         };
 
         progressBH.hide();
-        cargarTemas();
+        cargarComentarios();
     }
 
-    private void cargarTemas() {
+    private void cargarComentarios() {
         llMensajesForo = (LinearLayout) findViewById(R.id.linearScrollForo);
         llMensajesForo.removeAllViews();
 
         DisplayMetrics displaymetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
-        int height = displaymetrics.heightPixels - 56 - 100 - 170;
+        int height = displaymetrics.heightPixels - 56 - 100 - 150;
 
         android.util.Log.d("MSG", "HS= " + height);
 
@@ -209,12 +211,8 @@ public class ComentariosForoActivity extends AppCompatActivity {
         layoutParams.height = height;
         scroll_view.setLayoutParams(layoutParams);
 
-
-
         for(int i = 0; i < comentariosForo.size(); i++){
-            TextView tvMensajeForo = new TextView(this);
-            tvMensajeForo.setText(comentariosForo.get(i));
-            llMensajesForo.addView(tvMensajeForo);
+            cargarComentario(comentariosForo.get(i).first, comentariosForo.get(i).second);
 
             // Agrego un divisor
             llMensajesForo.addView(crearDivisor(LinearLayout.LayoutParams.MATCH_PARENT, 1, 10, 15, 10, 15, Color.LTGRAY));
@@ -236,9 +234,7 @@ public class ComentariosForoActivity extends AppCompatActivity {
                     registrarComentario(etMensajeIngresado.getText().toString());
                     if(!foroModerado){
                         //si NO es moderado ademas de hacer un post, tambien lo muestra
-                        TextView tvMensajeForo = new TextView(ComentariosForoActivity.this);
-                        tvMensajeForo.setText(etMensajeIngresado.getText().toString());
-                        llMensajesForo.addView(tvMensajeForo);
+                        cargarComentario(userLoginData.getUserName(), etMensajeIngresado.getText().toString());
 
                         // Agrego un divisor
                         llMensajesForo.addView(crearDivisor(LinearLayout.LayoutParams.MATCH_PARENT, 1, 10, 15, 10, 15, Color.LTGRAY));
@@ -254,6 +250,7 @@ public class ComentariosForoActivity extends AppCompatActivity {
                         Toast toast = Toast.makeText(getApplicationContext(), mensaje, Toast.LENGTH_SHORT);
                         toast.show();
                     }
+                    etMensajeIngresado.setText("");
                 } else {
                     String mensaje = "¡Excediste en número máximo permitido de caracteres!";
                     Toast toast = Toast.makeText(getApplicationContext(), mensaje, Toast.LENGTH_SHORT);
@@ -261,6 +258,20 @@ public class ComentariosForoActivity extends AppCompatActivity {
                 }
             }
         });
+    }
+
+    private void cargarComentario(String autor, String contenido){
+        TextView tvAutorMensajeForo = new TextView(ComentariosForoActivity.this);
+        tvAutorMensajeForo.setText(autor + " dijo:");
+        tvAutorMensajeForo.setTypeface(null, Typeface.BOLD);
+        tvAutorMensajeForo.setTextSize(20);
+        llMensajesForo.addView(tvAutorMensajeForo);
+
+        TextView tvContenidoMensajeForo = new TextView(ComentariosForoActivity.this);
+        tvContenidoMensajeForo.setText(contenido);
+        tvContenidoMensajeForo.setTypeface(null, Typeface.ITALIC);
+        tvContenidoMensajeForo.setTextSize(18);
+        llMensajesForo.addView(tvContenidoMensajeForo);
     }
 
     private void registrarComentario(String comentario){

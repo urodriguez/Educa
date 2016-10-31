@@ -40,6 +40,7 @@ import com.example.uciel.educa.adapters.VPAdapterContCurso;
 import com.example.uciel.educa.domain.Curso;
 import com.example.uciel.educa.domain.ProgressBarHandler;
 import com.example.uciel.educa.domain.SingletonUserLogin;
+import com.example.uciel.educa.domain.Tema;
 import com.example.uciel.educa.network.RQSingleton;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
@@ -70,7 +71,7 @@ public class ContenidoCurso extends AppCompatActivity {
 
     private Curso curso;
     private int idSesionActual;
-    private ArrayList<Pair<String,String>> temasForo = new ArrayList<>();
+    private ArrayList<Tema> temasForo = new ArrayList<>();
     private int idForoActual;
     private boolean foroModerado;
 
@@ -80,11 +81,10 @@ public class ContenidoCurso extends AppCompatActivity {
 
     private AlertDialog.Builder alertDialogBuilder;
 
-    private int cantDeTemas = 0;
-
     private final String URL_CURSOS_DISP = "http://educa-mnforlenza.rhcloud.com/api/curso/listar";
     private final String URL_MIS_SESIONES = "http://educa-mnforlenza.rhcloud.com/api/usuario/mis-sesiones/";
     private final String URL_FORO = "http://educa-mnforlenza.rhcloud.com/api/foro/";
+    private final String URL_LISTAR_TEMAS = "http://educa-mnforlenza.rhcloud.com/api/tema/listar/";
     private final String URL_CREAR_TEMA = "http://educa-mnforlenza.rhcloud.com/api/tema/crear";
 
     @Override
@@ -262,6 +262,7 @@ public class ContenidoCurso extends AppCompatActivity {
                     @Override
                     public void onResponse(String response) {
                         parseForoResponse(response);
+
                     }
                 },
                 new Response.ErrorListener() {
@@ -278,25 +279,54 @@ public class ContenidoCurso extends AppCompatActivity {
     }
 
     public void parseForoResponse(String response){
+        JSONObject jResponse;
+        try {
+            jResponse = new JSONObject(response);
+            idForoActual = jResponse.getInt("id");
+            foroModerado = jResponse.getBoolean("moderado");
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        String url = URL_LISTAR_TEMAS + idForoActual;
+        android.util.Log.d("MSG", "URL_TEMAS= " + url);
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        parseTemasResponse(response);
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        android.util.Log.d("MSG", "ERROR RESPONSE");
+                        CharSequence text = "Error al cargar temas. Reintente nuevamente!";
+                        Toast toast = Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT);
+                        toast.show();
+                    }
+                }
+        );
+        RQSingleton.getInstance(ContenidoCurso.this).addToRequestQueue(stringRequest);
+    }
+
+    public void parseTemasResponse(String response){
         android.util.Log.d("MSG", response.toString());
         JSONArray jsonarray;
         try {
-            JSONObject jResponse = new JSONObject(response);
-            idForoActual = jResponse.getInt("id");
-            foroModerado = jResponse.getBoolean("moderado");
-            jsonarray = new JSONArray(jResponse.getString("temas"));
-            for (int i = jsonarray.length() - 1; i >= 0 ; i--) {
+            jsonarray = new JSONArray(response);
+            for (int i = 0; i < jsonarray.length() ; i++) {
                 JSONObject jsonobject = jsonarray.getJSONObject(i);
                 android.util.Log.d("MSG", "T= " + jsonobject.getString("titulo") + " D= " + jsonobject.getString("descripcion"));
-                temasForo.add(new Pair<>(jsonobject.getString("titulo"), jsonobject.getString("descripcion")));
+                temasForo.add(new Tema(jsonobject.getInt("id"), jsonobject.getString("titulo"), jsonobject.getString("descripcion")));
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        for (int i = 0; i < temasForo.size() ; i++) {
+        /*for (int i = 0; i < temasForo.size() ; i++) {
             android.util.Log.d("MSG", "Ti= " + temasForo.get(i).first + " De= " + temasForo.get(i).second);
-        }
+        }*/
 
         progressBH.hide();
         setTabs();
@@ -430,8 +460,8 @@ public class ContenidoCurso extends AppCompatActivity {
         llMensajesForo = (LinearLayout) viewPager.findViewById(R.id.linearScrollTemaForo);
         llMensajesForo.removeAllViews();
 
-        for (int i = 0; i < temasForo.size(); i++){
-            cargarTemas(temasForo.get(i).first, temasForo.get(i).second);
+        for (int i = temasForo.size() - 1 ; i >= 0 ; i--){
+            cargarTema(temasForo.get(i).getIdTema(), temasForo.get(i).getTitulo(), temasForo.get(i).getDescripcion());
         }
 
         FloatingActionButton fab = (FloatingActionButton) viewPager.findViewById(R.id.floatingActionButton);
@@ -450,19 +480,11 @@ public class ContenidoCurso extends AppCompatActivity {
 
                 // set dialog message
                 alertDialogBuilder.setCancelable(false).setPositiveButton("OK", new DialogInterface.OnClickListener() {
-                    private String mensaje;
                     public void onClick(DialogInterface dialog, int id) {
                         EditText tvT = (EditText) dialogView.findViewById(R.id.titulo);
                         EditText tvD = (EditText) dialogView.findViewById(R.id.descripcion);
                         if(tvT.getText().toString().length() < 45 && tvD.getText().toString().length() < 200){
                             registrarTema(tvT.getText().toString(), tvD.getText().toString());
-                            if(!foroModerado){
-                                //si NO es moderado ademas de hacer un post, tambien lo muestra
-                                cargarTemas(tvT.getText().toString(), tvD.getText().toString());
-                            } else
-                                mensaje = "¡El tema aparecerá luego de ser aprobado!";
-                                Toast toast = Toast.makeText(getApplicationContext(), mensaje, Toast.LENGTH_SHORT);
-                                toast.show();
                         } else {
                             CharSequence text = "¡Limite de caracteres excedido!";
                             Toast toast = Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT);
@@ -505,6 +527,19 @@ public class ContenidoCurso extends AppCompatActivity {
                         // response
                         android.util.Log.d("MSG", "SUCCESS Response");
                         android.util.Log.d("MSG", response.toString());
+                        if(!foroModerado){
+                            //si NO es moderado ademas de hacer un post, tambien lo muestra
+                            try {
+                                temasForo.add(new Tema(response.getInt("id"), response.getString("titulo"), response.getString("descripcion")));
+                                cargarForo();
+                            } catch (JSONException e) {
+                                e.printStackTrace();
+                            }
+                        } else {
+                            CharSequence mensaje = "¡El tema aparecerá luego de ser aprobado!";
+                            Toast toast = Toast.makeText(getApplicationContext(), mensaje, Toast.LENGTH_SHORT);
+                            toast.show();
+                        }
                     }
                 }, new Response.ErrorListener() {
 
@@ -522,7 +557,7 @@ public class ContenidoCurso extends AppCompatActivity {
         queue.add(jsonObjReq);
     }
 
-    private void cargarTemas(String titulo, String descripcion){
+    private void cargarTema(int idTema, String titulo, String descripcion){
         CardView cv = new CardView(this);
         RelativeLayout rl = new RelativeLayout(this);
 
@@ -530,7 +565,7 @@ public class ContenidoCurso extends AppCompatActivity {
         cv.setLayoutParams(paramsdos); //causes layout update
 
         TextView tv = new TextView(this);
-        final int textViewUnidadID = cantDeTemas++;
+        final int textViewUnidadID = idTema;
         tv.setId(textViewUnidadID);
         tv.setText(titulo);
         tv.setTypeface(null, Typeface.BOLD);
