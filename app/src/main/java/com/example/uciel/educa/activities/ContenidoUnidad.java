@@ -28,15 +28,19 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.android.volley.Request;
+import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
+import com.android.volley.toolbox.Volley;
 import com.example.uciel.educa.R;
 import com.example.uciel.educa.adapters.VPAdapterContUnidad;
 import com.example.uciel.educa.domain.Choice;
 import com.example.uciel.educa.domain.Curso;
 import com.example.uciel.educa.domain.ItemDeExamen;
 import com.example.uciel.educa.domain.Pregunta;
+import com.example.uciel.educa.domain.Respuesta;
 import com.example.uciel.educa.domain.SingletonUserLogin;
 import com.example.uciel.educa.network.RQSingleton;
 import com.google.gson.Gson;
@@ -476,22 +480,27 @@ public class ContenidoUnidad extends AppCompatActivity {
                     btnCorregir.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                            cantDePregAprobadas = 0;
-                            boolean estaAprobado = true;
-                            for (int i = 0; i < itemsExamen.size(); i++){
-                                if(itemsExamen.get(i).itemAprobado() == false){
-                                    estaAprobado = false;
-                                } else {
-                                    cantDePregAprobadas++;
-                                }
-                            }
-                            android.util.Log.d("MSG", "RESULTADO= " + estaAprobado);
-                            android.util.Log.d("MSG", "#APROB= " + cantDePregAprobadas);
-                            llExamenItems.setVisibility(View.GONE);
-                            llExamenItems.removeAllViews();
 
-                            cargarEstadoExamen();
-                            llExamenPresentacion.setVisibility(View.VISIBLE);
+
+                        //llamarEvaluarExamen();
+
+
+                        cantDePregAprobadas = 0;
+                        boolean estaAprobado = true;
+                        for (int i = 0; i < itemsExamen.size(); i++){
+                            if(itemsExamen.get(i).itemAprobado() == false){
+                                estaAprobado = false;
+                            } else {
+                                cantDePregAprobadas++;
+                            }
+                        }
+                        android.util.Log.d("MSG", "RESULTADO= " + estaAprobado);
+                        android.util.Log.d("MSG", "#APROB= " + cantDePregAprobadas);
+                        llExamenItems.setVisibility(View.GONE);
+                        llExamenItems.removeAllViews();
+
+                        cargarEstadoExamen();
+                        llExamenPresentacion.setVisibility(View.VISIBLE);
 
                         }
                     });
@@ -536,5 +545,79 @@ public class ContenidoUnidad extends AppCompatActivity {
         divisor.setBackgroundColor(c);
 
         return divisor;
+    }
+
+
+    private void llamarEvaluarExamen() {
+
+        Integer numeroUnidad = extras.getInt("ID_UNIDAD");
+        Integer idCurso = extras.getInt("ID"); // id de curso
+        Integer idUsuario = 1; // De donde lo saco????
+
+        RequestQueue queue = Volley.newRequestQueue(getApplicationContext());
+
+        List<Respuesta> respuestas = new ArrayList<Respuesta>();
+
+        // cargar todas las opciones elegidas
+        Respuesta respuesta = new Respuesta();
+        respuesta.setIdPregunta(1);
+        respuesta.setMultipleChoice(false);
+        respuesta.setIdOpcionElegida(0); // se carga solo si multiple es true
+        respuesta.setRespuesta("Texto"); // se carga solo si multiple es false
+
+        respuestas.add(respuesta);
+
+        //JSONObject to send
+        JSONObject dataToSend = new JSONObject();
+        try {
+            dataToSend.put("idUsuario", idUsuario);
+            dataToSend.put("respuestas", respuestas);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        android.util.Log.d("MSG", dataToSend.toString());
+
+        String urlEvaluar = URL_PREG_UNIDAD + numeroUnidad + "/" + idCurso + "/evaluacion";
+
+        JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.POST, urlEvaluar, dataToSend,
+                new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        // response
+                        android.util.Log.d("MSG", "SUCCESS Response");
+                        android.util.Log.d("MSG", response.toString());
+
+                        String cantidadRespuestasCorrectas = "";//Es el ID que se usa para identificarlo en Educa (difiere del de FC o GG)
+                        String estado = "";
+                        String fechaActualizacion = "";
+                        String cantidadRespuestasInorrectas = "";
+                        try {
+                            cantidadRespuestasCorrectas = response.getString("cantidadRespuestasCorrectas");
+                            estado = response.getString("estado");
+                            fechaActualizacion = response.getString("fechaActualizacion");
+                            cantidadRespuestasInorrectas = response.getString("cantidadRespuestasInorrectas");
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                        SingletonUserLogin userLoginData = SingletonUserLogin.getInstance();
+
+                    }
+                }, new Response.ErrorListener() {
+
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        android.util.Log.d("MSG", "ERROR Response");
+                        CharSequence text = "Error al realizar la evaluación. Reintente nuevamente!";
+                        Toast toast = Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT);
+                        toast.show();
+                }
+        }
+        );
+
+        // Add the request to the RequestQueue.
+        queue.add(jsonObjReq);
+
     }
 }
