@@ -13,6 +13,7 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.widget.RelativeLayout;
 import android.widget.SearchView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -25,6 +26,7 @@ import com.example.uciel.educa.R;
 import com.example.uciel.educa.adapters.RVAdapter;
 import com.example.uciel.educa.adapters.RVAdapterMisCursos;
 import com.example.uciel.educa.domain.Curso;
+import com.example.uciel.educa.domain.ProgressBarHandler;
 import com.example.uciel.educa.domain.SingletonUserLogin;
 import com.example.uciel.educa.network.RQSingleton;
 import com.google.gson.Gson;
@@ -44,6 +46,8 @@ public class MisCursos extends AppCompatActivity implements SearchView.OnQueryTe
 
     private List<Curso> cursos;
     private RecyclerView rv;
+
+    private ProgressBarHandler progressBarHandler;
 
     private SingletonUserLogin userLoginData;
 
@@ -75,8 +79,10 @@ public class MisCursos extends AppCompatActivity implements SearchView.OnQueryTe
         rv.setLayoutManager(llm);
         rv.setHasFixedSize(true);
 
+        progressBarHandler = new ProgressBarHandler(this, (RelativeLayout) findViewById(R.id.rlrv));
+        progressBarHandler.show();
+
         initializeData();
-        initializeAdapter();
     }
 
     private void setToolbar() {
@@ -149,9 +155,6 @@ public class MisCursos extends AppCompatActivity implements SearchView.OnQueryTe
         cursos = new ArrayList<>();
         String url = URL_MIS_CURSOS + userLoginData.getUserID();
 
-        //Curso aCurso = new Curso();
-        //cursos.add(aCurso);
-
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
                     @Override
@@ -163,7 +166,7 @@ public class MisCursos extends AppCompatActivity implements SearchView.OnQueryTe
                             Toast toast = Toast.makeText(context, text, duration);
                             toast.show();
                         } else {
-                            parseHomeResponse(response);
+                            parseMisCursosResponse(response);
                             initializeAdapter();
                         }
                     }
@@ -178,7 +181,7 @@ public class MisCursos extends AppCompatActivity implements SearchView.OnQueryTe
         RQSingleton.getInstance(this).addToRequestQueue(stringRequest);
     }
 
-    public void parseHomeResponse(String response){
+    public void parseMisCursosResponse(String response){
         Gson g = new Gson();
 
         Type collectionType = new TypeToken<Collection<Curso>>(){}.getType();
@@ -192,6 +195,7 @@ public class MisCursos extends AppCompatActivity implements SearchView.OnQueryTe
     }
 
     private void initializeAdapter(){
+        progressBarHandler.hide();
         RVAdapterMisCursos adapter = new RVAdapterMisCursos(cursos, userLoginData, this);
         rv.setAdapter(adapter);
     }

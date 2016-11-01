@@ -11,9 +11,11 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
+import android.support.v7.widget.CardView;
 import android.support.v7.widget.Toolbar;
 import android.util.DisplayMetrics;
 import android.util.Pair;
+import android.util.TypedValue;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -33,6 +35,7 @@ import com.android.volley.toolbox.JsonObjectRequest;
 import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 import com.example.uciel.educa.R;
+import com.example.uciel.educa.domain.ComentarioForo;
 import com.example.uciel.educa.domain.ProgressBarHandler;
 import com.example.uciel.educa.domain.SingletonUserLogin;
 import com.example.uciel.educa.network.RQSingleton;
@@ -41,7 +44,9 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 
 public class ComentariosForoActivity extends AppCompatActivity {
     private Bundle extras;
@@ -50,9 +55,10 @@ public class ComentariosForoActivity extends AppCompatActivity {
     private NavigationView navigationView;
     private ProgressBarHandler progressBH;
     private boolean foroModerado;
-    private ArrayList<Pair<String,String>> comentariosForo = new ArrayList<>();
+    private ArrayList<ComentarioForo> comentariosForo = new ArrayList<>();
     private LinearLayout llMensajesForo;
     private ScrollView scroll_view;
+    private CardView cvRespuestaComentario;
 
 
     private final String URL_COMENTARIOS = "http://educa-mnforlenza.rhcloud.com/api/comentario/listar/";
@@ -160,6 +166,7 @@ public class ComentariosForoActivity extends AppCompatActivity {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
+                        android.util.Log.d("MSG", response);
                         parseComentariosResponse(response);
                     }
                 },
@@ -183,39 +190,62 @@ public class ComentariosForoActivity extends AppCompatActivity {
             for (int i = 0; i < jsonarray.length() ; i++) {
                 JSONObject jsonobject = jsonarray.getJSONObject(i);
                 String nYa = jsonobject.getJSONObject("usuario").getString("nombre");
-                comentariosForo.add(new Pair<>(nYa, jsonobject.getString("descripcion")));
+                long fecha = jsonobject.getLong("fechaCreacion");
+                boolean estado = jsonobject.getBoolean("aprobado");
+                comentariosForo.add(new ComentarioForo(nYa, fecha, jsonobject.getString("descripcion"), estado));
             }
         } catch (JSONException e) {
             e.printStackTrace();
         };
 
         progressBH.hide();
+
+        armarLayoutComentarios();
+
         cargarComentarios();
+    }
+
+    private void armarLayoutComentarios(){
+        DisplayMetrics displaymetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
+
+        int heightCardWithPaddingInPX = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 56, getResources().getDisplayMetrics());
+        int heightToolBarInPX = (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP, 68, getResources().getDisplayMetrics());
+        int height = displaymetrics.heightPixels - heightToolBarInPX - heightCardWithPaddingInPX - 16;//16 son extras
+
+        android.util.Log.d("MSG", "HS= " + height);
+        android.util.Log.d("MSG", "WS= " + displaymetrics.widthPixels);
+
+        scroll_view = (ScrollView) findViewById(R.id.scrollForo);
+        scroll_view.setLayoutParams(new RelativeLayout.LayoutParams(
+                RelativeLayout.LayoutParams.MATCH_PARENT, height));
+        RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) scroll_view.getLayoutParams();
+
+        android.util.Log.d("MSG", "LP_HS= " + layoutParams.height);
+
+        layoutParams.height = height;
+        scroll_view.setLayoutParams(layoutParams);
+
+        cvRespuestaComentario = (CardView) findViewById(R.id.cvComentario);
+        int widthCV =(int) (0.75 * displaymetrics.widthPixels);
+
+        android.util.Log.d("MSG", "CV_W= " + widthCV);
+        RelativeLayout.LayoutParams layoutParamsCV = (RelativeLayout.LayoutParams) cvRespuestaComentario.getLayoutParams();
+        layoutParamsCV.width = widthCV;
+        cvRespuestaComentario.setLayoutParams(layoutParamsCV);
     }
 
     private void cargarComentarios() {
         llMensajesForo = (LinearLayout) findViewById(R.id.linearScrollForo);
         llMensajesForo.removeAllViews();
 
-        DisplayMetrics displaymetrics = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
-        int height = displaymetrics.heightPixels - 56 - 100 - 150;
-
-        android.util.Log.d("MSG", "HS= " + height);
-
-        scroll_view = (ScrollView) findViewById(R.id.scrollForo);
-        scroll_view.setLayoutParams(new RelativeLayout.LayoutParams(
-                RelativeLayout.LayoutParams.MATCH_PARENT, height));
-        RelativeLayout.LayoutParams layoutParams = (RelativeLayout.LayoutParams) scroll_view.getLayoutParams();
-        //layoutParams.topMargin = 208;
-        layoutParams.height = height;
-        scroll_view.setLayoutParams(layoutParams);
-
         for(int i = 0; i < comentariosForo.size(); i++){
-            cargarComentario(comentariosForo.get(i).first, comentariosForo.get(i).second);
+            if(comentariosForo.get(i).fueAprobado()){
+                cargarComentario(comentariosForo.get(i).getAutor(), comentariosForo.get(i).getFecha(),comentariosForo.get(i).getContenido());
 
-            // Agrego un divisor
-            llMensajesForo.addView(crearDivisor(LinearLayout.LayoutParams.MATCH_PARENT, 1, 10, 15, 10, 15, Color.LTGRAY));
+                // Agrego un divisor
+                llMensajesForo.addView(crearDivisor(LinearLayout.LayoutParams.MATCH_PARENT, 1, 10, 15, 10, 15, Color.LTGRAY));
+            }
         }
 
         scroll_view.post(new Runnable() {
@@ -234,7 +264,9 @@ public class ComentariosForoActivity extends AppCompatActivity {
                     registrarComentario(etMensajeIngresado.getText().toString());
                     if(!foroModerado){
                         //si NO es moderado ademas de hacer un post, tambien lo muestra
-                        cargarComentario(userLoginData.getUserName(), etMensajeIngresado.getText().toString());
+                        SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+                        android.util.Log.d("MSG", "fechaCom= " + df.format(Calendar.getInstance().getTime()));
+                        cargarComentario(userLoginData.getUserName(), df.format(Calendar.getInstance().getTime()), etMensajeIngresado.getText().toString());
 
                         // Agrego un divisor
                         llMensajesForo.addView(crearDivisor(LinearLayout.LayoutParams.MATCH_PARENT, 1, 10, 15, 10, 15, Color.LTGRAY));
@@ -260,9 +292,9 @@ public class ComentariosForoActivity extends AppCompatActivity {
         });
     }
 
-    private void cargarComentario(String autor, String contenido){
+    private void cargarComentario(String autor, String fecha, String contenido){
         TextView tvAutorMensajeForo = new TextView(ComentariosForoActivity.this);
-        tvAutorMensajeForo.setText(autor + " dijo:");
+        tvAutorMensajeForo.setText(autor + " (" + fecha + ") dijo:");
         tvAutorMensajeForo.setTypeface(null, Typeface.BOLD);
         tvAutorMensajeForo.setTextSize(20);
         llMensajesForo.addView(tvAutorMensajeForo);
@@ -280,7 +312,7 @@ public class ComentariosForoActivity extends AppCompatActivity {
         //JSONObject to send
         JSONObject dataToSend = new JSONObject();
         try {
-            dataToSend.put("fechaCreacion", 1);
+            dataToSend.put("fechaCreacion", Calendar.getInstance().getTimeInMillis());
             dataToSend.put("idUsuario", userLoginData.getUserID());
             dataToSend.put("idTema", extras.getInt("ID_TEMA"));
             dataToSend.put("descripcion", comentario);

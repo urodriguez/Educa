@@ -1,11 +1,10 @@
 package com.example.uciel.educa.activities;
 
-import android.content.Context;
 import android.content.Intent;
 import android.graphics.Color;
 import android.graphics.PorterDuff;
 import android.graphics.Typeface;
-import android.graphics.drawable.GradientDrawable;
+import android.os.Bundle;
 import android.os.Handler;
 import android.support.design.widget.NavigationView;
 import android.support.design.widget.TabLayout;
@@ -15,7 +14,6 @@ import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -51,6 +49,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.lang.reflect.Type;
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -76,6 +75,7 @@ public class ContenidoUnidad extends AppCompatActivity {
     private final String URL_PREG_UNIDAD = "http://educa-mnforlenza.rhcloud.com/api/unidad/";
 
     private boolean examFail = false;
+    private Button btnComenzar;
     private int cantDePregAprobadas = -1;
 
     @Override
@@ -261,8 +261,6 @@ public class ContenidoUnidad extends AppCompatActivity {
         viewPager.setCurrentItem(0);
         //cargarMaterial();
 
-
-
         final Handler handler = new Handler();
 
         final Runnable r = new Runnable() {
@@ -271,7 +269,7 @@ public class ContenidoUnidad extends AppCompatActivity {
                 cargarMaterial();
             }
         };
-        handler.postDelayed(r, 500);
+        handler.postDelayed(r, 1000);
 
     }
 
@@ -449,7 +447,7 @@ public class ContenidoUnidad extends AppCompatActivity {
 
         cargarEstadoExamen();
 
-        Button btnComenzar = (Button) viewPager.findViewById(R.id.buttonComenzar);
+        btnComenzar = (Button) viewPager.findViewById(R.id.buttonComenzar);
 
         btnComenzar.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -514,10 +512,6 @@ public class ContenidoUnidad extends AppCompatActivity {
 
             }
         });
-
-
-
-
     }
 
     private void cargarEstadoExamen(){
@@ -525,14 +519,22 @@ public class ContenidoUnidad extends AppCompatActivity {
         if(cantDePregAprobadas == -1){
             btnEstado.setText("PENDIENTE");
             btnEstado.getBackground().setColorFilter(Color.LTGRAY, PorterDuff.Mode.SRC_ATOP);
-        } else if (cantDePregAprobadas == itemsExamen.size()){
-            btnEstado.setText("APROBADO" + "\n" +
-                              "Acertadas/Total = " + cantDePregAprobadas + "/" + itemsExamen.size() + "\n");
-            btnEstado.getBackground().setColorFilter(Color.GREEN, PorterDuff.Mode.SRC_ATOP);
-        } else {
-            btnEstado.setText("DESAPROBADO" + "\n" +
-                              "Acertadas/Total = " + cantDePregAprobadas + "/" + itemsExamen.size() + "\n");
-            btnEstado.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.SRC_ATOP);
+        } else{
+            float porcentaje = ((float)cantDePregAprobadas/itemsExamen.size())*100;
+            BigDecimal bd = new BigDecimal(Float.toString(porcentaje));
+            bd = bd.setScale(2, BigDecimal.ROUND_HALF_UP);
+            android.util.Log.d("MSG", "PORCENTAJE= " + bd);
+            if(porcentaje > 60){
+                btnEstado.setText("APROBADO " + bd + "%" + "\n" +
+                        "Acertadas/Total = " + cantDePregAprobadas + "/" + itemsExamen.size() + "\n");
+                btnEstado.getBackground().setColorFilter(Color.GREEN, PorterDuff.Mode.SRC_ATOP);
+                btnComenzar.setEnabled(false);
+            } else {
+                btnEstado.setText("DESAPROBADO " + bd + "%" + "\n" +
+                        "Acertadas/Total = " + cantDePregAprobadas + "/" + itemsExamen.size() + "\n");
+                btnEstado.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.SRC_ATOP);
+                btnComenzar.setEnabled(false);
+            }
         }
 
     }
@@ -546,7 +548,6 @@ public class ContenidoUnidad extends AppCompatActivity {
 
         return divisor;
     }
-
 
     private void llamarEvaluarExamen() {
 

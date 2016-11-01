@@ -318,7 +318,7 @@ public class ContenidoCurso extends AppCompatActivity {
             for (int i = 0; i < jsonarray.length() ; i++) {
                 JSONObject jsonobject = jsonarray.getJSONObject(i);
                 android.util.Log.d("MSG", "T= " + jsonobject.getString("titulo") + " D= " + jsonobject.getString("descripcion"));
-                temasForo.add(new Tema(jsonobject.getInt("id"), jsonobject.getString("titulo"), jsonobject.getString("descripcion")));
+                temasForo.add(new Tema(jsonobject.getInt("id"), jsonobject.getString("titulo"), jsonobject.getString("descripcion"), jsonobject.getString("estado")));
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -461,7 +461,9 @@ public class ContenidoCurso extends AppCompatActivity {
         llMensajesForo.removeAllViews();
 
         for (int i = temasForo.size() - 1 ; i >= 0 ; i--){
-            cargarTema(temasForo.get(i).getIdTema(), temasForo.get(i).getTitulo(), temasForo.get(i).getDescripcion());
+            if(temasForo.get(i).fueAprobado()){
+                cargarTema(temasForo.get(i).getIdTema(), temasForo.get(i).getTitulo(), temasForo.get(i).getDescripcion());
+            }
         }
 
         FloatingActionButton fab = (FloatingActionButton) viewPager.findViewById(R.id.floatingActionButton);
@@ -530,7 +532,7 @@ public class ContenidoCurso extends AppCompatActivity {
                         if(!foroModerado){
                             //si NO es moderado ademas de hacer un post, tambien lo muestra
                             try {
-                                temasForo.add(new Tema(response.getInt("id"), response.getString("titulo"), response.getString("descripcion")));
+                                temasForo.add(new Tema(response.getInt("id"), response.getString("titulo"), response.getString("descripcion"), "APROBADO"));
                                 cargarForo();
                             } catch (JSONException e) {
                                 e.printStackTrace();
