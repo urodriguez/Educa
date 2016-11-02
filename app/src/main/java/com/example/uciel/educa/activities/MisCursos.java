@@ -151,6 +151,44 @@ public class MisCursos extends AppCompatActivity implements SearchView.OnQueryTe
         );
     }
 
+    private void cargarFiltroYBusqueda(){
+        searchView = (SearchView) findViewById(R.id.searchView);
+        searchView.setOnQueryTextListener(this);
+
+        searchView.setOnCloseListener(new SearchView.OnCloseListener(){
+            @Override
+            public boolean onClose() {
+                //Al cerrar el search reestablezco los cursos por si el alumno se
+                //arrepiente y decide cancelar la busqueda
+                RVAdapter adapter = new RVAdapter(cursos, "VERTICAL", userLoginData, MisCursos.this);
+                rv.setAdapter(adapter);
+                return false;
+            }
+        });
+    }
+
+    @Override
+    public boolean onQueryTextSubmit(String query) {
+        // User pressed the search button
+        return false;
+    }
+
+    @Override
+    public boolean onQueryTextChange(String newText) {
+        // User changed the text
+        List<Curso> cursosFiltrados = new ArrayList<>();
+
+        for (Curso c: cursos){
+            if(c.getNombre().toLowerCase().contains(newText.toLowerCase())){
+                cursosFiltrados.add(c);
+            }
+        }
+
+        RVAdapter adapter = new RVAdapter(cursosFiltrados, "VERTICAL", userLoginData, this);
+        rv.setAdapter(adapter);
+        return false;
+    }
+
     private void initializeData(){
         cursos = new ArrayList<>();
         String url = URL_MIS_CURSOS + userLoginData.getUserID();
@@ -200,42 +238,6 @@ public class MisCursos extends AppCompatActivity implements SearchView.OnQueryTe
         rv.setAdapter(adapter);
     }
 
-    private void cargarFiltroYBusqueda(){
-        searchView = (SearchView) findViewById(R.id.searchView);
-        searchView.setOnQueryTextListener(this);
 
-        searchView.setOnCloseListener(new SearchView.OnCloseListener(){
-            @Override
-            public boolean onClose() {
-                //Al cerrar el search reestablezco los cursos por si el alumno se
-                //arrepiente y decide cancelar la busqueda
-                RVAdapter adapter = new RVAdapter(cursos, "VERTICAL", userLoginData, MisCursos.this);
-                rv.setAdapter(adapter);
-                return false;
-            }
-        });
-    }
-
-    @Override
-    public boolean onQueryTextSubmit(String query) {
-        // User pressed the search button
-        return false;
-    }
-
-    @Override
-    public boolean onQueryTextChange(String newText) {
-        // User changed the text
-        List<Curso> cursosFiltrados = new ArrayList<>();
-
-        for (Curso c: cursos){
-            if(c.getNombre().toLowerCase().contains(newText.toLowerCase())){
-                cursosFiltrados.add(c);
-            }
-        }
-
-        RVAdapter adapter = new RVAdapter(cursosFiltrados, "VERTICAL", userLoginData, this);
-        rv.setAdapter(adapter);
-        return false;
-    }
 
 }

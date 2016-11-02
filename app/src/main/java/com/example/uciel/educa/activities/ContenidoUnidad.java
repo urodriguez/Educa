@@ -56,7 +56,6 @@ import java.util.List;
 
 public class ContenidoUnidad extends AppCompatActivity {
     private SingletonUserLogin userLoginData;
-    private Curso curso;
 
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
@@ -71,12 +70,13 @@ public class ContenidoUnidad extends AppCompatActivity {
 
     private List<ItemDeExamen> itemsExamen = new ArrayList<>();
 
-    private final String URL_CURSOS_DISP = "http://educa-mnforlenza.rhcloud.com/api/curso/listar";
+    private final String URL_CONSULTAR_EXAMEN = "http://educa-mnforlenza.rhcloud.com/api/consultarExamen/";
     private final String URL_PREG_UNIDAD = "http://educa-mnforlenza.rhcloud.com/api/unidad/";
 
     private boolean examFail = false;
+    private String estadoExamen;
     private Button btnComenzar;
-    private int cantDePregAprobadas = -1;
+    private int cantDePregAprobadas = 0;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -85,11 +85,7 @@ public class ContenidoUnidad extends AppCompatActivity {
 
         extras = getIntent().getExtras();
 
-        initializeData();
-
         setToolbar(); // Setear Toolbar como action bar
-
-        setTabs();
 
         userLoginData = SingletonUserLogin.getInstance();
 
@@ -98,94 +94,8 @@ public class ContenidoUnidad extends AppCompatActivity {
         if (navigationView != null) {
             setupDrawerContent(navigationView);
         }
-    }
 
-    private void initializeData(){
-        // Instantiate the RequestQueue.
-        String url = URL_CURSOS_DISP;
-
-        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        parseHomeResponse(response);
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        android.util.Log.d("MSG", "ERROR RESPONSE");
-                        CharSequence text = "Error al cargar curso. Reintente nuevamente!";
-                        Toast toast = Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT);
-                        toast.show();
-                    }
-                }
-        );
-        RQSingleton.getInstance(this).addToRequestQueue(stringRequest);
-
-
-        url = URL_PREG_UNIDAD + extras.getInt("ID_UNIDAD") + "/" + extras.getInt("ID_CURSO") + "/examen";
-        android.util.Log.d("MSG", url);
-        stringRequest = new StringRequest(Request.Method.GET, url,
-                new Response.Listener<String>() {
-                    @Override
-                    public void onResponse(String response) {
-                        examFail = false;
-                        parseExamResponse(response);
-                    }
-                },
-                new Response.ErrorListener() {
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        android.util.Log.d("MSG", "ERROR RESPONSE");
-                        examFail = true;
-
-                    }
-                }
-        );
-        RQSingleton.getInstance(this).addToRequestQueue(stringRequest);
-    }
-
-    public void parseHomeResponse(String response){
-        Gson g = new Gson();
-
-        Type collectionType = new TypeToken<Collection<Curso>>(){}.getType();
-        Collection<Curso> cusos = g.fromJson(response, collectionType);
-
-        android.util.Log.d("MSG", "ID_C= " +  extras.getInt("ID"));
-        for(Curso c: cusos){
-            if(extras.getInt("ID") == c.getId()){
-                android.util.Log.d("MSG", "CURSO ENCONTRADO");
-                curso = c;
-            }
-        }
-    }
-
-    public void parseExamResponse(String response){
-        android.util.Log.d("MSG", response.toString());
-        try {
-            JSONObject jsonExamen = new JSONObject(response);
-            JSONArray jsonArray = jsonExamen.getJSONArray("preguntas");
-            for (int i = 0; i < jsonArray.length(); i++) {
-                JSONObject jsonItemExamen = jsonArray.getJSONObject(i);
-                if(jsonItemExamen.getBoolean("multipleChoice") == true){
-                    Choice itemChoice = new Choice(jsonItemExamen.getJSONObject("id").getInt("idPregunta"),
-                                                   jsonItemExamen.getString("enunciado"),
-                                                   jsonItemExamen.getJSONArray("opciones"),
-                                                   this);
-                    itemsExamen.add(itemChoice);
-                } else{
-                    Pregunta preg = new Pregunta(jsonItemExamen.getJSONObject("id").getInt("idPregunta"),
-                                                 jsonItemExamen.getString("enunciado"),
-                                                 jsonItemExamen.getString("respuesta"),
-                                                 this);
-                    itemsExamen.add(preg);
-                }
-            }
-
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
+        setTabs();
     }
 
     private void setToolbar() {
@@ -200,77 +110,6 @@ public class ContenidoUnidad extends AppCompatActivity {
             ab.setHomeAsUpIndicator(R.drawable.ic_menu);
             ab.setDisplayHomeAsUpEnabled(true);
         }
-    }
-
-    private void setTabs() {
-        tabs = (TabLayout) findViewById(R.id.tabs);
-
-        viewPager = (ViewPager) findViewById(R.id.viewpager);
-        vpaContUnidad = new VPAdapterContUnidad(getSupportFragmentManager());
-        viewPager.setAdapter(vpaContUnidad);
-
-        final TabLayout.Tab material = tabs.newTab();
-        final TabLayout.Tab practicas = tabs.newTab();
-        final TabLayout.Tab examen = tabs.newTab();
-
-        material.setText("MATERIAL");
-        practicas.setText("PRACTICAS");
-        examen.setText("EXAMEN");
-
-        tabs.addTab(material, 0);
-        tabs.addTab(practicas, 1);
-        tabs.addTab(examen, 2);
-
-        tabs.setTabTextColors(ContextCompat.getColorStateList(this, R.color.white));
-        tabs.setSelectedTabIndicatorColor(ContextCompat.getColor(this, R.color.black_overlay));
-
-        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabs));
-        tabs.setOnTabSelectedListener(
-                new TabLayout.OnTabSelectedListener() {
-                    @Override
-                    public void onTabSelected(TabLayout.Tab tab) {
-
-                        viewPager.setCurrentItem(tab.getPosition());
-
-                        switch (tab.getPosition()) {
-                            case 0:
-                                cargarMaterial();
-                                break;
-
-                            case 1:
-                                cargarPracticas();
-                                break;
-
-                            case 2:
-                                cargarExamenes();
-                                break;
-                        }
-                    }
-
-                    @Override
-                    public void onTabUnselected(TabLayout.Tab tab) {
-
-                    }
-
-                    @Override
-                    public void onTabReselected(TabLayout.Tab tab) {
-                    }
-                }
-        );
-
-        viewPager.setCurrentItem(0);
-        //cargarMaterial();
-
-        final Handler handler = new Handler();
-
-        final Runnable r = new Runnable() {
-            public void run() {
-                viewPager.setCurrentItem(0);
-                cargarMaterial();
-            }
-        };
-        handler.postDelayed(r, 1000);
-
     }
 
     @Override
@@ -329,6 +168,166 @@ public class ContenidoUnidad extends AppCompatActivity {
                     }
                 }
         );
+    }
+
+    private void setTabs() {
+        tabs = (TabLayout) findViewById(R.id.tabs);
+
+        viewPager = (ViewPager) findViewById(R.id.viewpager);
+        vpaContUnidad = new VPAdapterContUnidad(getSupportFragmentManager());
+        viewPager.setAdapter(vpaContUnidad);
+
+        final TabLayout.Tab material = tabs.newTab();
+        final TabLayout.Tab practicas = tabs.newTab();
+        final TabLayout.Tab examen = tabs.newTab();
+
+        material.setText("MATERIAL");
+        practicas.setText("PRACTICAS");
+        examen.setText("EXAMEN");
+
+        tabs.addTab(material, 0);
+        tabs.addTab(practicas, 1);
+        tabs.addTab(examen, 2);
+
+        tabs.setTabTextColors(ContextCompat.getColorStateList(this, R.color.white));
+        tabs.setSelectedTabIndicatorColor(ContextCompat.getColor(this, R.color.black_overlay));
+
+        viewPager.addOnPageChangeListener(new TabLayout.TabLayoutOnPageChangeListener(tabs));
+        tabs.setOnTabSelectedListener(
+                new TabLayout.OnTabSelectedListener() {
+                    @Override
+                    public void onTabSelected(TabLayout.Tab tab) {
+
+                        viewPager.setCurrentItem(tab.getPosition());
+
+                        switch (tab.getPosition()) {
+                            case 0:
+                                cargarMaterial();
+                                break;
+
+                            case 1:
+                                cargarPracticas();
+                                break;
+
+                            case 2:
+                                initializeExamData();
+
+                                break;
+                        }
+                    }
+
+                    @Override
+                    public void onTabUnselected(TabLayout.Tab tab) {
+
+                    }
+
+                    @Override
+                    public void onTabReselected(TabLayout.Tab tab) {
+                    }
+                }
+        );
+
+        viewPager.setCurrentItem(0);
+
+        final Handler handler = new Handler();
+
+        final Runnable r = new Runnable() {
+            public void run() {
+                viewPager.setCurrentItem(0);
+                cargarMaterial();
+            }
+        };
+        handler.postDelayed(r, 1000);
+
+    }
+
+    private void initializeExamData(){
+        // Instantiate the RequestQueue.
+        String url = URL_CONSULTAR_EXAMEN + extras.getInt("ID_CURSO")+ "/" + extras.getInt("ID_UNIDAD") + "/" +  userLoginData.getUserID();
+        android.util.Log.d("MSG", url);
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        examFail = false;
+                        parseStateExamResponse(response);
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        android.util.Log.d("MSG", "ERROR RESPONSE");
+                        examFail = true;
+
+                    }
+                }
+        );
+        RQSingleton.getInstance(this).addToRequestQueue(stringRequest);
+    }
+
+    private void parseStateExamResponse(String response){
+        try {
+            JSONObject jsonObject = new JSONObject(response);
+            estadoExamen = jsonObject.getString("estado");
+            if(estadoExamen.equals("APROBADO")){
+                cantDePregAprobadas = jsonObject.getInt("cantDePregAprobadas");
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        if(!examFail){
+            // Instantiate the RequestQueue.
+            String url = URL_PREG_UNIDAD + extras.getInt("ID_UNIDAD") + "/" + extras.getInt("ID_CURSO") + "/examen";
+            android.util.Log.d("MSG", url);
+            StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                    new Response.Listener<String>() {
+                        @Override
+                        public void onResponse(String response) {
+                            examFail = false;
+                            parseExamResponse(response);
+                        }
+                    },
+                    new Response.ErrorListener() {
+                        @Override
+                        public void onErrorResponse(VolleyError error) {
+                            android.util.Log.d("MSG", "ERROR RESPONSE");
+                            examFail = true;
+
+                        }
+                    }
+            );
+            RQSingleton.getInstance(this).addToRequestQueue(stringRequest);
+        }
+    }
+
+    public void parseExamResponse(String response){
+        android.util.Log.d("MSG", response.toString());
+        try {
+            JSONObject jsonExamen = new JSONObject(response);
+            JSONArray jsonArray = jsonExamen.getJSONArray("preguntas");
+            for (int i = 0; i < jsonArray.length(); i++) {
+                JSONObject jsonItemExamen = jsonArray.getJSONObject(i);
+                if(jsonItemExamen.getBoolean("multipleChoice") == true){
+                    Choice itemChoice = new Choice(jsonItemExamen.getJSONObject("id").getInt("idPregunta"),
+                            jsonItemExamen.getString("enunciado"),
+                            jsonItemExamen.getJSONArray("opciones"),
+                            this);
+                    itemsExamen.add(itemChoice);
+                } else{
+                    Pregunta preg = new Pregunta(jsonItemExamen.getJSONObject("id").getInt("idPregunta"),
+                            jsonItemExamen.getString("enunciado"),
+                            jsonItemExamen.getString("respuesta"),
+                            this);
+                    itemsExamen.add(preg);
+                }
+            }
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        cargarExamen();
     }
 
     private void cargarMaterial() {
@@ -436,7 +435,7 @@ public class ContenidoUnidad extends AppCompatActivity {
 
     }
 
-    private void cargarExamenes() {
+    private void cargarExamen() {
         llExamenPresentacion = (LinearLayout) viewPager.findViewById(R.id.llExamenPresentacion);
 
         TextView txtExamen = (TextView) viewPager.findViewById(R.id.textViewExamTitulo);
@@ -478,12 +477,6 @@ public class ContenidoUnidad extends AppCompatActivity {
                     btnCorregir.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-
-
-                        //llamarEvaluarExamen();
-
-
-                        cantDePregAprobadas = 0;
                         boolean estaAprobado = true;
                         for (int i = 0; i < itemsExamen.size(); i++){
                             if(itemsExamen.get(i).itemAprobado() == false){
@@ -497,17 +490,16 @@ public class ContenidoUnidad extends AppCompatActivity {
                         llExamenItems.setVisibility(View.GONE);
                         llExamenItems.removeAllViews();
 
-                        cargarEstadoExamen();
-                        llExamenPresentacion.setVisibility(View.VISIBLE);
+                        //TODO hacer un POST con el estado del examen
+                        initializeExamData();
 
+                        llExamenPresentacion.setVisibility(View.VISIBLE);
                         }
                     });
-
                 } else{
                     CharSequence text = "Error al cargar examen. Reintente nuevamente!";
                     Toast toast = Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT);
                     toast.show();
-
                 }
 
             }
@@ -516,7 +508,7 @@ public class ContenidoUnidad extends AppCompatActivity {
 
     private void cargarEstadoExamen(){
         Button btnEstado = (Button) viewPager.findViewById(R.id.buttonEstado);
-        if(cantDePregAprobadas == -1){
+        if(estadoExamen.equals("PENDIENTE")){
             btnEstado.setText("PENDIENTE");
             btnEstado.getBackground().setColorFilter(Color.LTGRAY, PorterDuff.Mode.SRC_ATOP);
         } else{
@@ -530,13 +522,19 @@ public class ContenidoUnidad extends AppCompatActivity {
                 btnEstado.getBackground().setColorFilter(Color.GREEN, PorterDuff.Mode.SRC_ATOP);
                 btnComenzar.setEnabled(false);
             } else {
-                btnEstado.setText("DESAPROBADO " + bd + "%" + "\n" +
+                //TODO enviarlo a Mis Cursos pues desaprobo y ya no puede ver el contenido
+                CharSequence text = "Lamentablemente has desaprobado el examen. " +
+                        "Puedes volver a intentarlo cuando comience la proxima sesión";
+                Toast toast = Toast.makeText(getApplicationContext(), text, Toast.LENGTH_LONG);
+                toast.show();
+
+                startActivity(new Intent(ContenidoUnidad.this, MisCursos.class));
+                /*btnEstado.setText("DESAPROBADO " + bd + "%" + "\n" +
                         "Acertadas/Total = " + cantDePregAprobadas + "/" + itemsExamen.size() + "\n");
                 btnEstado.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.SRC_ATOP);
-                btnComenzar.setEnabled(false);
+                btnComenzar.setEnabled(false);*/
             }
         }
-
     }
 
     private ImageView crearDivisor(int ancho, int alto, int margenI, int margenTop, int margenD, int margenBottom, int c) {
@@ -547,78 +545,5 @@ public class ContenidoUnidad extends AppCompatActivity {
         divisor.setBackgroundColor(c);
 
         return divisor;
-    }
-
-    private void llamarEvaluarExamen() {
-
-        Integer numeroUnidad = extras.getInt("ID_UNIDAD");
-        Integer idCurso = extras.getInt("ID"); // id de curso
-        Integer idUsuario = 1; // De donde lo saco????
-
-        RequestQueue queue = Volley.newRequestQueue(getApplicationContext());
-
-        List<Respuesta> respuestas = new ArrayList<Respuesta>();
-
-        // cargar todas las opciones elegidas
-        Respuesta respuesta = new Respuesta();
-        respuesta.setIdPregunta(1);
-        respuesta.setMultipleChoice(false);
-        respuesta.setIdOpcionElegida(0); // se carga solo si multiple es true
-        respuesta.setRespuesta("Texto"); // se carga solo si multiple es false
-
-        respuestas.add(respuesta);
-
-        //JSONObject to send
-        JSONObject dataToSend = new JSONObject();
-        try {
-            dataToSend.put("idUsuario", idUsuario);
-            dataToSend.put("respuestas", respuestas);
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
-
-        android.util.Log.d("MSG", dataToSend.toString());
-
-        String urlEvaluar = URL_PREG_UNIDAD + numeroUnidad + "/" + idCurso + "/evaluacion";
-
-        JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.POST, urlEvaluar, dataToSend,
-                new Response.Listener<JSONObject>() {
-
-                    @Override
-                    public void onResponse(JSONObject response) {
-                        // response
-                        android.util.Log.d("MSG", "SUCCESS Response");
-                        android.util.Log.d("MSG", response.toString());
-
-                        String cantidadRespuestasCorrectas = "";//Es el ID que se usa para identificarlo en Educa (difiere del de FC o GG)
-                        String estado = "";
-                        String fechaActualizacion = "";
-                        String cantidadRespuestasInorrectas = "";
-                        try {
-                            cantidadRespuestasCorrectas = response.getString("cantidadRespuestasCorrectas");
-                            estado = response.getString("estado");
-                            fechaActualizacion = response.getString("fechaActualizacion");
-                            cantidadRespuestasInorrectas = response.getString("cantidadRespuestasInorrectas");
-                        } catch (JSONException e) {
-                            e.printStackTrace();
-                        }
-                        SingletonUserLogin userLoginData = SingletonUserLogin.getInstance();
-
-                    }
-                }, new Response.ErrorListener() {
-
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        android.util.Log.d("MSG", "ERROR Response");
-                        CharSequence text = "Error al realizar la evaluación. Reintente nuevamente!";
-                        Toast toast = Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT);
-                        toast.show();
-                }
-        }
-        );
-
-        // Add the request to the RequestQueue.
-        queue.add(jsonObjReq);
-
     }
 }

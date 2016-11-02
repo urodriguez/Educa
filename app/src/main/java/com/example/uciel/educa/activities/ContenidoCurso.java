@@ -560,11 +560,8 @@ public class ContenidoCurso extends AppCompatActivity {
     }
 
     private void cargarTema(int idTema, String titulo, String descripcion){
-        CardView cv = new CardView(this);
+        CardView cv = getCVproporcional();
         RelativeLayout rl = new RelativeLayout(this);
-
-        RelativeLayout.LayoutParams paramsdos = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, 100);
-        cv.setLayoutParams(paramsdos); //causes layout update
 
         TextView tv = new TextView(this);
         final int textViewUnidadID = idTema;
@@ -581,7 +578,6 @@ public class ContenidoCurso extends AppCompatActivity {
         tvd.setTextSize(18);
         tvd.setPadding(4,4,4,4);
         rl.addView(tvd);
-
 
         RelativeLayout.LayoutParams params = (RelativeLayout.LayoutParams)tv.getLayoutParams();
         params.addRule(RelativeLayout.ALIGN_PARENT_TOP);
@@ -621,5 +617,16 @@ public class ContenidoCurso extends AppCompatActivity {
 
         llMensajesForo.addView(txtEspacio);
 
+    }
+
+    private CardView getCVproporcional(){
+        CardView cv = new CardView(this);
+        DisplayMetrics displaymetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
+        int widthCV =(int) (0.10 * displaymetrics.heightPixels);
+        RelativeLayout.LayoutParams paramsdos = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, widthCV);
+        cv.setLayoutParams(paramsdos); //causes layout update
+
+        return cv;
     }
 }
