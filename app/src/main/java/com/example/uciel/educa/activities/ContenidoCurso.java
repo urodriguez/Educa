@@ -55,7 +55,6 @@ import java.util.Collection;
 import java.util.Map;
 
 public class ContenidoCurso extends AppCompatActivity {
-
     private Bundle extras;
 
     private SingletonUserLogin userLoginData;
@@ -311,7 +310,7 @@ public class ContenidoCurso extends AppCompatActivity {
     }
 
     public void parseTemasResponse(String response){
-        android.util.Log.d("MSG", response.toString());
+        android.util.Log.d("MSG", response);
         JSONArray jsonarray;
         try {
             jsonarray = new JSONArray(response);
@@ -436,6 +435,8 @@ public class ContenidoCurso extends AppCompatActivity {
                     TextView textView = (TextView) findViewById(textViewUnidadID);
                     cursosIntent.putExtra("UNIDAD", textView.getText());
                     cursosIntent.putExtra("ID_UNIDAD", (textViewUnidadID - 100) + 1);//Transforma a ID de unidad
+
+                    cursosIntent.putExtra("ID_SESION_ACTUAL", idSesionActual);
 
                     startActivity(cursosIntent);
 

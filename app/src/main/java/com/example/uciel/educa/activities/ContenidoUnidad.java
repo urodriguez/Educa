@@ -48,6 +48,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.UnsupportedEncodingException;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -70,11 +71,15 @@ public class ContenidoUnidad extends AppCompatActivity {
 
     private List<ItemDeExamen> itemsExamen = new ArrayList<>();
 
-    private final String URL_CONSULTAR_EXAMEN = "http://educa-mnforlenza.rhcloud.com/api/consultarExamen/";
+    private final String URL_CONSULTAR_EXAMEN = "http://educa-mnforlenza.rhcloud.com/api/unidad/consultarExamen/";
+    private final String URL_ENVIAR_EXAMEN = "http://educa-mnforlenza.rhcloud.com/api/unidad/enviarResultado";
     private final String URL_PREG_UNIDAD = "http://educa-mnforlenza.rhcloud.com/api/unidad/";
+
+    private int idCursoActual, idSesionActual, idUnidadActual;
 
     private boolean examFail = false;
     private String estadoExamen;
+    private float resultadoPorcentual;
     private Button btnComenzar;
     private int cantDePregAprobadas = 0;
 
@@ -84,6 +89,10 @@ public class ContenidoUnidad extends AppCompatActivity {
         setContentView(R.layout.activity_contenido_unidad);
 
         extras = getIntent().getExtras();
+
+        idCursoActual = extras.getInt("ID_CURSO");
+        idSesionActual = extras.getInt("ID_SESION_ACTUAL");
+        idUnidadActual = extras.getInt("ID_UNIDAD");
 
         setToolbar(); // Setear Toolbar como action bar
 
@@ -243,7 +252,7 @@ public class ContenidoUnidad extends AppCompatActivity {
 
     private void initializeExamData(){
         // Instantiate the RequestQueue.
-        String url = URL_CONSULTAR_EXAMEN + extras.getInt("ID_CURSO")+ "/" + extras.getInt("ID_UNIDAD") + "/" +  userLoginData.getUserID();
+        String url = URL_CONSULTAR_EXAMEN + userLoginData.getUserID() + "/" + idSesionActual + "/" + idCursoActual + "/" + idUnidadActual;
         android.util.Log.d("MSG", url);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
@@ -256,9 +265,29 @@ public class ContenidoUnidad extends AppCompatActivity {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        android.util.Log.d("MSG", "ERROR RESPONSE");
-                        examFail = true;
+                        String body;
+                        //get response body and parse with appropriate encoding
+                        if(error.networkResponse.data!=null) {
+                            try {
+                                body = new String(error.networkResponse.data,"UTF-8");
+                                try {
+                                    JSONObject jsonObject = new JSONObject(body);
+                                    android.util.Log.d("MSG", jsonObject.toString());
 
+                                    jsonObject.getString("error");//Si no hay error, es de "PENDIENTE" y lanza excepcion
+                                    //Si el flujo sigue, efectivamente fallo el response
+                                    examFail = true;
+                                    CharSequence text = "Error al cargar examen. Reintente nuevamente!";
+                                    Toast toast = Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT);
+                                    toast.show();
+                                } catch (JSONException e) {
+                                    //No es un error, sino un 404 de estado "PENDIENTE"
+                                    parseStateExamResponse(body);
+                                }
+                            } catch (UnsupportedEncodingException e) {
+                                e.printStackTrace();
+                            }
+                        }
                     }
                 }
         );
@@ -266,11 +295,13 @@ public class ContenidoUnidad extends AppCompatActivity {
     }
 
     private void parseStateExamResponse(String response){
+        android.util.Log.d("MSG", response);
         try {
             JSONObject jsonObject = new JSONObject(response);
             estadoExamen = jsonObject.getString("estado");
-            if(estadoExamen.equals("APROBADO")){
-                cantDePregAprobadas = jsonObject.getInt("cantDePregAprobadas");
+            if(!estadoExamen.equals("PENDIENTE")){
+                resultadoPorcentual = Float.parseFloat(jsonObject.getString("porcentaje"));
+                cantDePregAprobadas = jsonObject.getInt("cantidadRespuestasCorrectas");
             }
         } catch (JSONException e) {
             e.printStackTrace();
@@ -278,7 +309,7 @@ public class ContenidoUnidad extends AppCompatActivity {
 
         if(!examFail){
             // Instantiate the RequestQueue.
-            String url = URL_PREG_UNIDAD + extras.getInt("ID_UNIDAD") + "/" + extras.getInt("ID_CURSO") + "/examen";
+            String url = URL_PREG_UNIDAD + idUnidadActual + "/" + idCursoActual + "/examen";
             android.util.Log.d("MSG", url);
             StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                     new Response.Listener<String>() {
@@ -302,13 +333,14 @@ public class ContenidoUnidad extends AppCompatActivity {
     }
 
     public void parseExamResponse(String response){
-        android.util.Log.d("MSG", response.toString());
+        itemsExamen.clear();
+        android.util.Log.d("MSG", response);
         try {
             JSONObject jsonExamen = new JSONObject(response);
             JSONArray jsonArray = jsonExamen.getJSONArray("preguntas");
             for (int i = 0; i < jsonArray.length(); i++) {
                 JSONObject jsonItemExamen = jsonArray.getJSONObject(i);
-                if(jsonItemExamen.getBoolean("multipleChoice") == true){
+                if(jsonItemExamen.getBoolean("multipleChoice")){
                     Choice itemChoice = new Choice(jsonItemExamen.getJSONObject("id").getInt("idPregunta"),
                             jsonItemExamen.getString("enunciado"),
                             jsonItemExamen.getJSONArray("opciones"),
@@ -442,11 +474,11 @@ public class ContenidoUnidad extends AppCompatActivity {
         txtExamen.setText("Examen - Unidad " + extras.getInt("ID_UNIDAD"));
 
         TextView txtDuracion = (TextView) viewPager.findViewById(R.id.textViewExamDuracion);
-        txtDuracion.setText("Duración estimida: " + "X" + " min");
-
-        cargarEstadoExamen();
+        txtDuracion.setText("Duración estimida: " + itemsExamen.size() * 2 + " min");//dos minutos por pregunta
 
         btnComenzar = (Button) viewPager.findViewById(R.id.buttonComenzar);
+
+        cargarEstadoExamen();
 
         btnComenzar.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -477,21 +509,18 @@ public class ContenidoUnidad extends AppCompatActivity {
                     btnCorregir.setOnClickListener(new View.OnClickListener() {
                         @Override
                         public void onClick(View v) {
-                        boolean estaAprobado = true;
                         for (int i = 0; i < itemsExamen.size(); i++){
-                            if(itemsExamen.get(i).itemAprobado() == false){
-                                estaAprobado = false;
-                            } else {
+                            if(itemsExamen.get(i).itemAprobado()){
                                 cantDePregAprobadas++;
                             }
                         }
-                        android.util.Log.d("MSG", "RESULTADO= " + estaAprobado);
                         android.util.Log.d("MSG", "#APROB= " + cantDePregAprobadas);
                         llExamenItems.setVisibility(View.GONE);
                         llExamenItems.removeAllViews();
 
-                        //TODO hacer un POST con el estado del examen
-                        initializeExamData();
+                        registrarResultadoExamen();//Se hace un POST con el estado del examen
+
+                        //initializeExamData();
 
                         llExamenPresentacion.setVisibility(View.VISIBLE);
                         }
@@ -512,12 +541,9 @@ public class ContenidoUnidad extends AppCompatActivity {
             btnEstado.setText("PENDIENTE");
             btnEstado.getBackground().setColorFilter(Color.LTGRAY, PorterDuff.Mode.SRC_ATOP);
         } else{
-            float porcentaje = ((float)cantDePregAprobadas/itemsExamen.size())*100;
-            BigDecimal bd = new BigDecimal(Float.toString(porcentaje));
-            bd = bd.setScale(2, BigDecimal.ROUND_HALF_UP);
-            android.util.Log.d("MSG", "PORCENTAJE= " + bd);
-            if(porcentaje > 60){
-                btnEstado.setText("APROBADO " + bd + "%" + "\n" +
+            android.util.Log.d("MSG", "PORCENTAJE= " + resultadoPorcentual);
+            if(resultadoPorcentual > 60){
+                btnEstado.setText("APROBADO " + resultadoPorcentual + "%" + "\n" +
                         "Acertadas/Total = " + cantDePregAprobadas + "/" + itemsExamen.size() + "\n");
                 btnEstado.getBackground().setColorFilter(Color.GREEN, PorterDuff.Mode.SRC_ATOP);
                 btnComenzar.setEnabled(false);
@@ -535,6 +561,63 @@ public class ContenidoUnidad extends AppCompatActivity {
                 btnComenzar.setEnabled(false);*/
             }
         }
+    }
+
+    private void registrarResultadoExamen(){
+        RequestQueue queue = Volley.newRequestQueue(getApplicationContext());
+
+        //JSONObject to send
+        JSONObject dataToSend = new JSONObject();
+        try {
+            dataToSend.put("idCurso", idCursoActual);
+            dataToSend.put("numeroUnidad", idUnidadActual);
+            dataToSend.put("idUsuario", userLoginData.getUserID());
+            dataToSend.put("idSesion", idSesionActual);
+            dataToSend.put("cantDePreguntas", itemsExamen.size());
+            dataToSend.put("cantDePregAprobadas", cantDePregAprobadas);
+
+            if(getResultadoPorcentual() > 60){
+                dataToSend.put("estado", "APROBADO");
+            } else {
+                dataToSend.put("estado", "DESAPROBADO");
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        android.util.Log.d("MSG", "DATA TO SEND= " + dataToSend.toString());
+
+        JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.POST, URL_ENVIAR_EXAMEN, dataToSend,
+                new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        // response
+                        android.util.Log.d("MSG", "SUCCESS POST EXAM Response");
+                        android.util.Log.d("MSG", response.toString());
+
+                        initializeExamData();
+
+                    }
+                }, new Response.ErrorListener() {
+
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                android.util.Log.d("MSG", "ERROR Response");
+                CharSequence text = "Error al enviar examen. Reintente nuevamente!";
+                Toast toast = Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT);
+                toast.show();
+            }
+        }
+        );
+        // Add the request to the RequestQueue.
+        queue.add(jsonObjReq);
+    }
+
+    private float getResultadoPorcentual(){
+        float porcentaje = ((float)cantDePregAprobadas/itemsExamen.size())*100;
+        BigDecimal bd = new BigDecimal(Float.toString(porcentaje));
+        return bd.setScale(2, BigDecimal.ROUND_HALF_UP).floatValue();
     }
 
     private ImageView crearDivisor(int ancho, int alto, int margenI, int margenTop, int margenD, int margenBottom, int c) {
