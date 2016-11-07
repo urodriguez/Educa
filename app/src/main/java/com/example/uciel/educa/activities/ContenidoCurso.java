@@ -247,15 +247,16 @@ public class ContenidoCurso extends AppCompatActivity {
             jsonarray = new JSONArray(response);
             for (int i = 0; i < jsonarray.length(); i++) {
                 JSONObject jsonobject = jsonarray.getJSONObject(i);
-                if(jsonobject.getInt("idCurso") == curso.getId()){
-                    idSesionActual = jsonobject.getInt("numero");
+                if(jsonobject.getJSONObject("id").getInt("idCurso") == curso.getId()){
+                    idSesionActual = jsonobject.getJSONObject("id").getInt("numero");
                 }
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        String url = URL_FORO + "/" + idSesionActual + "/" + curso.getId();
+        String url = URL_FORO + idSesionActual + "/" + curso.getId();
+        android.util.Log.d("MSG", "URL FORO= " + url);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
                     @Override

@@ -32,6 +32,10 @@ import com.example.uciel.educa.network.RQSingleton;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import java.lang.reflect.Type;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -44,6 +48,7 @@ public class MisCursos extends AppCompatActivity implements SearchView.OnQueryTe
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
 
+    private List<Integer> cursosDesaprobados;
     private List<Curso> cursos;
     private RecyclerView rv;
 
@@ -51,6 +56,7 @@ public class MisCursos extends AppCompatActivity implements SearchView.OnQueryTe
 
     private SingletonUserLogin userLoginData;
 
+    private final String URL_MIS_SESIONES = "http://educa-mnforlenza.rhcloud.com/api/usuario/mis-sesiones/";
     private final String URL_MIS_CURSOS = "http://educa-mnforlenza.rhcloud.com/api/usuario/mis-cursos/";
 
     @Override
@@ -190,6 +196,46 @@ public class MisCursos extends AppCompatActivity implements SearchView.OnQueryTe
     }
 
     private void initializeData(){
+        String url = URL_MIS_SESIONES + "/" + userLoginData.getUserID();
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        parseSesionesResponse(response);
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        android.util.Log.d("MSG", "ERROR RESPONSE");
+                        CharSequence text = "Error al cargar sesiones. Reintente nuevamente!";
+                        Toast toast = Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT);
+                        toast.show();
+                    }
+                }
+        );
+        RQSingleton.getInstance(this).addToRequestQueue(stringRequest);
+    }
+
+    public void parseSesionesResponse(String response){
+        cursosDesaprobados = new ArrayList<>();
+        JSONArray jsonarray;
+        try {
+            jsonarray = new JSONArray(response);
+            for (int i = 0; i < jsonarray.length(); i++) {
+                JSONObject jsonobject = jsonarray.getJSONObject(i);
+                if(jsonobject.getBoolean("desaprobado")){
+                    cursosDesaprobados.add(jsonobject.getJSONObject("id").getInt("idCurso"));
+                }
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        initializeCursos();
+    }
+
+    private void initializeCursos(){
         cursos = new ArrayList<>();
         String url = URL_MIS_CURSOS + userLoginData.getUserID();
 
@@ -226,10 +272,12 @@ public class MisCursos extends AppCompatActivity implements SearchView.OnQueryTe
         Collection<Curso> cusos = g.fromJson(response, collectionType);
 
         for(Curso c: cusos){
+            if(cursosDesaprobados.contains(c.getId())){
+                c.desaprobarSesionActual();
+            }
             cursos.add(c);
             android.util.Log.d("CATEGORIASCURSO", "NOMBRE :" + c.getNombre() + "Docente: " + c.getNombreDocente());
         }
-
     }
 
     private void initializeAdapter(){

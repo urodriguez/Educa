@@ -2,6 +2,8 @@ package com.example.uciel.educa.adapters;
 
 import android.content.Context;
 import android.content.Intent;
+import android.graphics.Color;
+import android.graphics.PorterDuff;
 import android.support.v7.widget.CardView;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
@@ -9,6 +11,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RatingBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.android.volley.toolbox.ImageLoader;
 import com.android.volley.toolbox.NetworkImageView;
@@ -86,17 +89,28 @@ public class RVAdapterMisCursos extends RecyclerView.Adapter<RVAdapterMisCursos.
         mImageLoader = RQSingleton.getInstance(this.context).getImageLoader();
         cursoViewHolder.fotoCursoNiv.setImageUrl(imageUrl, mImageLoader);
 
+        if (cursos.get(i).tieneLaSesionActualDesaprobada()){
+            cursoViewHolder.cv.getBackground().setColorFilter(Color.LTGRAY, PorterDuff.Mode.SRC_ATOP);
+        }
+
         cursoViewHolder.cv.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                //implementing onClick
-                Intent intentContenidoCurso = new Intent();
-                intentContenidoCurso.setClass(v.getContext(), ContenidoCurso.class);
+                if (cursos.get(i).tieneLaSesionActualDesaprobada()){
+                    CharSequence text = "¡Solicitud Denegada! Tienes un examen desaprobado. " +
+                            "Puedes volver a intentarlo cuando comience la proxima sesión";
+                    Toast toast = Toast.makeText(v.getContext(), text, Toast.LENGTH_LONG);
+                    toast.show();
+                } else {
+                    //implementing onClick
+                    Intent intentContenidoCurso = new Intent();
+                    intentContenidoCurso.setClass(v.getContext(), ContenidoCurso.class);
 
-                this.cargarInformacion(intentContenidoCurso,cursos.get(i));
+                    this.cargarInformacion(intentContenidoCurso,cursos.get(i));
 
-                v.getContext().startActivity(intentContenidoCurso);
-                System.out.println("Clicked " + String.valueOf(i));
+                    v.getContext().startActivity(intentContenidoCurso);
+                    System.out.println("Clicked " + String.valueOf(i));
+                }
             }
 
             private void cargarInformacion(Intent intentDescripcionCurso, Curso curso) {

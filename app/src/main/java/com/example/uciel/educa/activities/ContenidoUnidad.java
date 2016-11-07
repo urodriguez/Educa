@@ -548,7 +548,6 @@ public class ContenidoUnidad extends AppCompatActivity {
                 btnEstado.getBackground().setColorFilter(Color.GREEN, PorterDuff.Mode.SRC_ATOP);
                 btnComenzar.setEnabled(false);
             } else {
-                //TODO enviarlo a Mis Cursos pues desaprobo y ya no puede ver el contenido
                 CharSequence text = "Lamentablemente has desaprobado el examen. " +
                         "Puedes volver a intentarlo cuando comience la proxima sesión";
                 Toast toast = Toast.makeText(getApplicationContext(), text, Toast.LENGTH_LONG);
@@ -604,6 +603,7 @@ public class ContenidoUnidad extends AppCompatActivity {
             @Override
             public void onErrorResponse(VolleyError error) {
                 android.util.Log.d("MSG", "ERROR Response");
+                android.util.Log.d("MSG", error.toString());
                 CharSequence text = "Error al enviar examen. Reintente nuevamente!";
                 Toast toast = Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT);
                 toast.show();

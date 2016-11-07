@@ -23,6 +23,7 @@ public class Curso {
     private List<Sesion> sesiones;
     private List<Unidad> unidades;
     private List<Critica> criticas;
+    private boolean sesionActualDesaprobada = false;
 
     public Curso() {
         this.id = 1;
@@ -203,5 +204,13 @@ public class Curso {
 
     public String getFDISesionNUM(int i) {
         return sesiones.get(i).getFechaDesdeInscripcion();
+    }
+
+    public void desaprobarSesionActual() {
+        sesionActualDesaprobada = true;
+    }
+
+    public boolean tieneLaSesionActualDesaprobada(){
+        return sesionActualDesaprobada;
     }
 }
