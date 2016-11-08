@@ -42,8 +42,6 @@ import java.util.Collection;
 import java.util.List;
 
 public class MisCursos extends AppCompatActivity implements SearchView.OnQueryTextListener {
-    private Bundle extras;
-
     private SearchView searchView;
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
@@ -63,8 +61,6 @@ public class MisCursos extends AppCompatActivity implements SearchView.OnQueryTe
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mis_cursos);
-
-        extras = getIntent().getExtras();
 
         userLoginData = SingletonUserLogin.getInstance();
 

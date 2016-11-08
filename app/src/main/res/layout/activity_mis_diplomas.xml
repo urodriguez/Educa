@@ -5,11 +5,11 @@
     android:id="@+id/drawer_layout"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".activities.Cursos"
+    tools:context=".activities.MisDiplomas"
     android:fitsSystemWindows="true">
 
     <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         >
 
@@ -35,34 +35,27 @@
                     android:layout_centerInParent="true"
                     />
 
-                <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_toRightOf="@id/textView">
-
-                    <SearchView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:id="@+id/searchView"
-                        android:icon="@android:drawable/ic_menu_search"
-                        android:title="@string/action_search"
-                        android:queryHint="Buscar..."
-                        android:showAsAction="always"
-                        android:layout_alignParentTop="true"
-                        android:layout_alignParentRight="true"
-                        android:layout_centerInParent="true"
-                        />
-                </RelativeLayout>
-
             </RelativeLayout>
 
         </android.support.v7.widget.Toolbar>
 
-        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        <TextView
+            android:id="@+id/misDiplomas"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_below="@id/toolbar"
+            android:text="@string/mis_diplomas"
+            android:textStyle="bold"
+            android:layout_marginLeft="16dp"
+            android:layout_marginTop="8dp"
+            android:textSize="24sp"
+            />
+
+        <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
             android:id="@+id/rlrv"
-            android:layout_below="@+id/toolbar">
+            android:layout_below="@+id/misDiplomas">
 
             <android.support.v7.widget.RecyclerView
                 android:layout_height="wrap_content"

@@ -625,8 +625,8 @@ public class ContenidoCurso extends AppCompatActivity {
         CardView cv = new CardView(this);
         DisplayMetrics displaymetrics = new DisplayMetrics();
         getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
-        int widthCV =(int) (0.10 * displaymetrics.heightPixels);
-        RelativeLayout.LayoutParams paramsdos = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, widthCV);
+        int heightCV =(int) (0.10 * displaymetrics.heightPixels);
+        RelativeLayout.LayoutParams paramsdos = new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.MATCH_PARENT, heightCV);
         cv.setLayoutParams(paramsdos); //causes layout update
 
         return cv;

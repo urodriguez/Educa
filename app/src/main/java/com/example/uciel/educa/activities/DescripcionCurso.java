@@ -309,24 +309,23 @@ public class DescripcionCurso extends AppCompatActivity {
         llUnidades.removeAllViews();
 
         for(int i = 0; i < curso.getCantDeUnidades(); i++){
+            RelativeLayout rl = new RelativeLayout(this);
+
             TextView txt = new TextView(this);
             txt.setTextSize(18);
             txt.setTypeface(null, Typeface.BOLD);
             txt.setText("Unidad " + String.valueOf(i + 1)+ " - " + curso.getTituloUnidadNum(i));
 
-            Button bc = new Button(this);
-            bc.setText(String.valueOf(curso.getDuracionEstUnidadNum(i)) + " hs");
-            bc.setTextSize(14);
-            bc.setBackgroundResource(R.drawable.round_button);
-
-            RelativeLayout rl = new RelativeLayout(this);
             rl.addView(txt);
+
+            Button bc = getButtonProporcional(curso.getDuracionEstUnidadNum(i), txt.getId());
+
             rl.addView(bc);
 
-            RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(88, 88);
+            /*RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(88, 88);
             params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
             params.addRule(RelativeLayout.RIGHT_OF, txt.getId());
-            bc.setLayoutParams(params); //causes layout update
+            bc.setLayoutParams(params); //causes layout update*/
 
             llUnidades.addView(rl);
 
@@ -338,6 +337,24 @@ public class DescripcionCurso extends AppCompatActivity {
             // Agrego un divisor
             llUnidades.addView(crearDivisor(LinearLayout.LayoutParams.MATCH_PARENT, 1, 10, 15, 10, 15, Color.LTGRAY));
         }
+    }
+
+    private Button getButtonProporcional(int duracion, int idTextViewIzquierdo) {
+        Button bc = new Button(this);
+
+        DisplayMetrics displaymetrics = new DisplayMetrics();
+        getWindowManager().getDefaultDisplay().getMetrics(displaymetrics);
+        int altoBT =(int) (0.085 * displaymetrics.heightPixels);
+        RelativeLayout.LayoutParams params = new RelativeLayout.LayoutParams(altoBT, altoBT);
+        params.addRule(RelativeLayout.ALIGN_PARENT_RIGHT);
+        params.addRule(RelativeLayout.RIGHT_OF, idTextViewIzquierdo);
+        bc.setLayoutParams(params); //causes layout update
+
+        bc.setText(duracion + " hs");
+        bc.setTextSize(14);
+        bc.setBackgroundResource(R.drawable.round_button);
+
+        return bc;
     }
 
     private void cargarSesiones() {

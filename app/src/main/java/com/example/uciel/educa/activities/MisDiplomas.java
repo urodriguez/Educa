@@ -12,35 +12,45 @@ import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
-import android.widget.SearchView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
 import com.example.uciel.educa.R;
-import com.example.uciel.educa.adapters.RVAdapter;
-import com.example.uciel.educa.domain.Curso;
+import com.example.uciel.educa.adapters.RVAdapterMisDiplomas;
+import com.example.uciel.educa.domain.DataMisDiplomas;
+import com.example.uciel.educa.domain.ProgressBarHandler;
 import com.example.uciel.educa.domain.SingletonUserLogin;
+import com.example.uciel.educa.network.RQSingleton;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MisDiplomas extends AppCompatActivity implements SearchView.OnQueryTextListener {
-    private Bundle extras;
-
-    private SearchView searchView;
+public class MisDiplomas extends AppCompatActivity{
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
 
-    private List<Curso> cursos;
+    private List<DataMisDiplomas> datosDeCampos;
     private RecyclerView rv;
 
+    private ProgressBarHandler progressBarHandler;
+
     private SingletonUserLogin userLoginData;
+
+    private final String URL_MIS_DIPLOMAS = "http://educa-mnforlenza.rhcloud.com/api/usuario/mis-diplomas/";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_mis_diplomas);
-
-        extras = getIntent().getExtras();
 
         userLoginData = SingletonUserLogin.getInstance();
 
@@ -52,18 +62,22 @@ public class MisDiplomas extends AppCompatActivity implements SearchView.OnQuery
             setupDrawerContent(navigationView);
         }
 
-        this.cargarFiltroYBusqueda();
-
         rv=(RecyclerView)findViewById(R.id.rv);
 
         LinearLayoutManager llm = new LinearLayoutManager(this);
         llm.setOrientation(LinearLayoutManager.VERTICAL);
         rv.setLayoutManager(llm);
         rv.setHasFixedSize(true);
+
+        progressBarHandler = new ProgressBarHandler(this, (RelativeLayout) findViewById(R.id.rlrv));
+        progressBarHandler.show();
+
+        initializeData();
     }
 
     private void setToolbar() {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitle("");
         setSupportActionBar(toolbar);
         final ActionBar ab = getSupportActionBar();
         if (ab != null) {
@@ -128,47 +142,49 @@ public class MisDiplomas extends AppCompatActivity implements SearchView.OnQuery
         );
     }
 
-    private void initializeAdapter(){
-        RVAdapter adapter = new RVAdapter(cursos, "VERTICAL", userLoginData, this);
-        rv.setAdapter(adapter);
+    private void initializeData(){
+        //String url = URL_MIS_DIPLOMAS + userLoginData.getUserID();
+        String url= "http://educa-mnforlenza.rhcloud.com/api/usuario/mis-sesiones/43";
+        StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+                        response = "[{\"nombreCurso\":\"Android\",\"fechaInicio\": \"14/10/2016\"},{\"nombreCurso\":\"Cocina Mex\",\"fechaInicio\": \"01/11/2016\"}]";
+                        android.util.Log.d("MSG", "RESPONSE DIPLO= " + response);
+                        parseDiplomasResponse(response);
+                        initializeAdapter();
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        android.util.Log.d("MSG", "ERROR RESPONSE");
+                        CharSequence text = "Error al cargar sesiones. Reintente nuevamente!";
+                        Toast toast = Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT);
+                        toast.show();
+                    }
+                }
+        );
+        RQSingleton.getInstance(this).addToRequestQueue(stringRequest);
     }
 
-    private void cargarFiltroYBusqueda(){
-        searchView = (SearchView) findViewById(R.id.searchView);
-        searchView.setOnQueryTextListener(this);
-
-        searchView.setOnCloseListener(new SearchView.OnCloseListener(){
-            @Override
-            public boolean onClose() {
-                //Al cerrar el search reestablezco los cursos por si el alumno se
-                //arrepiente y decide cancelar la busqueda
-                RVAdapter adapter = new RVAdapter(cursos, "VERTICAL", userLoginData, MisDiplomas.this);
-                rv.setAdapter(adapter);
-                return false;
+    private void parseDiplomasResponse(String response) {
+        datosDeCampos = new ArrayList<>();
+        JSONArray jsonarray;
+        try {
+            jsonarray = new JSONArray(response);
+            for (int i = 0; i < jsonarray.length(); i++) {
+                JSONObject jsonobject = jsonarray.getJSONObject(i);
+                datosDeCampos.add(new DataMisDiplomas(jsonobject.getString("nombreCurso"), jsonobject.getString("fechaInicio")));
             }
-        });
-    }
-
-    @Override
-    public boolean onQueryTextSubmit(String query) {
-        // User pressed the search button
-        return false;
-    }
-
-    @Override
-    public boolean onQueryTextChange(String newText) {
-        // User changed the text
-        List<Curso> cursosFiltrados = new ArrayList<>();
-
-        for (Curso c: cursos){
-            if(c.getNombre().toLowerCase().contains(newText.toLowerCase())){
-                cursosFiltrados.add(c);
-            }
+        } catch (JSONException e) {
+            e.printStackTrace();
         }
-
-        RVAdapter adapter = new RVAdapter(cursosFiltrados, "VERTICAL", userLoginData, this);
-        rv.setAdapter(adapter);
-        return false;
     }
 
+    private void initializeAdapter(){
+        progressBarHandler.hide();
+        RVAdapterMisDiplomas adapter = new RVAdapterMisDiplomas(datosDeCampos);
+        rv.setAdapter(adapter);
+    }
 }
