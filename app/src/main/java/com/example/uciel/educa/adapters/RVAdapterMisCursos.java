@@ -18,6 +18,7 @@ import com.android.volley.toolbox.NetworkImageView;
 import com.example.uciel.educa.R;
 import com.example.uciel.educa.activities.ContenidoCurso;
 import com.example.uciel.educa.domain.Curso;
+import com.example.uciel.educa.domain.SesionHandler;
 import com.example.uciel.educa.domain.SingletonUserLogin;
 import com.example.uciel.educa.network.RQSingleton;
 
@@ -26,7 +27,6 @@ import java.util.List;
 public class RVAdapterMisCursos extends RecyclerView.Adapter<RVAdapterMisCursos.CursoViewHolder> {
 
     public static class CursoViewHolder extends RecyclerView.ViewHolder {
-
         CardView cv;
         TextView nombreCurso;
         TextView profesorCurso;
@@ -46,18 +46,16 @@ public class RVAdapterMisCursos extends RecyclerView.Adapter<RVAdapterMisCursos.
     }
 
     private List<Curso> cursos;
-    private final String userName;
-    private final String userID;
+    List<SesionHandler> sesionHandlers;
     private Context context;
 
     private static final String IMAGE_ROOT_URL =
             "http://educa-mnforlenza.rhcloud.com/api/";
 
 
-    public RVAdapterMisCursos(List<Curso> cursos, SingletonUserLogin userLoginData, Context context){
+    public RVAdapterMisCursos(List<Curso> cursos, List<SesionHandler> sesionHandlers, Context context){
         this.cursos = cursos;
-        this.userName = userLoginData.getUserName();
-        this.userID = userLoginData.getUserID();
+        this.sesionHandlers = sesionHandlers;
         this.context = context;
     }
 
@@ -77,11 +75,16 @@ public class RVAdapterMisCursos extends RecyclerView.Adapter<RVAdapterMisCursos.
     @Override
     public void onBindViewHolder(CursoViewHolder cursoViewHolder, final int i) {
         cursoViewHolder.nombreCurso.setText(cursos.get(i).getNombre());
-        cursoViewHolder.ratingBar.setRating(cursos.get(i).getValoracionesPromedio());
 
         cursoViewHolder.profesorCurso.setText(cursos.get(i).getNombreCompletoDocente());
 
-        cursoViewHolder.estado.setText(cursos.get(i).getEstado());
+        if(sesionHandlers.get(i).isIniciada()){
+            cursoViewHolder.estado.setText("Dictandose");
+        } else {
+            cursoViewHolder.estado.setText("Comienza el: " + sesionHandlers.get(i).getStringFechaInicio());
+        }
+
+        cursoViewHolder.ratingBar.setRating(cursos.get(i).getValoracionesPromedio());
 
         String imageUrl = IMAGE_ROOT_URL + cursos.get(i).getLinkImagen();
         ImageLoader mImageLoader;
@@ -101,15 +104,19 @@ public class RVAdapterMisCursos extends RecyclerView.Adapter<RVAdapterMisCursos.
                             "Puedes volver a intentarlo cuando comience la proxima sesión";
                     Toast toast = Toast.makeText(v.getContext(), text, Toast.LENGTH_LONG);
                     toast.show();
-                } else {
+                } else if (sesionHandlers.get(i).isIniciada()) {
                     //implementing onClick
                     Intent intentContenidoCurso = new Intent();
                     intentContenidoCurso.setClass(v.getContext(), ContenidoCurso.class);
 
-                    this.cargarInformacion(intentContenidoCurso,cursos.get(i));
+                    this.cargarInformacion(intentContenidoCurso, cursos.get(i));
 
                     v.getContext().startActivity(intentContenidoCurso);
                     System.out.println("Clicked " + String.valueOf(i));
+                } else {
+                    CharSequence text = "¡Esta sesión aun no ha comenzado! Comienza el: " + sesionHandlers.get(i).getStringFechaInicio() ;
+                    Toast toast = Toast.makeText(v.getContext(), text, Toast.LENGTH_LONG);
+                    toast.show();
                 }
             }
 

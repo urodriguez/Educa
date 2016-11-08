@@ -72,8 +72,10 @@ public class CursosBuscados extends AppCompatActivity {
 
         criterioDeBusqueda = extras.getString("BUSQUEDA");
 
+        TextView tvBusqueda = (TextView) findViewById(R.id.busquedaActual);
+        tvBusqueda.setText("Buscando por: "+ criterioDeBusqueda);
+
         initializeData();
-        initializeAdapter();
     }
 
     private void setToolbar() {
@@ -155,7 +157,7 @@ public class CursosBuscados extends AppCompatActivity {
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        parseHomeResponse(response);
+                        parseCursoBuscadoResponse(response);
                         initializeAdapter();
                     }
                 },
@@ -170,13 +172,7 @@ public class CursosBuscados extends AppCompatActivity {
         RQSingleton.getInstance(this).addToRequestQueue(stringRequest);
     }
 
-
-    private void initializeAdapter(){
-        RVAdapter adapter = new RVAdapter(cursos, "VERTICAL", userLoginData, this);
-        rv.setAdapter(adapter);
-    }
-
-    public void parseHomeResponse(String response){
+    public void parseCursoBuscadoResponse(String response){
         Gson g = new Gson();
 
         Type collectionType = new TypeToken<Collection<Curso>>(){}.getType();
@@ -189,5 +185,10 @@ public class CursosBuscados extends AppCompatActivity {
             android.util.Log.d("CATEGORIASCURSO", "NOMBRE :" + c.getNombre() + "Docente: " + c.getNombreDocente());
         }
 
+    }
+
+    private void initializeAdapter(){
+        RVAdapter adapter = new RVAdapter(cursos, "VERTICAL", userLoginData, this);
+        rv.setAdapter(adapter);
     }
 }

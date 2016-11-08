@@ -40,18 +40,21 @@
         </android.support.v7.widget.Toolbar>
 
         <TextView
-            android:id="@+id/categoriaActual"
+            android:id="@+id/busquedaActual"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@id/toolbar"
-            android:textSize="25dp"
+            android:textStyle="bold|italic"
+            android:layout_marginStart="16dp"
+            android:layout_marginTop="8dp"
+            android:textSize="24sp"
             />
 
         <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:id="@+id/rlrv"
-            android:layout_below="@+id/categoriaActual">
+            android:layout_below="@+id/busquedaActual">
 
             <android.support.v7.widget.RecyclerView
                 android:layout_height="wrap_content"

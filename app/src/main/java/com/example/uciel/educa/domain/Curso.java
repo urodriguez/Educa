@@ -23,7 +23,12 @@ public class Curso {
     private List<Sesion> sesiones;
     private List<Unidad> unidades;
     private List<Critica> criticas;
+
     private boolean sesionActualDesaprobada = false;
+    private int idSesionActual;
+    private String fechaInicioSesionActual;
+    private boolean sesionActualIniciada;
+
 
     public Curso() {
         this.id = 1;
@@ -212,5 +217,14 @@ public class Curso {
 
     public boolean tieneLaSesionActualDesaprobada(){
         return sesionActualDesaprobada;
+    }
+
+    public long getFechaInicioSesion(int idSesion){
+        for (Sesion s: sesiones) {
+            if (s.getID() == idSesion){
+                return s.getFechaInicio();
+            }
+        }
+        return 0;
     }
 }

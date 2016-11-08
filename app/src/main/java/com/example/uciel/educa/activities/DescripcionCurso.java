@@ -544,8 +544,8 @@ public class DescripcionCurso extends AppCompatActivity {
                             JSONArray jsonArray = new JSONArray(response);
                             for (int i = 0; i < jsonArray.length(); i++) {
                                 JSONObject explrObject = jsonArray.getJSONObject(i);
-                                int idCurso = explrObject.getInt("idCurso");
-                                int idSesion = explrObject.getInt("numero");
+                                int idCurso = explrObject.getJSONObject("id").getInt("idCurso");
+                                int idSesion = explrObject.getJSONObject("id").getInt("numero");
                                 android.util.Log.i("MSG", "data: "+ idCurso + "-" + idSesion );
                                 mis_IDCURSO_IDSESSION.put(idCurso, idSesion);
                             }

@@ -27,6 +27,7 @@ import com.example.uciel.educa.adapters.RVAdapter;
 import com.example.uciel.educa.adapters.RVAdapterMisCursos;
 import com.example.uciel.educa.domain.Curso;
 import com.example.uciel.educa.domain.ProgressBarHandler;
+import com.example.uciel.educa.domain.SesionHandler;
 import com.example.uciel.educa.domain.SingletonUserLogin;
 import com.example.uciel.educa.network.RQSingleton;
 import com.google.gson.Gson;
@@ -48,6 +49,7 @@ public class MisCursos extends AppCompatActivity implements SearchView.OnQueryTe
 
     private List<Integer> cursosDesaprobados;
     private List<Curso> cursos;
+    private List<SesionHandler> sesionHandlers;
     private RecyclerView rv;
 
     private ProgressBarHandler progressBarHandler;
@@ -214,12 +216,14 @@ public class MisCursos extends AppCompatActivity implements SearchView.OnQueryTe
     }
 
     public void parseSesionesResponse(String response){
+        sesionHandlers = new ArrayList<>();
         cursosDesaprobados = new ArrayList<>();
         JSONArray jsonarray;
         try {
             jsonarray = new JSONArray(response);
             for (int i = 0; i < jsonarray.length(); i++) {
                 JSONObject jsonobject = jsonarray.getJSONObject(i);
+                sesionHandlers.add(new SesionHandler(jsonobject.getJSONObject("id").getInt("numero")));
                 if(jsonobject.getBoolean("desaprobado")){
                     cursosDesaprobados.add(jsonobject.getJSONObject("id").getInt("idCurso"));
                 }
@@ -267,10 +271,12 @@ public class MisCursos extends AppCompatActivity implements SearchView.OnQueryTe
         Type collectionType = new TypeToken<Collection<Curso>>(){}.getType();
         Collection<Curso> cusos = g.fromJson(response, collectionType);
 
+        int i = 0;
         for(Curso c: cusos){
             if(cursosDesaprobados.contains(c.getId())){
                 c.desaprobarSesionActual();
             }
+            sesionHandlers.get(i++).setFechaInicio(c);
             cursos.add(c);
             android.util.Log.d("CATEGORIASCURSO", "NOMBRE :" + c.getNombre() + "Docente: " + c.getNombreDocente());
         }
@@ -278,7 +284,7 @@ public class MisCursos extends AppCompatActivity implements SearchView.OnQueryTe
 
     private void initializeAdapter(){
         progressBarHandler.hide();
-        RVAdapterMisCursos adapter = new RVAdapterMisCursos(cursos, userLoginData, this);
+        RVAdapterMisCursos adapter = new RVAdapterMisCursos(cursos, sesionHandlers,this);
         rv.setAdapter(adapter);
     }
 

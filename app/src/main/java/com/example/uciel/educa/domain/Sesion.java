@@ -14,7 +14,6 @@ public class Sesion {
     private String cadenaFechaHasta;
     private String cadenaFechaDesdeInscripcion;
 
-
     public Sesion(String cfd, String cfh, String cfdi) {
         cadenaFechaDesde = cfd;
         cadenaFechaHasta = cfh;
@@ -61,5 +60,13 @@ public class Sesion {
 
     public String getCadenaFechaDesdeInscripcion() {
         return cadenaFechaDesdeInscripcion;
+    }
+
+    public int getID() {
+        return this.id.getID();
+    }
+
+    public long getFechaInicio(){
+        return this.fechaDesde;
     }
 }
