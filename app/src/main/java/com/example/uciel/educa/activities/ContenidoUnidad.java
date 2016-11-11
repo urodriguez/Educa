@@ -65,7 +65,7 @@ public class ContenidoUnidad extends AppCompatActivity {
     private ViewPager viewPager;
     private VPAdapterContUnidad vpaContUnidad;
 
-    private LinearLayout llMaterial, llPracticas, llExamenPresentacion, llExamenItems;
+    private LinearLayout llMaterial, llExamenPresentacion, llExamenItems;
 
     private Bundle extras;
 
@@ -187,16 +187,13 @@ public class ContenidoUnidad extends AppCompatActivity {
         viewPager.setAdapter(vpaContUnidad);
 
         final TabLayout.Tab material = tabs.newTab();
-        final TabLayout.Tab practicas = tabs.newTab();
         final TabLayout.Tab examen = tabs.newTab();
 
         material.setText("MATERIAL");
-        practicas.setText("PRACTICAS");
         examen.setText("EXAMEN");
 
         tabs.addTab(material, 0);
-        tabs.addTab(practicas, 1);
-        tabs.addTab(examen, 2);
+        tabs.addTab(examen, 1);
 
         tabs.setTabTextColors(ContextCompat.getColorStateList(this, R.color.white));
         tabs.setSelectedTabIndicatorColor(ContextCompat.getColor(this, R.color.black_overlay));
@@ -215,12 +212,7 @@ public class ContenidoUnidad extends AppCompatActivity {
                                 break;
 
                             case 1:
-                                cargarPracticas();
-                                break;
-
-                            case 2:
                                 initializeExamData();
-
                                 break;
                         }
                     }
@@ -461,10 +453,6 @@ public class ContenidoUnidad extends AppCompatActivity {
 
         // Agrego un divisor
         llMaterial.addView(crearDivisor(LinearLayout.LayoutParams.MATCH_PARENT, 1, 10, 15, 10, 15, Color.LTGRAY));
-    }
-
-    private void cargarPracticas() {
-
     }
 
     private void cargarExamen() {

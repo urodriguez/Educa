@@ -45,7 +45,7 @@ public class MisDiplomas extends AppCompatActivity{
 
     private SingletonUserLogin userLoginData;
 
-    private final String URL_MIS_DIPLOMAS = "http://educa-mnforlenza.rhcloud.com/api/usuario/mis-diplomas/";
+    private final String URL_MIS_DIPLOMAS = "https://educa-mnforlenza.rhcloud.com/api/usuario/mis-diplomas/";
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -143,14 +143,19 @@ public class MisDiplomas extends AppCompatActivity{
     }
 
     private void initializeData(){
-        //String url = URL_MIS_DIPLOMAS + userLoginData.getUserID();
-        String url= "http://educa-mnforlenza.rhcloud.com/api/usuario/mis-sesiones/43";
+        String url = URL_MIS_DIPLOMAS + userLoginData.getUserID();
+        android.util.Log.d("MSG", "URL DIPLO " + url);
         StringRequest stringRequest = new StringRequest(Request.Method.GET, url,
                 new Response.Listener<String>() {
                     @Override
                     public void onResponse(String response) {
-                        response = "[{\"nombreCurso\":\"Android\",\"fechaInicio\": \"14/10/2016\"},{\"nombreCurso\":\"Cocina Mex\",\"fechaInicio\": \"01/11/2016\"}]";
+                        //response = "[{\"nombreCurso\":\"Android\",\"fechaInicio\": \"14/10/2016\"},{\"nombreCurso\":\"Cocina Mex\",\"fechaInicio\": \"01/11/2016\"}]";
                         android.util.Log.d("MSG", "RESPONSE DIPLO= " + response);
+                        if (response.equals("[]")){//Aun no tiene diplomas cargados
+                            CharSequence text = "¡Aún no tiene diplomas cargados! Debes aprobar un curso primero";
+                            Toast toast = Toast.makeText(getApplicationContext(), text, Toast.LENGTH_LONG);
+                            toast.show();
+                        }
                         parseDiplomasResponse(response);
                         initializeAdapter();
                     }
@@ -159,7 +164,7 @@ public class MisDiplomas extends AppCompatActivity{
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         android.util.Log.d("MSG", "ERROR RESPONSE");
-                        CharSequence text = "Error al cargar sesiones. Reintente nuevamente!";
+                        CharSequence text = "Error al cargar 'Mis Diplomas'. Reintente nuevamente!";
                         Toast toast = Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT);
                         toast.show();
                     }

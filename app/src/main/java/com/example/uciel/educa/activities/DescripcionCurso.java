@@ -266,7 +266,7 @@ public class DescripcionCurso extends AppCompatActivity {
         tvDescripcion = (TextView) viewPager.findViewById(R.id.textView5);
 
         tvNombre.setText("Nombre: " + curso.getNombre());
-        tvEstado.setText("Estado: " + curso.getEstado());
+        tvEstado.setText("Estado: " + curso.getFechaSesionMasCercana());
         tvProfesor.setText("Profesor: " + curso.getNombreCompletoDocente());
         tvDescripcion.setText("Descripción: " + curso.getDescripcion());
     }

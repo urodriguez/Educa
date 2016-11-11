@@ -25,9 +25,6 @@ public class Curso {
     private List<Critica> criticas;
 
     private boolean sesionActualDesaprobada = false;
-    private int idSesionActual;
-    private String fechaInicioSesionActual;
-    private boolean sesionActualIniciada;
 
 
     public Curso() {
@@ -226,5 +223,14 @@ public class Curso {
             }
         }
         return 0;
+    }
+
+    public String getFechaSesionMasCercana(){
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTimeInMillis(sesiones.get(0).getFechaInicio());
+        Date fechaComienzo = calendar.getTime();
+        SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+
+        return df.format(fechaComienzo);
     }
 }

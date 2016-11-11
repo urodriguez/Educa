@@ -22,9 +22,6 @@ public class VPAdapterContUnidad extends FragmentStatePagerAdapter {
             case 1:
                 tb.setTabNumber(1);
                 return tb;
-            case 2:
-                tb.setTabNumber(2);
-                return tb;
             default:
                 return null;
         }
@@ -32,7 +29,7 @@ public class VPAdapterContUnidad extends FragmentStatePagerAdapter {
 
     @Override
     public int getCount() {
-        return 3;           // As there are only 3 Tabs
+        return 2;           // As there are only 2 Tabs
     }
 
 }

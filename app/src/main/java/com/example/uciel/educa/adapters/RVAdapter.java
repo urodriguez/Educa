@@ -87,13 +87,7 @@ public class RVAdapter extends RecyclerView.Adapter<RVAdapter.CursoViewHolder> {
         cursoViewHolder.ratingBar.setRating(cursos.get(i).getValoracionesPromedio());
 
         if (orientacion.equals("HORIZONTAL")){
-            Calendar calendar = Calendar.getInstance();
-            calendar.setTimeInMillis(cursos.get(i).getFechaEstimadaProximaSesion());
-            Date fechaComienzo = calendar.getTime();
-            SimpleDateFormat df = new SimpleDateFormat("dd/MM/yyyy");
-            String cadenaFechaComienzo = df.format(fechaComienzo);
-
-            String comienzo = "Comienza: "  + cadenaFechaComienzo;
+            String comienzo = "Comienza: "  + cursos.get(i).getFechaSesionMasCercana();
             cursoViewHolder.fechaComienzo.setText(comienzo);
 
         } else {

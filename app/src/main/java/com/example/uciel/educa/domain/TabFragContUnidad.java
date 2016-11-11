@@ -20,8 +20,6 @@ public class TabFragContUnidad extends Fragment {
         if(tabNumber == 0){
             View view = inflater.inflate(R.layout.tab_cont_unidad_one_mat, container, false);
             return view;
-        } else if (tabNumber == 1) {
-            return inflater.inflate(R.layout.tab_cont_unidad_two_pract, container, false);
         } else {
             return inflater.inflate(R.layout.tab_cont_unidad_three_exam, container, false);
         }
