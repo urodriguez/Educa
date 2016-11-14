@@ -405,6 +405,10 @@ public class ContenidoCurso extends AppCompatActivity {
         android.util.Log.d("MSG", "CANT UNID= " + curso.getCantDeUnidades());
 
         for (int i = 0; i < curso.getCantDeUnidades(); i++){
+            if( ! curso.unidadPublidad(i)){
+                android.util.Log.d("MSG", "SALTEANDOSE UNIDAD NO PUBLICADA");
+                continue;
+            }
             CardView cv = new CardView(this);
             RelativeLayout rl = new RelativeLayout(this);
             TextView tv = new TextView(this);

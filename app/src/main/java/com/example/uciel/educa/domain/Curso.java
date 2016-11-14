@@ -233,4 +233,8 @@ public class Curso {
 
         return df.format(fechaComienzo);
     }
+
+    public boolean unidadPublidad(int indiceUnidad) {
+        return unidades.get(indiceUnidad).unidadPublicada();
+    }
 }

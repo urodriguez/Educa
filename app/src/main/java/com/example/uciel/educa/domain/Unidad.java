@@ -5,6 +5,7 @@ public class Unidad {
     private String titulo;
     private String descripcion;
     private int duracionEstimada;
+    private boolean publicado;
 
     public Unidad(String t, String d, int de) {
         titulo = t;
@@ -22,5 +23,9 @@ public class Unidad {
 
     public int getDuracionEstimada() {
         return duracionEstimada;
+    }
+
+    public boolean unidadPublicada(){
+        return publicado;
     }
 }
