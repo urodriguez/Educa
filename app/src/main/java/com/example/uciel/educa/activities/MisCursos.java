@@ -12,6 +12,7 @@ import android.os.Bundle;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.util.*;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.RelativeLayout;
@@ -171,6 +172,12 @@ public class MisCursos extends AppCompatActivity implements SearchView.OnQueryTe
                             case "Mis Diplomas":
                                 Intent misDiplomas = new Intent(MisCursos.this, MisDiplomas.class);
                                 startActivity(misDiplomas);
+                                break;
+                            case "Cerrar Sesión":
+                                if (mGoogleApiClient != null){
+                                    Auth.GoogleSignInApi.signOut(mGoogleApiClient);
+                                }
+                                startActivity(new Intent(MisCursos.this, Log.class));
                                 break;
                         }
                         return true;

@@ -175,6 +175,12 @@ public class ComentariosForoActivity extends AppCompatActivity implements Google
                                 Intent misDiplomas = new Intent(ComentariosForoActivity.this, MisDiplomas.class);
                                 startActivity(misDiplomas);
                                 break;
+                            case "Cerrar Sesión":
+                                if (mGoogleApiClient != null){
+                                    Auth.GoogleSignInApi.signOut(mGoogleApiClient);
+                                }
+                                startActivity(new Intent(ComentariosForoActivity.this, Log.class));
+                                break;
                         }
                         return true;
                     }

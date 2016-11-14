@@ -194,6 +194,12 @@ public class ContenidoUnidad extends AppCompatActivity implements GoogleApiClien
                                 Intent misDiplomas = new Intent(ContenidoUnidad.this,MisDiplomas.class);
                                 startActivity(misDiplomas);
                                 break;
+                            case "Cerrar Sesión":
+                                if (mGoogleApiClient != null){
+                                    Auth.GoogleSignInApi.signOut(mGoogleApiClient);
+                                }
+                                startActivity(new Intent(ContenidoUnidad.this, Log.class));
+                                break;
                         }
 
                         drawerLayout.closeDrawers(); // Cerrar drawer

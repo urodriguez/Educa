@@ -164,6 +164,12 @@ public class Cursos extends AppCompatActivity implements SearchView.OnQueryTextL
                                 Intent misDiplomas = new Intent(Cursos.this,MisDiplomas.class);
                                 startActivity(misDiplomas);
                                 break;
+                            case "Cerrar Sesión":
+                                if (mGoogleApiClient != null){
+                                    Auth.GoogleSignInApi.signOut(mGoogleApiClient);
+                                }
+                                startActivity(new Intent(Cursos.this, Log.class));
+                                break;
                         }
 
                         drawerLayout.closeDrawers(); // Cerrar drawer

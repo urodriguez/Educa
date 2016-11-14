@@ -159,6 +159,12 @@ public class MisDiplomas extends AppCompatActivity implements GoogleApiClient.On
                             case "Mis Diplomas":
                                 drawerLayout.closeDrawers(); // Cerrar drawer
                                 break;
+                            case "Cerrar Sesión":
+                                if (mGoogleApiClient != null){
+                                    Auth.GoogleSignInApi.signOut(mGoogleApiClient);
+                                }
+                                startActivity(new Intent(MisDiplomas.this, Log.class));
+                                break;
                         }
                         return true;
                     }

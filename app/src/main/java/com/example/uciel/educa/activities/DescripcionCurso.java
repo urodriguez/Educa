@@ -658,6 +658,12 @@ public class DescripcionCurso extends AppCompatActivity implements GoogleApiClie
                                 Intent misDiplomas = new Intent(DescripcionCurso.this,MisDiplomas.class);
                                 startActivity(misDiplomas);
                                 break;
+                            case "Cerrar Sesión":
+                                if (mGoogleApiClient != null){
+                                    Auth.GoogleSignInApi.signOut(mGoogleApiClient);
+                                }
+                                startActivity(new Intent(DescripcionCurso.this, com.example.uciel.educa.activities.Log.class));
+                                break;
                         }
 
                         drawerLayout.closeDrawers(); // Cerrar drawer
