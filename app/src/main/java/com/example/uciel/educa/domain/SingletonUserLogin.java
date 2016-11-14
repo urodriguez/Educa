@@ -1,13 +1,9 @@
 package com.example.uciel.educa.domain;
 
-import java.util.HashMap;
-import java.util.Map;
-
 public class SingletonUserLogin {
     private static SingletonUserLogin instance = null;
 
     private String userName, userID;
-    private Map<Integer, Integer> mis_IDCURSO_IDSESSION = new HashMap<>();
 
     protected SingletonUserLogin() {
     }
@@ -38,13 +34,5 @@ public class SingletonUserLogin {
 
     public String getUserID(){
         return this.userID;
-    }
-
-    public void registrarSesionInscriptaAcurso(int idSesion, int idCurso){
-        mis_IDCURSO_IDSESSION.put(idCurso,idSesion);
-    }
-
-    public void borrarCurso(int idCurso){
-        mis_IDCURSO_IDSESSION.remove(idCurso);
     }
 }
