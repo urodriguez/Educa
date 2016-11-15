@@ -14,11 +14,14 @@ import android.support.v4.view.GravityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v4.widget.DrawerLayout;
 import android.support.v7.app.ActionBar;
+import android.support.v7.app.ActionBarDrawerToggle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -87,6 +90,7 @@ public class ContenidoUnidad extends AppCompatActivity implements GoogleApiClien
     private float resultadoPorcentual;
     private Button btnComenzar;
     private int cantDePregAprobadas = 0;
+    private boolean realizandoExamen = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -158,7 +162,13 @@ public class ContenidoUnidad extends AppCompatActivity implements GoogleApiClien
     public boolean onOptionsItemSelected(MenuItem item) {
         switch (item.getItemId()) {
             case android.R.id.home:
-                drawerLayout.openDrawer(GravityCompat.START);
+                if(realizandoExamen){
+                    CharSequence text = "¡Debes terminar el examen antes de retirarte!";
+                    Toast toast = Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT);
+                    toast.show();
+                } else {
+                    drawerLayout.openDrawer(GravityCompat.START);
+                }
                 return true;
         }
         return super.onOptionsItemSelected(item);
@@ -234,16 +244,20 @@ public class ContenidoUnidad extends AppCompatActivity implements GoogleApiClien
                     @Override
                     public void onTabSelected(TabLayout.Tab tab) {
 
-                        viewPager.setCurrentItem(tab.getPosition());
+                        if(realizandoExamen){
+                            viewPager.setCurrentItem(1);
+                        } else {
+                            viewPager.setCurrentItem(tab.getPosition());
 
-                        switch (tab.getPosition()) {
-                            case 0:
-                                cargarMaterial();
-                                break;
+                            switch (tab.getPosition()) {
+                                case 0:
+                                    cargarMaterial();
+                                    break;
 
-                            case 1:
-                                initializeExamData();
-                                break;
+                                case 1:
+                                    initializeExamData();
+                                    break;
+                            }
                         }
                     }
 
@@ -502,6 +516,10 @@ public class ContenidoUnidad extends AppCompatActivity implements GoogleApiClien
             @Override
             public void onClick(View v) {
                 if(examFail == false){
+                    realizandoExamen = true;
+                    drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_LOCKED_CLOSED);
+                    //tabs.setEnabled(false);
+
                     llExamenPresentacion.setVisibility(View.GONE);
 
                     llExamenItems = (LinearLayout) viewPager.findViewById(R.id.llExamenItems);
@@ -538,9 +556,8 @@ public class ContenidoUnidad extends AppCompatActivity implements GoogleApiClien
 
                         registrarResultadoExamen();//Se hace un POST con el estado del examen
 
-                        //initializeExamData();
-
                         llExamenPresentacion.setVisibility(View.VISIBLE);
+                        realizandoExamen = false;
                         }
                     });
                 } else{
@@ -565,6 +582,8 @@ public class ContenidoUnidad extends AppCompatActivity implements GoogleApiClien
                         "Acertadas/Total = " + cantDePregAprobadas + "/" + itemsExamen.size() + "\n");
                 btnEstado.getBackground().setColorFilter(Color.GREEN, PorterDuff.Mode.SRC_ATOP);
                 btnComenzar.setEnabled(false);
+                drawerLayout.setDrawerLockMode(DrawerLayout.LOCK_MODE_UNLOCKED);
+                //tabs.setEnabled(true);
             } else {
                 CharSequence text = "Lamentablemente has desaprobado el examen. " +
                         "Puedes volver a intentarlo cuando comience la proxima sesión";
@@ -572,10 +591,6 @@ public class ContenidoUnidad extends AppCompatActivity implements GoogleApiClien
                 toast.show();
 
                 startActivity(new Intent(ContenidoUnidad.this, MisCursos.class));
-                /*btnEstado.setText("DESAPROBADO " + bd + "%" + "\n" +
-                        "Acertadas/Total = " + cantDePregAprobadas + "/" + itemsExamen.size() + "\n");
-                btnEstado.getBackground().setColorFilter(Color.RED, PorterDuff.Mode.SRC_ATOP);
-                btnComenzar.setEnabled(false);*/
             }
         }
     }
@@ -646,5 +661,73 @@ public class ContenidoUnidad extends AppCompatActivity implements GoogleApiClien
         divisor.setBackgroundColor(c);
 
         return divisor;
+    }
+
+    @Override
+    public boolean onKeyDown(int keyCode, KeyEvent event) {
+        switch(keyCode){
+            case KeyEvent.KEYCODE_BACK:
+                if(realizandoExamen){
+                    CharSequence text = "¡Debes terminar el examen antes de retirarte!";
+                    Toast toast = Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT);
+                    toast.show();
+                } else {
+                    Intent intentContenidoUnidad = new Intent(ContenidoUnidad.this,ContenidoCurso.class);
+                    intentContenidoUnidad.putExtra("ID", extras.getInt("ID_CURSO"));
+                    intentContenidoUnidad.putExtra("NOMBRE_CURSO", extras.getString("NOMBRE_CURSO"));
+
+                    startActivity(intentContenidoUnidad);
+                }
+                return true;
+        }
+        return super.onKeyDown(keyCode, event);
+    }
+
+    @Override
+    protected void onStop() {
+        super.onStop();
+
+        if(realizandoExamen){
+            RequestQueue queue = Volley.newRequestQueue(getApplicationContext());
+
+            //JSONObject to send
+            JSONObject dataToSend = new JSONObject();
+            try {
+                dataToSend.put("idCurso", idCursoActual);
+                dataToSend.put("numeroUnidad", idUnidadActual);
+                dataToSend.put("idUsuario", userLoginData.getUserID());
+                dataToSend.put("idSesion", idSesionActual);
+                dataToSend.put("cantDePreguntas", itemsExamen.size());
+                dataToSend.put("cantDePregAprobadas", 0);
+                dataToSend.put("estado", "DESAPROBADO");
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+
+            android.util.Log.d("MSG", "DATA TO SEND= " + dataToSend.toString());
+
+            JsonObjectRequest jsonObjReq = new JsonObjectRequest(Request.Method.POST, URL_ENVIAR_EXAMEN, dataToSend,
+                    new Response.Listener<JSONObject>() {
+
+                        @Override
+                        public void onResponse(JSONObject response) {
+                            // response
+                            android.util.Log.d("MSG", "SUCCESS POST EXAM Response");
+                            android.util.Log.d("MSG", response.toString());
+
+                        }
+                    }, new Response.ErrorListener() {
+
+                @Override
+                public void onErrorResponse(VolleyError error) {
+                    android.util.Log.d("MSG", "ERROR Response");
+                }
+            }
+            );
+            // Add the request to the RequestQueue.
+            queue.add(jsonObjReq);
+
+            startActivity(new Intent(ContenidoUnidad.this, MisCursos.class));
+        }
     }
 }

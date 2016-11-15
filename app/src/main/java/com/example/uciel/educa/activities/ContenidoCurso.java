@@ -466,6 +466,7 @@ public class ContenidoCurso extends AppCompatActivity implements GoogleApiClient
                 public void onClick(View v) {
                     Intent cursosIntent = new Intent(ContenidoCurso.this,ContenidoUnidad.class);
                     cursosIntent.putExtra("ID_CURSO", curso.getId());
+                    cursosIntent.putExtra("NOMBRE_CURSO", curso.getNombre());
 
                     TextView textView = (TextView) findViewById(textViewUnidadID);
                     cursosIntent.putExtra("UNIDAD", textView.getText());

@@ -100,7 +100,7 @@ public class RVAdapterMisCursos extends RecyclerView.Adapter<RVAdapterMisCursos.
             @Override
             public void onClick(View v) {
                 if (cursos.get(i).tieneLaSesionActualDesaprobada()){
-                    CharSequence text = "¡Solicitud Denegada! Tienes un examen desaprobado. " +
+                    CharSequence text = "¡No puedes ingresar a este curso! Tienes un examen desaprobado. " +
                             "Puedes volver a intentarlo cuando comience la proxima sesión";
                     Toast toast = Toast.makeText(v.getContext(), text, Toast.LENGTH_LONG);
                     toast.show();
