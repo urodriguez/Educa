@@ -69,4 +69,11 @@ public class Sesion {
     public long getFechaInicio(){
         return this.fechaDesde;
     }
+    public long getLongFechaDesdeInscripcion(){
+        return this.fechaDesdeInscripcion;
+    }
+
+    public boolean estaVigente() {
+        return Calendar.getInstance().getTimeInMillis() <= fechaHasta;
+    }
 }

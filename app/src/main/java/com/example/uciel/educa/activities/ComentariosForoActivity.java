@@ -290,7 +290,11 @@ public class ComentariosForoActivity extends AppCompatActivity implements Google
             @Override
             public void onClick(View v) {
                 EditText etMensajeIngresado = (EditText) findViewById(R.id.editTextForo);
-                if(etMensajeIngresado.getText().toString().length() < 500){
+                if(etMensajeIngresado.getText().toString().isEmpty()){
+                    String mensaje = "¡No puedes enviar un mensaje sin contenido!";
+                    Toast toast = Toast.makeText(getApplicationContext(), mensaje, Toast.LENGTH_SHORT);
+                    toast.show();
+                } else if(etMensajeIngresado.getText().toString().length() < 500){
                     registrarComentario(etMensajeIngresado.getText().toString());
                     if(!foroModerado){
                         //si NO es moderado ademas de hacer un post, tambien lo muestra

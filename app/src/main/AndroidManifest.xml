@@ -20,7 +20,8 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme">
+        android:theme="@style/AppTheme"
+        >
         <meta-data
             android:name="com.facebook.sdk.ApplicationId"
             android:value="@string/facebook_app_id" />
@@ -37,21 +38,22 @@
             android:configChanges="keyboard|keyboardHidden|screenLayout|screenSize|orientation"
             android:label="@string/app_name"
             android:theme="@android:style/Theme.Translucent.NoTitleBar" />
-        <activity android:name=".activities.Cursos" />
-        <activity android:name=".activities.DescripcionCurso" />
-        <activity android:name=".activities.Home"></activity>
-        <activity android:name=".activities.CursosBuscados" />
-        <activity android:name=".activities.MisCursos" />
-        <activity android:name=".activities.VideoActivity" />
-        <activity android:name=".activities.MisDiplomas" />
-        <activity android:name=".activities.ContenidoCurso" />
-        <activity android:name=".activities.ContenidoUnidad" />
-        <activity android:name=".activities.MaterialActivity" />
+        <activity android:name=".activities.Cursos" android:configChanges="orientation|screenSize|keyboardHidden"/>
+        <activity android:name=".activities.DescripcionCurso" android:configChanges="orientation|screenSize|keyboardHidden"/>
+        <activity android:name=".activities.Home" android:configChanges="orientation|screenSize|keyboardHidden"/>
+        <activity android:name=".activities.CursosBuscados" android:configChanges="orientation|screenSize|keyboardHidden"/>
+        <activity android:name=".activities.MisCursos" android:configChanges="orientation|screenSize|keyboardHidden"/>
+        <activity android:name=".activities.VideoActivity" android:configChanges="orientation|screenSize|keyboardHidden"/>
+        <activity android:name=".activities.MisDiplomas" android:configChanges="orientation|screenSize|keyboardHidden"/>
+        <activity android:name=".activities.ContenidoCurso" android:configChanges="orientation|screenSize|keyboardHidden"/>
+        <activity android:name=".activities.ContenidoUnidad" android:configChanges="orientation|screenSize|keyboardHidden"/>
+        <activity android:name=".activities.MaterialActivity" android:configChanges="orientation|screenSize|keyboardHidden"/>
         <activity
             android:name=".activities.ComentariosForoActivity"
+            android:configChanges="orientation|screenSize|keyboardHidden"
             android:label="@string/title_activity_tema_foro"
             android:theme="@style/AppTheme" />
-        <activity android:name=".activities.MiDiploma"></activity>
+        <activity android:name=".activities.MiDiploma" android:configChanges="orientation|screenSize|keyboardHidden"/>
     </application>
 
 </manifest>

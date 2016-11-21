@@ -2,6 +2,7 @@ package com.example.uciel.educa.domain;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -236,5 +237,34 @@ public class Curso {
 
     public boolean unidadPublidad(int indiceUnidad) {
         return unidades.get(indiceUnidad).unidadPublicada();
+    }
+
+    public boolean yaPuedeInscribirseAsesion(int idSesion) {
+        Sesion s = getSesionConID(idSesion);
+        long fechaDeHoy = Calendar.getInstance().getTimeInMillis();
+        if (s != null) {
+            return fechaDeHoy >= s.getLongFechaDesdeInscripcion();
+        } else {
+            return false;
+        }
+    }
+
+    private Sesion getSesionConID(int idSesion) {
+        for (Sesion s: sesiones) {
+            if (s.getID() == idSesion){
+                return s;
+            }
+        }
+        return null;
+    }
+
+    public List<Sesion> getSesionesVigentes() {
+        List<Sesion> sesionesVigentes = new ArrayList<>();
+        for (Sesion s: sesiones) {
+            if (s.estaVigente()){
+                sesionesVigentes.add(s);
+            }
+        }
+        return sesionesVigentes;
     }
 }

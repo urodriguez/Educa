@@ -497,6 +497,12 @@ public class ContenidoCurso extends AppCompatActivity implements GoogleApiClient
         llMensajesForo = (LinearLayout) viewPager.findViewById(R.id.linearScrollTemaForo);
         llMensajesForo.removeAllViews();
 
+        if (temasForo.size() == 0){
+            CharSequence text = "¡Aún no hay temas para esta sesión!";
+            Toast toast = Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT);
+            toast.show();
+        }
+
         for (int i = temasForo.size() - 1 ; i >= 0 ; i--){
             if(temasForo.get(i).fueAprobado()){
                 cargarTema(temasForo.get(i).getIdTema(), temasForo.get(i).getTitulo(), temasForo.get(i).getDescripcion());
@@ -518,7 +524,7 @@ public class ContenidoCurso extends AppCompatActivity implements GoogleApiClient
                 alertDialogBuilder.setView(dialogView);
 
                 // set dialog message
-                alertDialogBuilder.setCancelable(false).setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                alertDialogBuilder.setCancelable(true).setPositiveButton("OK", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         EditText tvT = (EditText) dialogView.findViewById(R.id.titulo);
                         EditText tvD = (EditText) dialogView.findViewById(R.id.descripcion);
@@ -597,7 +603,8 @@ public class ContenidoCurso extends AppCompatActivity implements GoogleApiClient
     }
 
     private void cargarTema(int idTema, String titulo, String descripcion){
-        CardView cv = getCVproporcional();
+        //CardView cv = getCVproporcional();
+        CardView cv = new CardView(this);
         RelativeLayout rl = new RelativeLayout(this);
 
         TextView tv = new TextView(this);
@@ -623,6 +630,7 @@ public class ContenidoCurso extends AppCompatActivity implements GoogleApiClient
 
         RelativeLayout.LayoutParams paramsD = (RelativeLayout.LayoutParams)tvd.getLayoutParams();
         paramsD.addRule(RelativeLayout.ALIGN_PARENT_BOTTOM);
+        paramsD.addRule(RelativeLayout.BELOW, tv.getId());
 
         tvd.setLayoutParams(paramsD); //causes layout update
 

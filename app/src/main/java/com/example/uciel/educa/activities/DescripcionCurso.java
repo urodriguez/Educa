@@ -70,7 +70,7 @@ import java.util.Map;
 public class DescripcionCurso extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener{
 
     private SingletonUserLogin userLoginData;
-    private Curso  curso;
+    private Curso curso;
 
     private DrawerLayout drawerLayout;
     private NavigationView navigationView;
@@ -366,7 +366,7 @@ public class DescripcionCurso extends AppCompatActivity implements GoogleApiClie
         llSesiones = (LinearLayout) viewPager.findViewById(R.id.sesiones_linear);
         llSesiones.removeAllViews();
 
-        cargarBotonesDeInscripcion(curso.getSesiones().size());
+        cargarBotonesDeInscripcion(curso.getCantDeSesiones());
 
         for(int i = 0; i < curso.getCantDeSesiones(); i++){
             LinearLayout llH = new LinearLayout(this);
@@ -433,21 +433,29 @@ public class DescripcionCurso extends AppCompatActivity implements GoogleApiClie
             final int finalI = i;
             botonesInscripcion.get(i).setOnClickListener(new View.OnClickListener() {
                 public void onClick(View v) {
+                    int idSesion = finalI+1;
                     if(botonesInscripcion.get(finalI).getText().equals("INSCRIBIRSE")){
-                        botonesInscripcion.get(finalI).setText("DESUSCRIBIRSE");
-                        inscribirseAsesion(finalI+1);
+                        if (curso.yaPuedeInscribirseAsesion(idSesion)){
+                            inscribirseAsesion(idSesion);
 
-                        //Deshabilito los demas botones
-                        for (int j = 0; j < cantDeSesiones; j++){
-                            if (j != finalI){
-                                botonesInscripcion.get(j).setText("NO DISPONIBLE");
-                                botonesInscripcion.get(j).setEnabled(false);
-                                botonesInscripcion.get(j).setBackgroundColor(Color.LTGRAY);
+                            botonesInscripcion.get(finalI).setText("DESUSCRIBIRSE");
+
+                            //Deshabilito los demas botones
+                            for (int j = 0; j < cantDeSesiones; j++){
+                                if (j != finalI){
+                                    botonesInscripcion.get(j).setText("NO DISPONIBLE");
+                                    botonesInscripcion.get(j).setEnabled(false);
+                                    botonesInscripcion.get(j).setBackgroundColor(Color.LTGRAY);
+                                }
                             }
+                        } else {
+                            CharSequence text = "¡Aún no puedes inscribirte! Revisa la fecha de inicio de inscripciones";
+                            Toast toast = Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT);
+                            toast.show();
                         }
                     } else {
                         botonesInscripcion.get(finalI).setText("INSCRIBIRSE");
-                        desinscribirseAsesion(finalI+1);
+                        desinscribirseAsesion(idSesion);
 
                         //Reestablezco los demas botones
                         for (int j = 0; j < cantDeSesiones; j++){
@@ -486,13 +494,13 @@ public class DescripcionCurso extends AppCompatActivity implements GoogleApiClie
                     }
                 }, new Response.ErrorListener() {
 
-                    @Override
-                    public void onErrorResponse(VolleyError error) {
-                        android.util.Log.d("MSG", "ERROR Response");
-                        CharSequence text = "¡Error al procesar la inscripción! Vuelve a intentarlo";
-                        Toast toast = Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT);
-                        toast.show();
-                    }
+            @Override
+            public void onErrorResponse(VolleyError error) {
+                android.util.Log.d("MSG", "ERROR Response");
+                CharSequence text = "¡Error al procesar la inscripción! Vuelve a intentarlo";
+                Toast toast = Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT);
+                toast.show();
+            }
         }
         );
         // Add the request to the RequestQueue.

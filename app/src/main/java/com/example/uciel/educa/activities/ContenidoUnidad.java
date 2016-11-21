@@ -245,6 +245,9 @@ public class ContenidoUnidad extends AppCompatActivity implements GoogleApiClien
                     public void onTabSelected(TabLayout.Tab tab) {
 
                         if(realizandoExamen){
+                            CharSequence text = "¡Debes terminar el examen antes de realizar otra acción!";
+                            Toast toast = Toast.makeText(getApplicationContext(), text, Toast.LENGTH_SHORT);
+                            toast.show();
                             viewPager.setCurrentItem(1);
                         } else {
                             viewPager.setCurrentItem(tab.getPosition());

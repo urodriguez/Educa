@@ -85,7 +85,7 @@ public class VideoActivity extends AppCompatActivity {
             myVideoView.setVideoURI(Uri.parse(urlVideo));
 
             InputStream subtitule = getResources().getAssets().open("discurso.vtt");
-            myVideoView.addSubtitleSource(subtitule, MediaFormat.createSubtitleFormat("text/vtt", Locale.ENGLISH.getLanguage()));
+            //myVideoView.addSubtitleSource(subtitule, MediaFormat.createSubtitleFormat("text/vtt", Locale.ENGLISH.getLanguage()));
 
 
         } catch (Exception e) {
